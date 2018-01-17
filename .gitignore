@@ -1,0 +1,6 @@
+# Below are files should be ignored for each people
+# Wolfbolin
+.idea/*
+_gsdata_/
+*/_gsdata_/
+old/*

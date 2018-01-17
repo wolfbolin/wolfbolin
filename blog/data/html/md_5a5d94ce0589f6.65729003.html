@@ -1,0 +1,74 @@
+<p>前一段时间用树莓派折腾了一个非常复杂的嵌入式系统，现在树莓派已经闲下来了。那么贵的设备怎么能闲着吃灰呢？我把它放在保护盒里插好线，计划使其变成一个小型的网页服务器。<br />
+现在服务器已经基本成型，我就把我的配置过程分享一下。</p>
+<h2>0.环境说明</h2>
+<p>设备：Raspberry Pi 3b<br />
+网关：NETGEAR R6220<br />
+接入方式：有线接入<br />
+软件版本：nginx-1.12.2</p>
+<h2>1.烧录系统</h2>
+<p>首先要在CentOS官方下载镜像，传送门：<a href="http://mirror.centos.org/altarch/7/isos/armhfp/">http://mirror.centos.org/altarch/7/isos/armhfp/</a><br />
+因为我是树莓派3b，所以我下载：<a href="http://mirror.centos.org/altarch/7/isos/armhfp/CentOS-Userland-7-armv7hl-Minimal-1708-RaspberryPi3.img.xz">http://mirror.centos.org/altarch/7/isos/armhfp/CentOS-Userland-7-armv7hl-Minimal-1708-RaspberryPi3.img.xz</a><br />
+下载完成后使用<code>Win32DiskImager.exe</code>烧录在TF卡中(一个小小的提示，TF卡的质量不过关可能会导致在写入的时候速度越来越慢，以至于用了好几个小时都无法写入)<br />
+在系统写入之后就可以将其插入树莓派开机了</p>
+<h2>2.扩展TF卡空间</h2>
+<p>(该步不为必要操作，可跳过)<br />
+安利我自己的文章<br />
+<a href="http://blog.csdn.net/qq_36731677/article/details/78764941">树莓派 CentOS7扩展内存卡剩余空间 http://blog.csdn.net/qq_36731677/article/details/78764941</a></p>
+<h2>3.安装依赖</h2>
+<p>可能有过nginx安装经验的人会奇怪为什么不用yum来安装，因为nginx在树莓派上由于一些我不懂的原因无法安装，即使我替换了阿里的源也不行，所以我们来手动编译安装吧。<br />
+安装依赖包<br />
+<code>yum install -y gcc-c++ pcre pcre-devel zlib zlib-devel openssl openssl-devel</code><br />
+这几个依赖也可以分开安装</p>
+<pre><code>yum install -y gcc-c++ 
+yum install -y pcre pcre-devel 
+yum install -y zlib zlib-devel 
+yum install -y openssl openssl-devel
+</code></pre>
+
+<h2>4.下载安装包</h2>
+<p>nginx官方网站：https://nginx.org/en/download.html<br />
+下载稳定版：<code>wget https://nginx.org/download/nginx-1.12.2.tar.gz</code><br />
+解压压缩包：<code>tar -zxvf nginx-1.12.2.tar.gz</code><br />
+进入文件夹：<code>cd nginx-1.12.2</code><br />
+编译安装：</p>
+<pre><code>./configure
+make &amp;&amp; make install
+</code></pre>
+
+<h2>5.手动开启nginx</h2>
+<p>打开安装目录：<code>cd /usr/local/nginx/sbin/</code></p>
+<pre><code>./nginx             #启动nginx
+./nginx -s stop     #停止nginx
+./nginx -s quit     #终止nginx
+./nginx -s reload   #重启nginx
+</code></pre>
+
+<h2>6.开启nginx.service</h2>
+<p>按照以往的经验，yum安装的nginx是自带nginx.service的，但是自己编译安装的程序则没有这个服务，所以我现在就分享一下如何手动写入这个服务。<br />
+在终端上操作：</p>
+<pre><code>cd /usr/lib/systemd/system
+touch nginx.service
+vim nginx.service
+</code></pre>
+
+<p>在nginx.service中写入以下内容（可能需要根据情况修改）</p>
+<pre><code>[Unit]
+Description=nginx
+After=network.target
+
+[Service]
+Type=forking
+ExecStart=/usr/local/nginx/sbin/nginx
+ExecReload=/usr/local/nginx/sbin/nginx -s reload
+ExecStop=/usr/local/nginx/sbin/nginx -s quit
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
+</code></pre>
+
+<p>然后就可以使用nginx.service相关的命令了</p>
+<pre><code>systemctl start nginx.service
+systemctl stauts nginx.service
+systemctl enable nginx.service
+</code></pre>
