@@ -1,19 +1,19 @@
-$('.wf-navbar').scrollspynav({
+$('.wb-navbar').scrollspynav({
     className: {
-        active: 'wf-navbar-btn-active'
+        active: 'wb-navbar-btn-active'
     }
 });
 $(function(){
     function home_height () {
-        var cover = $('.wf-cover');
-        var element = $('.wf-cover-title');
+        var cover = $('.wb-cover');
+        var element = $('.wb-cover-title');
         elemHeight = element.height();
         winHeight = $(window).height();
         cover_height = winHeight;
         if (cover_height >1440){
             cover_height = 1440;
         }
-        element_padding = (cover_height - elemHeight - 200) /2;
+        element_padding = (cover_height - elemHeight - 200) /2 +100;
         if (element_padding < 150 ) {
             element_padding = 150;
         }
