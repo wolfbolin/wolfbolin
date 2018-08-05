@@ -1,6 +1,1 @@
-.idea/*
-*/.idea/*
-_gsdata_/
-*/_gsdata_/
-*/cache/
-commons.*
+.idea
