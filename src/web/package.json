@@ -1,7 +1,7 @@
 {
-  "name": "wolfbolin",
+  "name": "wolfbolin-website",
   "version": "1.0.0",
-  "description": "A Vue.js project for wolfbolin",
+  "description": "My website",
   "author": "wolfbolin <wolfbolin@foxmail.com>",
   "private": true,
   "scripts": {
@@ -10,8 +10,6 @@
     "build": "node build/build.js"
   },
   "dependencies": {
-    "ajv": "^6.5.2",
-    "element-ui": "^2.4.5",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1"
   },

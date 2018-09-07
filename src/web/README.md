@@ -1,6 +1,6 @@
-# wolfbolin
+# wolfbolin-website
 
-> A Vue.js project for wolfbolin
+> My website
 
 ## Build Setup
 
