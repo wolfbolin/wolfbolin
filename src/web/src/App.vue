@@ -1,23 +1,110 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
-    <router-view/>
+    <!--祖传导航栏-->
+    <div class="wb-navbar">
+      <el-row class="inner">
+        <el-col :span="6" class="logo">
+          <img src="./assets/WolfBolin.png"/></el-col>
+        <el-col :span="18">
+          <el-menu
+            :default-active="activeIndex"
+            mode="horizontal"
+            class="menu"
+            @select="handleSelect"
+            background-color="#404040"
+            text-color="#ffffff"
+            active-text-color="#0080ff">
+            <el-menu-item index="1">主页</el-menu-item>
+            <el-menu-item index="2">摄影</el-menu-item>
+            <el-menu-item index="3">项目</el-menu-item>
+            <el-menu-item index="4">博客</el-menu-item>
+          </el-menu>
+        </el-col>
+      </el-row>
+    </div>
+    <!--此处利用路由自动呈现不同的内容-->
+    <div class="wb-content">
+      <div class="inner">
+        <router-view/>
+      </div>
+    </div>
+    <!--统一的页脚-->
+    <footer class="wb-footer">
+      <p class="copyright">CopyRight © 2018 WolfBolin. All Rights Reserved.</p>
+      <a href="http://www.miitbeian.gov.cn" class="icp">湘ICP备17015330号</a>
+    </footer>
   </div>
 </template>
 
 <script>
-export default {
-  name: 'App'
-}
+  export default {
+    name: 'App',
+    data() {
+      return {
+        activeIndex: '1'
+      }
+    },
+    methods: {
+      handleSelect(key, keyPath) {
+        console.log(key, keyPath);
+      }
+    }
+  }
 </script>
 
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+<style lang="scss">
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
+
+  #app {
+    .wb-navbar {
+      background-color: #404040;
+      position: fixed;
+      z-index: 100;
+      height: 60px;
+      width: 100%;
+      .inner {
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+      .logo {
+        padding-top: 16px;
+        img {
+          height: 40px;
+        }
+      }
+      .menu {
+        float: right;
+      }
+      .el-menu--horizontal {
+        border-bottom: none;
+      }
+    }
+
+    .wb-content {
+      background: url(./assets/background.jpg) no-repeat fixed top center;
+      background-size: cover;
+      position: relative;
+    }
+
+    .wb-footer {
+      background-color: #353535;
+      p, a {
+        margin: 0;
+        display: block;
+        text-align: center;
+      }
+      .copyright {
+        color: #888888;
+        padding: 10px;
+      }
+      .icp {
+        color: #0080ff;
+        padding-bottom: 5px;
+      }
+    }
+  }
+
 </style>
