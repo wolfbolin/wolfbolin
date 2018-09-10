@@ -11,7 +11,8 @@ header('Access-Control-Allow-Methods:GET'); #仅允许GET请求
  * 预定义失败信息
  */
 $response = [
-    'result' => 'WA'
+    'result' => 'WA',
+    'card' => []
 ];
 /**
  * 向博客的RSS发起请求
@@ -41,13 +42,17 @@ foreach ($rss->channel->item as $item) { #文章的数量由RSS源控制
     $card['content'] = $content;
     $date = strtotime($item->pubDate);
     $date = date("Y-m-d H:i:s", $date);
-    $card['date'] = $date;
+    $card['time'] = $date;
     $category = [];
     foreach ($item->category as $it) {
-        $category[(string)$it] = 'https://blog.wolfbolin.com/archives/category/' . $it;
+        $item = [
+            'name' => (string)$it,
+            'link' => 'https://blog.wolfbolin.com/archives/category/' . $it
+        ];
+        $category[] = $item;
     }
     $card['category'] = $category;
-    $response[] = $card;
+    $response['card'][] = $card;
 }
 $response['result'] = 'AC';
 echo json_encode($response);

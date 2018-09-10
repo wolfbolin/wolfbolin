@@ -3,9 +3,9 @@
     <!--网页封面-->
     <section class="wb-cover">
       <div ref="cover" v-bind:style="{padding: coverPadding}">
-        <h3>嗜之越笃 技巧越工</h3>
+        <h3>{{ $t("i18n.motto") }}</h3>
         <h1>WolfBolin</h1>
-        <a>开始探索</a>
+        <a>{{ $t("i18n.explore") }}</a>
       </div>
     </section>
     <!--网页第一模块-->
@@ -13,34 +13,26 @@
       <div class="inner">
         <div class="title">
           <h3>WOLFBOLIN</h3>
-          <h1>很荣幸能与你相遇</h1>
+          <h1>{{ $t("i18n.section1_title") }}</h1>
         </div>
         <el-row :gutter="40">
-          <el-col class="card" :span="12">
-            <h3>创建这个网站有何意义呢?</h3>
-            <p>wolfbolin.com是大灰狼先生创办的个人网站，目的在于向所有线上玩家展示其对硅基生物的理解程度，
-              网站的建设过程具有强烈的试验性，每一次更新对于大灰狼先生都是一次挑战，
-              他永远都不知道网站会在什么时候神秘消失， 他也永远不知道你何时从这里轻轻走过。</p>
+          <el-col class="item" :span="12">
+            <h3>{{ $t("i18n.section1_subhead1") }}</h3>
+            <p>{{ $t("i18n.section1_content1") }}</p>
           </el-col>
-          <el-col class="card" :span="12">
-            <h3>大灰狼先生有什么特点呢?</h3>
-            <p>大灰狼先生是一位温文尔雅、礼貌谦逊的绅士。 他虽然温柔安静，但是却不喜欢宅在房间中。
-              他虽然见识广泛，但他却不会经常吹嘘炫耀。 他虽然博古通今，但他却不停止学习的脚步。
-              大灰狼先生正在努力成为全能小王子呢，有兴趣可以在不同平台关注他哟~</p>
+          <el-col class="item" :span="12">
+            <h3>{{ $t("i18n.section1_subhead2") }}</h3>
+            <p>{{ $t("i18n.section1_content2") }}</p>
           </el-col>
         </el-row>
         <el-row :gutter="40">
-          <el-col class="card" :span="12">
-            <h3>创建这个网站有何意义呢?</h3>
-            <p>wolfbolin.com是大灰狼先生创办的个人网站，目的在于向所有线上玩家展示其对硅基生物的理解程度，
-              网站的建设过程具有强烈的试验性，每一次更新对于大灰狼先生都是一次挑战，
-              他永远都不知道网站会在什么时候神秘消失， 他也永远不知道你何时从这里轻轻走过。</p>
+          <el-col class="item" :span="12">
+            <h3>{{ $t("i18n.section1_subhead3") }}</h3>
+            <p>{{ $t("i18n.section1_content3") }}</p>
           </el-col>
-          <el-col class="card" :span="12">
-            <h3>大灰狼先生有什么特点呢?</h3>
-            <p>大灰狼先生是一位温文尔雅、礼貌谦逊的绅士。 他虽然温柔安静，但是却不喜欢宅在房间中。
-              他虽然见识广泛，但他却不会经常吹嘘炫耀。 他虽然博古通今，但他却不停止学习的脚步。
-              大灰狼先生正在努力成为全能小王子呢，有兴趣可以在不同平台关注他哟~</p>
+          <el-col class="item" :span="12">
+            <h3>{{ $t("i18n.section1_subhead4") }}</h3>
+            <p>{{ $t("i18n.section1_content4") }}</p>
           </el-col>
         </el-row>
       </div>
@@ -50,7 +42,7 @@
       <div class="inner">
         <div class="title">
           <h3>GALLERY</h3>
-          <h1>摄影也是生活</h1>
+          <h1>{{ $t("i18n.section2_title") }}</h1>
         </div>
         <el-carousel height="540px">
           <el-carousel-item v-for="item in photoGallery" :key="item">
@@ -64,34 +56,26 @@
       <div class="inner">
         <div class="title">
           <h3>TREND</h3>
-          <h1>我的最新动向</h1>
+          <h1>{{ $t("i18n.section3_title") }}</h1>
         </div>
         <el-row :gutter="40">
-          <el-col class="card" :span="12">
-            <h3>创建这个网站有何意义呢?</h3>
-            <p>wolfbolin.com是大灰狼先生创办的个人网站，目的在于向所有线上玩家展示其对硅基生物的理解程度，
-              网站的建设过程具有强烈的试验性，每一次更新对于大灰狼先生都是一次挑战，
-              他永远都不知道网站会在什么时候神秘消失， 他也永远不知道你何时从这里轻轻走过。</p>
+          <el-col class="item" :span="12">
+            <h3>{{ $t("i18n.section3_subhead1") }}</h3>
+            <p>{{ $t("i18n.section3_content1") }}</p>
           </el-col>
-          <el-col class="card" :span="12">
-            <h3>大灰狼先生有什么特点呢?</h3>
-            <p>大灰狼先生是一位温文尔雅、礼貌谦逊的绅士。 他虽然温柔安静，但是却不喜欢宅在房间中。
-              他虽然见识广泛，但他却不会经常吹嘘炫耀。 他虽然博古通今，但他却不停止学习的脚步。
-              大灰狼先生正在努力成为全能小王子呢，有兴趣可以在不同平台关注他哟~</p>
+          <el-col class="item" :span="12">
+            <h3>{{ $t("i18n.section3_subhead2") }}</h3>
+            <p>{{ $t("i18n.section3_content2") }}</p>
           </el-col>
         </el-row>
         <el-row :gutter="40">
-          <el-col class="card" :span="12">
-            <h3>创建这个网站有何意义呢?</h3>
-            <p>wolfbolin.com是大灰狼先生创办的个人网站，目的在于向所有线上玩家展示其对硅基生物的理解程度，
-              网站的建设过程具有强烈的试验性，每一次更新对于大灰狼先生都是一次挑战，
-              他永远都不知道网站会在什么时候神秘消失， 他也永远不知道你何时从这里轻轻走过。</p>
+          <el-col class="item" :span="12">
+            <h3>{{ $t("i18n.section3_subhead3") }}</h3>
+            <p>{{ $t("i18n.section3_content3") }}</p>
           </el-col>
-          <el-col class="card" :span="12">
-            <h3>大灰狼先生有什么特点呢?</h3>
-            <p>大灰狼先生是一位温文尔雅、礼貌谦逊的绅士。 他虽然温柔安静，但是却不喜欢宅在房间中。
-              他虽然见识广泛，但他却不会经常吹嘘炫耀。 他虽然博古通今，但他却不停止学习的脚步。
-              大灰狼先生正在努力成为全能小王子呢，有兴趣可以在不同平台关注他哟~</p>
+          <el-col class="item" :span="12">
+            <h3>{{ $t("i18n.section3_subhead4") }}</h3>
+            <p>{{ $t("i18n.section3_content4") }}</p>
           </el-col>
         </el-row>
       </div>
@@ -101,84 +85,16 @@
       <div class="inner">
         <div class="title">
           <h3>GROWTH</h3>
-          <h1>我的进阶之路</h1>
+          <h1>{{ $t("i18n.section4_title") }}</h1>
         </div>
         <ul class="timeline">
-          <li>
-            <div class="direction-l">
+          <li v-for="index in this.$t('i18n.section4_data')">
+            <div :class=index.class>
               <div class="flag-wrapper">
-                <span class="flag"><a href="https://blog.wolfbolin.com">Blog</a></span>
-                <span class="time-wrapper"><span class="time">2017/11 - 2018/4</span></span>
+                <span class="flag"><a :href=index.link>{{ index.title }}</a></span>
+                <span class="time-wrapper"><span class="time">{{ index.time }}</span></span>
               </div>
-              <div class="desc">每个新站长都幻想着自己的博客梦~但是大灰狼先生最终放弃了梦想，
-                选择了使用简单方便的轮子
-              </div>
-            </div>
-          </li>
-
-          <li>
-            <div class="direction-r">
-              <div class="flag-wrapper">
-                <span class="flag"><a href="https://github.com/wolfbolin/Caremore">Caremore</a></span>
-                <span class="time-wrapper"><span class="time">2017/6 - 2017/11</span></span>
-              </div>
-              <div class="desc">CareMore是一款基于云计算，搭载于智能可穿戴设备，
-                应用深度学习技术并结合心率进行分析的儿童安全预警系统。
-              </div>
-            </div>
-          </li>
-
-          <li>
-            <div class="direction-l">
-              <div class="flag-wrapper">
-                <span class="flag">ICPC</span>
-                <span class="time-wrapper"><span class="time">2016/2 - 2017/10</span></span>
-              </div>
-              <div class="desc">经过一年的准备，大灰狼先生参加了ICPC沈阳站的比赛，并最终收获一枚银奖。</div>
-            </div>
-          </li>
-
-          <li>
-            <div class="direction-r">
-              <div class="flag-wrapper">
-                <span class="flag"><a href="https://github.com/wolfbolin/Chattincrypted">Chattincrypted</a></span>
-                <span class="time-wrapper"><span class="time">2017/7 - 2017/8</span></span>
-              </div>
-              <div class="desc">一款可以自己部署的加密聊天通信软件，由java+python开发运行。</div>
-            </div>
-          </li>
-
-          <li>
-            <div class="direction-l">
-              <div class="flag-wrapper">
-                <span class="flag"><a href="https://github.com/wolfbolin/Jigsaw">Jigsaw</a></span>
-                <span class="time-wrapper"><span class="time">2017/6 - 2017/7</span></span>
-              </div>
-              <div class="desc">在校期间第一个C++实训项目，除了还能看没什么优点。</div>
-            </div>
-          </li>
-
-          <li>
-            <div class="direction-r">
-              <div class="flag-wrapper">
-                <span class="flag"><a href="">NLife</a></span>
-                <span class="time-wrapper"><span class="time">2017/2 - 2017/5</span></span>
-              </div>
-              <div class="desc">受益于学校的自由探索项目，我带领四人开发团队尝试建立一套基于AHP法的人体健康评估模型。
-                但是由于资金和能力的限制，该项目在完成了七成的工作之后搁置了，非常期待他的二次开发。
-              </div>
-            </div>
-          </li>
-
-          <li>
-            <div class="direction-l">
-              <div class="flag-wrapper">
-                <span class="flag"><a href="">CSU Software</a></span>
-                <span class="time-wrapper"><span class="time">2016/9 - 2016/12</span></span>
-              </div>
-              <div class="desc">第一个练手的网页作品，制作目的是为了参加学校组织的网页设计大赛，
-                因为能力所限，页面中存在Flash技术。
-              </div>
+              <div class="desc">{{ index.content }}</div>
             </div>
           </li>
         </ul>
@@ -189,49 +105,102 @@
       <div class="inner">
         <div class="title">
           <h3>BLOG</h3>
-          <h1>我的博客</h1>
+          <h1>{{ $t("i18n.section5_title") }}</h1>
         </div>
+        <el-row :gutter="40" v-for="index in Math.ceil(articleBox.length/2)" :key="index">
+          <el-col class="card" :span="12">
+            <el-card>
+              <div slot="header">
+                <span>{{ articleBox[2*(index-1)].title }}</span>
+                <el-button class="button" type="text" @click="openLink(articleBox[2*(index-1)].link)">查看全文</el-button>
+              </div>
+              <p>{{ articleBox[2*(index-1)].content }}</p>
+              <div>
+                <p class="blog-time">{{ articleBox[2*(index-1)].time }}</p>
+                <template v-for="item in articleBox[2*(index-1)].category">
+                  <div class="blog-tag" @click="openLink(item.link)">
+                    <el-tag>{{ item.name }}</el-tag>
+                  </div>
+                </template>
+              </div>
+            </el-card>
+          </el-col>
+
+          <el-col class="card" :span="12" v-if="(2*index-1) < articleBox.length">
+            <el-card>
+              <div slot="header">
+                <span>{{ articleBox[2*index-1].title }}</span>
+                <el-button class="button" type="text" @click="openLink(articleBox[2*index-1].link)">查看全文</el-button>
+              </div>
+              <p>{{ articleBox[2*index-1].content }}</p>
+              <div>
+                <p class="blog-time">{{ articleBox[2*index-1].time }}</p>
+                <template v-for="item in articleBox[2*index-1].category">
+                  <div class="blog-tag" @click="openLink(item.link)">
+                    <el-tag>{{ item.name }}</el-tag>
+                  </div>
+                </template>
+              </div>
+            </el-card>
+          </el-col>
+        </el-row>
       </div>
     </section>
     <!--网页第六模块-->
     <section class="wb-blue-section">
       <div class="inner">
         <div class="title">
-          <h3>FRIEND</h3>
-          <h1>我的伙伴</h1>
+          <h3>LINK</h3>
+          <h1>{{ $t("i18n.section6_title") }}</h1>
         </div>
         <el-row :gutter="40">
-          <el-col class="card" :span="12">
-            <h3>这是什么？</h3>
-            <p>任何事物的学习过程都少不了同行的伙伴，任何一个人都难以掌握所有知识。
-              也许你无法在Baidu、Google、Yahoo上找到合适的教学，
-              也许你无法在Stack Overflow、Segment Fault、V2EX上找到合适的解答。
-              但是，你还是可以问问更有智慧的伙伴呀~</p>
+          <el-col class="item link-box" :span="10">
+            <div class="text">
+              <h3>{{ $t("i18n.section6_subhead1") }}</h3>
+              <p>{{ $t("i18n.section6_content1") }}</p>
+            </div>
           </el-col>
-          <el-col class="card" :span="12">
-            <h3>其他伙伴</h3>
-            <p>张洺豪DragonHao：<a href="http://www.dragonhao.cn/">http://www.dragonhao.cn/</a><br/>
-              徐戍Haxushu：<a href="http://haxushu.coding.me/">http://haxushu.coding.me/</a></p>
+          <el-col class="item link-box icon-box" :span="14">
+            <a href="https://blog.csdn.net/qq_36731677"><img class="icon" src="../assets/csdn.png"/></a>
+            <a href="https://github.com/wolfbolin"><img class="icon" src="../assets/github.png"/></a>
+            <a href="https://space.bilibili.com/72835041/#/"><img class="icon" src="../assets/bilibili.png"/></a>
+            <a href="mailto:admin@wolfbolin.com"><img class="icon" src="../assets/gmail.png"/></a>
+          </el-col>
+        </el-row>
+      </div>
+    </section>
+    <!--网页第七模块-->
+    <section class="wb-white-section">
+      <div class="inner">
+        <div class="title">
+          <h3>FRIEND</h3>
+          <h1>{{ $t("i18n.section7_title") }}</h1>
+        </div>
+        <el-row :gutter="40">
+          <el-col class="item" :span="12">
+            <h3>{{ $t("i18n.section7_subhead1") }}</h3>
+            <p>{{ $t("i18n.section7_content1") }}</p>
+          </el-col>
+          <el-col class="item" :span="12">
+            <h3>{{ $t("i18n.section7_subhead2") }}</h3>
+            <p>{{ $t("i18n.section7_content2") }}<br/>
+              {{ $t("i18n.section7_blog") }}：<a href="https://csuwangj.github.io/">https://csuwangj.github.io/</a><br/>
+              {{ $t("i18n.section7_blog") }}：<a href="https://zickshen.github.io/">https://zickshen.github.io/</a></p>
           </el-col>
         </el-row>
         <el-row :gutter="40">
-          <el-col class="card" :span="12">
-            <h3>Frederic Chan</h3>
-            <p style="margin: 0">这是一位非常文艺的软件开发者，有着优雅的编程追求。
-              Admirable 是 Frederic Chan 的个人品牌。寓意为，做一个受人尊敬的人。
-              Tail0r 是 Admirable.one 旗下的多人博客。
-              在这里，我们分享科技、人文、兴趣、生活。
-              我们一直在等待一个像你一样愿意了解我们的人。<br/>
-              主页：<a href="https://www.admirable.one/">https://www.admirable.one/</a><br/>
-              博客：<a href="https://www.tail0r.com/">https://www.tail0r.com/</a>
+          <el-col class="item" :span="12">
+            <h3>{{ $t("i18n.section7_subhead3") }}</h3>
+            <p>{{ $t("i18n.section7_content3") }}<br/>
+              {{ $t("i18n.section7_index") }}：<a href="https://www.admirable.one/">https://www.admirable.one/</a><br/>
+              {{ $t("i18n.section7_blog") }}：<a href="https://www.tail0r.com/">https://www.tail0r.com/</a>
             </p>
           </el-col>
-          <el-col class="card" :span="12">
-            <h3>DJ !</h3>
-            <p style="margin: 0">这是一位喜爱研究信息安全的小伙伴，CTF、PWN、逆向工程都是他的专业领域。
-              如果有什么新奇的信息安全问题，他也许会非常感兴趣哟~<br/>
-              博客：<a href="https://csuwangj.github.io/">https://csuwangj.github.io/</a><br/>
-              博客：<a href="https://zickshen.github.io/">https://zickshen.github.io/</a>
+          <el-col class="item" :span="12">
+            <h3>{{ $t("i18n.section7_subhead4") }}</h3>
+            <p>{{ $t("i18n.section7_content4") }}<br/>
+              张洺豪DragonHao：<a href="http://www.dragonhao.cn/">http://www.dragonhao.cn/</a><br/>
+              徐戍Haxushu：<a href="http://haxushu.coding.me/">http://haxushu.coding.me/</a></p>
             </p>
           </el-col>
         </el-row>
@@ -246,13 +215,36 @@
     data() {
       return {
         coverPadding: '',
-        activePhoto: 0,
-        photoGallery: ['./static/index-photo1.jpg', './static/index-photo2.jpg',
-          './static/index-photo3.jpg', './static/index-photo4.jpg']
+        photoGallery: ['./static/img/index-photo1.jpg', './static/img/index-photo2.jpg',
+          './static/img/index-photo3.jpg', './static/img/index-photo4.jpg'],
+        articleBox: [{
+          title: '示例标题一',
+          link: 'https://blog.wolfbolin.com',
+          content: '假设这里有一篇很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长的文章介绍',
+          time: '1970-00-00 00:08:00',
+          category: [
+            {
+              name: '标签一',
+              link: 'https://blog.wolfbolin.com'
+            }
+          ]
+        }, {
+          title: '示例标题二',
+          link: 'https://blog.wolfbolin.com',
+          content: '假设这里有一篇很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长的文章介绍',
+          time: '1970-00-00 00:08:00',
+          category: [
+            {
+              name: '标签二',
+              link: 'https://blog.wolfbolin.com'
+            }
+          ]
+        }]
       }
     },
     mounted() {
-      this.setCoverPadding()
+      this.setCoverPadding();
+      this.updateArticle();
     },
     methods: {
       setCoverPadding: function () {
@@ -260,6 +252,21 @@
         let titleHeight = this.$refs.cover.clientHeight;
         let padding = (clientHeight - titleHeight) / 2;
         this.coverPadding = `${padding}px 0px`;
+      },
+      openLink: function (url) {
+        window.open(url);
+      },
+      updateArticle: function () {
+        let that = this;
+        this.$http.get('http://localhost:63343/server/getArticle.php')
+          .then(function (response) {
+            if(response.data.result === 'AC'){
+              that.articleBox = response.data.card;
+            }
+          })
+          .catch(function (err) {
+            console.log(err);
+          });
       }
     }
   }
@@ -300,10 +307,11 @@
         padding: .5em 1em;
         border-radius: 1000px;
         background-color: transparent;
-        border: 1px solid #404040;
+        border: 0.5px solid #404040;
+        cursor: pointer;
       }
     }
-    .card {
+    .item {
       h3 {
         color: #404040;
       }
@@ -316,8 +324,47 @@
         text-decoration: none;
       }
     }
+    .icon-box {
+      text-align: center;
+    }
+    .link-box {
+      height: 250px;
+      &:before {
+        content: '';
+        display: inline-block;
+        height: 100%;
+        vertical-align: middle;
+      }
+      .text {
+        display: inline-block;
+        vertical-align: middle;
+      }
+      .icon {
+        display: inline-block;
+        vertical-align: middle;
+        margin: 2%;
+        border-radius: 25%;
+        width: 100px;
+        height: 100px;
+      }
+    }
+    .card {
+      padding: 20px;
+      .button {
+        float: right;
+        padding: 3px 0
+      }
+      .blog-time {
+        display: inline-block;
+      }
+      .blog-tag {
+        float: right;
+        margin: 10px 2px;
+        cursor: pointer;
+      }
+    }
     .wb-white-section {
-      background-color: rgba(255, 255, 255, 0.5);
+      background-color: rgba(255, 255, 255, 0.7);
       .title {
         text-align: center;
         h3 {
@@ -333,7 +380,7 @@
       }
     }
     .wb-blue-section {
-      background-color: rgba(0, 128, 255, 0.5);
+      background-color: rgba(0, 128, 255, 0.7);
       .title {
         text-align: center;
         h3 {
@@ -346,6 +393,11 @@
           font-weight: 400;
           font-size: 38px;
         }
+      }
+    }
+    .timeline {
+      .time, .desc {
+        font-size: 0.9em;
       }
     }
   }

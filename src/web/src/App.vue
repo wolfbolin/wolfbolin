@@ -14,10 +14,10 @@
             background-color="#404040"
             text-color="#ffffff"
             active-text-color="#0080ff">
-            <el-menu-item index="1">主页</el-menu-item>
-            <el-menu-item index="2">摄影</el-menu-item>
-            <el-menu-item index="3">项目</el-menu-item>
-            <el-menu-item index="4">博客</el-menu-item>
+            <el-menu-item index="1">{{ $t("i18n.index") }}</el-menu-item>
+            <el-menu-item index="2">{{ $t("i18n.gallery") }}</el-menu-item>
+            <el-menu-item index="3">{{ $t("i18n.project") }}</el-menu-item>
+            <el-menu-item index="4">{{ $t("i18n.blog") }}</el-menu-item>
           </el-menu>
         </el-col>
       </el-row>
