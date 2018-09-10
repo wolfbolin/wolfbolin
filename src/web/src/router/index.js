@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Index from '@/components/Index'
-// import Mobile from '@/components/Mobile'
+import Building from '@/components/Building'
 
 Vue.use(Router);
 
@@ -11,11 +11,11 @@ export default new Router({
       path: '/',
       name: 'Index',
       component: Index
+    },
+    {
+      path: '/building',
+      name: 'Building',
+      component: Building
     }
-    // {
-    //   path: '/mobile',
-    //   name: 'Mobile',
-    //   component: Mobile
-    // }
   ]
 })

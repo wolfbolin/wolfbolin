@@ -161,10 +161,18 @@
             </div>
           </el-col>
           <el-col class="item link-box icon-box" :span="14">
-            <a href="https://blog.csdn.net/qq_36731677"><img class="icon" src="../assets/csdn.png"/></a>
-            <a href="https://github.com/wolfbolin"><img class="icon" src="../assets/github.png"/></a>
-            <a href="https://space.bilibili.com/72835041/#/"><img class="icon" src="../assets/bilibili.png"/></a>
-            <a href="mailto:admin@wolfbolin.com"><img class="icon" src="../assets/gmail.png"/></a>
+            <a href="https://blog.csdn.net/qq_36731677" target="_blank">
+              <img class="icon" src="../assets/csdn.png"/>
+            </a>
+            <a href="https://github.com/wolfbolin" target="_blank">
+              <img class="icon" src="../assets/github.png"/>
+            </a>
+            <a href="https://space.bilibili.com/72835041/#/" target="_blank">
+              <img class="icon" src="../assets/bilibili.png"/>
+            </a>
+            <a href="mailto:admin@wolfbolin.com">
+              <img class="icon" src="../assets/gmail.png"/>
+            </a>
           </el-col>
         </el-row>
       </div>
@@ -184,23 +192,29 @@
           <el-col class="item" :span="12">
             <h3>{{ $t("i18n.section7_subhead2") }}</h3>
             <p>{{ $t("i18n.section7_content2") }}<br/>
-              {{ $t("i18n.section7_blog") }}：<a href="https://csuwangj.github.io/">https://csuwangj.github.io/</a><br/>
-              {{ $t("i18n.section7_blog") }}：<a href="https://zickshen.github.io/">https://zickshen.github.io/</a></p>
+              {{ $t("i18n.section7_blog") }}：
+              <a href="https://csuwangj.github.io/" target="_blank">https://csuwangj.github.io/</a><br/>
+              {{ $t("i18n.section7_blog") }}：
+              <a href="https://zickshen.github.io/" target="_blank">https://zickshen.github.io/</a></p>
           </el-col>
         </el-row>
         <el-row :gutter="40">
           <el-col class="item" :span="12">
             <h3>{{ $t("i18n.section7_subhead3") }}</h3>
             <p>{{ $t("i18n.section7_content3") }}<br/>
-              {{ $t("i18n.section7_index") }}：<a href="https://www.admirable.one/">https://www.admirable.one/</a><br/>
-              {{ $t("i18n.section7_blog") }}：<a href="https://www.tail0r.com/">https://www.tail0r.com/</a>
+              {{ $t("i18n.section7_index") }}：
+              <a href="https://www.admirable.one/" target="_blank">https://www.admirable.one/</a><br/>
+              {{ $t("i18n.section7_blog") }}：
+              <a href="https://www.tail0r.com/" target="_blank">https://www.tail0r.com/</a>
             </p>
           </el-col>
           <el-col class="item" :span="12">
             <h3>{{ $t("i18n.section7_subhead4") }}</h3>
             <p>{{ $t("i18n.section7_content4") }}<br/>
-              张洺豪DragonHao：<a href="http://www.dragonhao.cn/">http://www.dragonhao.cn/</a><br/>
-              徐戍Haxushu：<a href="http://haxushu.coding.me/">http://haxushu.coding.me/</a></p>
+              张洺豪DragonHao：
+              <a href="http://www.dragonhao.cn/" target="_blank">http://www.dragonhao.cn/</a><br/>
+              楼远洋yylou：
+              <a href="http://www.yylou15.cn/" target="_blank">http://www.yylou15.cn/</a>
             </p>
           </el-col>
         </el-row>
@@ -258,14 +272,25 @@
       },
       updateArticle: function () {
         let that = this;
-        this.$http.get('http://localhost:63343/server/getArticle.php')
+        this.$http.get('http://localhost:63344/server/getArticle.php')
           .then(function (response) {
-            if(response.data.result === 'AC'){
+            if (response.data.result === 'AC') {
               that.articleBox = response.data.card;
+            } else {
+              that.$notify({
+                title: '警告',
+                message: '服务器异常，博客文章更新失败',
+                type: 'warning',
+                position: 'bottom-right'
+              });
             }
           })
           .catch(function (err) {
-            console.log(err);
+            that.$notify.error({
+              title: '错误',
+              message: '您似乎与服务器断开链接，博客文章更新失败',
+              position: 'bottom-right'
+            });
           });
       }
     }

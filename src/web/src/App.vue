@@ -14,10 +14,10 @@
             background-color="#404040"
             text-color="#ffffff"
             active-text-color="#0080ff">
-            <el-menu-item index="1">{{ $t("i18n.index") }}</el-menu-item>
-            <el-menu-item index="2">{{ $t("i18n.gallery") }}</el-menu-item>
-            <el-menu-item index="3">{{ $t("i18n.project") }}</el-menu-item>
-            <el-menu-item index="4">{{ $t("i18n.blog") }}</el-menu-item>
+            <el-menu-item index="index">{{ $t("i18n.index") }}</el-menu-item>
+            <el-menu-item index="gallery">{{ $t("i18n.gallery") }}</el-menu-item>
+            <el-menu-item index="project">{{ $t("i18n.project") }}</el-menu-item>
+            <el-menu-item index="blog">{{ $t("i18n.blog") }}</el-menu-item>
           </el-menu>
         </el-col>
       </el-row>
@@ -41,12 +41,19 @@
     name: 'App',
     data() {
       return {
-        activeIndex: '1'
+        activeIndex: 'index'
       }
     },
     methods: {
-      handleSelect(key, keyPath) {
-        console.log(key, keyPath);
+      handleSelect(key) {
+        if (key === 'index') {
+          this.$router.push('/');
+        } else if (key === 'blog') {
+          // window.location.href="http://blog.wolfbolin.com"
+          window.open("http://blog.wolfbolin.com");
+        }else{
+          this.$router.push('/building');
+        }
       }
     }
   }
