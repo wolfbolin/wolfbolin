@@ -6,6 +6,7 @@ import Building from '@/components/Building'
 Vue.use(Router);
 
 export default new Router({
+  mode: 'history',
   routes: [
     {
       path: '/',
