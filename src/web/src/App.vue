@@ -48,7 +48,9 @@
       handleSelect(key) {
         if (key === 'index') {
           this.$router.push('/');
-        } else if (key === 'blog') {
+        } else if (key === 'project') {
+          this.$router.push('/project');
+        }else if (key === 'blog') {
           // window.location.href="http://blog.wolfbolin.com"
           window.open("http://blog.wolfbolin.com");
         }else{
