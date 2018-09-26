@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Index from '@/components/Index'
-import Project from '@/components/Project'
+// import Project from '@/components/Project'
 import Building from '@/components/Building'
 
 Vue.use(Router);
@@ -18,11 +18,11 @@ export default new Router({
       path: '/building',
       name: 'Building',
       component: Building
-    },
-    {
-      path: '/project',
-      name: 'Project',
-      component: Project
     }
+    // {
+    //   path: '/project',
+    //   name: 'Project',
+    //   component: Project
+    // }
   ]
 })

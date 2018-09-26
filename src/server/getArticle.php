@@ -7,6 +7,7 @@
  * Target: 完成博客RSS数据的解析并以json的形式传给前端
  */
 header('Access-Control-Allow-Methods:GET'); #仅允许GET请求
+header('Access-Control-Allow-Origin:https://wolfbolin.com'); # 跨域设置
 /**
  * 预定义失败信息
  */
