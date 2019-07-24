@@ -1,0 +1,67 @@
+<!DOCTYPE doctype html>
+<html class="no-js">
+    <head>
+        <meta charset="utf-8"/>
+        <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+        <meta content="" name="description"/>
+        <meta content="WolfBolin" name="keywords"/>
+        <meta content="width=device-width, initial-scale=1" name="viewport"/>
+        <title>
+            {% block title %}{% endblock %} | 嗜之越笃 技巧越工
+        </title>
+
+        <!-- Set render engine for 360 browser -->
+        <meta content="webkit" name="renderer"/>
+
+        <!-- No Baidu Siteapp-->
+        <meta content="no-siteapp" http-equiv="Cache-Control"/>
+        <link href="/static/image/Logo.png" rel="icon" type="image/png"/>
+
+        <!-- Add to homescreen for Chrome on Android -->
+        <meta content="yes" name="mobile-web-app-capable"/>
+        <link href="/static/image/Logo.png" rel="icon" type="image/png" sizes="192x192"/>
+
+        <!-- Add to homescreen for Safari on iOS -->
+        <meta content="yes" name="apple-mobile-web-app-capable"/>
+        <meta content="black" name="apple-mobile-web-app-status-bar-style"/>
+        <meta content="Amaze UI" name="apple-mobile-web-app-title"/>
+        <link href="/static/image/Logo.png" rel="apple-touch-icon-precomposed"/>
+
+        <!-- Tile icon for Win8 (144x144 + tile color) -->
+        <meta content="/static/image/Logo.png" name="msapplication-TileImage"/>
+        <meta content="#0e90d2" name="msapplication-TileColor"/>
+        <link href="/static/css/amazeui.min.css" rel="stylesheet"/>
+        <link href="/static/css/base.css" rel="stylesheet"/>
+        {% block csscode %}{% endblock %}
+    </head>
+    <body>
+        <div id="app" class="wb-app">
+            <section class="wb-navbar">
+                <div class="am-g am-g-fixed am-cf">
+                    <div class="am-fl">
+                        <img src="/static/image/Logo_navbar.png"/>
+                    </div>
+                    <div class="am-fr">
+                        <ul>
+                            {% for item in nav_item %}
+                                <li class="{{ item.class }}" id="{{ item.id }}">
+                                    <a href="{{ item.href }}">{{ item.name }}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            {% block content %}{% endblock %}
+            <section class="wb-footer">
+                <div class="am-g am-g-fixed">
+                    <p class="copyright">{{ copyright }}</p>
+                    <a href="http://www.beian.miit.gov.cn" class="icp">湘ICP备17015330号</a>
+                </div>
+            </section>
+        </div>
+        <script src="/static/js/jquery-2.1.4.min.js"></script>
+        <script src="/static/js/amazeui.min.js"></script>
+        {% block jscode %}{% endblock %}
+    </body>
+</html>

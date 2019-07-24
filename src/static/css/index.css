@@ -1,0 +1,25 @@
+.wb-cover p{
+	line-height: 40px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    color: #404040;
+    margin: 0;
+}
+.wb-cover h1{
+    color: #404040;
+	font-size: 3em;
+    font-weight: 400;
+    line-height: 90px;
+    margin: 30px 0 20px;
+    letter-spacing: 8px;
+}
+.wb-cover button{
+    color: #404040;
+    font-size: 15px;
+    font-weight: 400;
+    padding: .5em 1em;
+    border-radius: 1000px;
+    border: 1px solid #404040;
+    background-color: transparent;
+}
+

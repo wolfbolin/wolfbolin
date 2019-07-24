@@ -1,0 +1,54 @@
+a :focus {
+    outline: 0;
+}
+.wb-app {
+    background: url(/static/image/background.jpg) no-repeat fixed top;
+    background-size: cover;
+    position: relative;
+}
+.wb-navbar {
+    width: 100%;
+    height: 60px;
+    position: fixed;
+    font-weight: 200;
+    background-color: #404040;
+}
+.wb-navbar img {
+    height: 50px;
+    padding-top: 16px;
+}
+.wb-navbar ul {
+    margin: 0;
+}
+.wb-navbar li {
+    height: 60px;
+    color: #FFFFFF;
+    display: inline-block;
+    text-align: -webkit-match-parent;
+}
+.wb-navbar .wb-active {
+    color: #64AAFF;
+    border-bottom: 4px solid #4096FF;
+}
+.wb-navbar a {
+    color: inherit;
+    padding: 0 20px;
+    line-height: 60px;
+}
+.wb-footer {
+    background-color: #353535;
+}
+.wb-footer .copyright {
+    margin: 0;
+    color: #888;
+    padding: 10px;
+    display: block;
+    text-align: center;
+}
+.wb-footer .icp {
+    margin: 0;
+    color: #666;
+    display: block;
+    text-align: center;
+    padding-bottom: 5px;
+}
