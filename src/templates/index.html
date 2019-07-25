@@ -1,41 +1,50 @@
 {% extends "base.html" %}
 {% block title %}WolfBolin{% endblock %}
 {% block csscode %}
-<link href="/static/css/index.css" rel="stylesheet"/>
+    <link href="/static/css/index.css" rel="stylesheet"/>
 {% endblock %}
 {% block jscode %}
-<script src="/static/js/index.js"></script>
+    <script src="/static/js/index.js"></script>
+    <script src="/static/js/jquery.scrollTo.min.js"></script>
 {% endblock %}
 {% block content %}
-<section class="wb-cover">
-	<div class="cover-title">
-		<p class="am-text-center">嗜之越笃 技巧越工</p>
-		<h1 class="am-text-center">WolfBolin</h1>
-		<button class="am-center" id="explore">开始探索</button>
-	</div>
-</section>
-<section class="wb-section-white">
-	<div class="title">
-		<p>Hello,world!</p>
-		<h2>你好,世界!</h2>
-	</div>
-	<div>
-		<div>
-			<h3>这个网站是什么？</h3>
-			<p>wolfbolin.com是大灰狼先生创办的个人网站，旨在向所有线上玩家展示其对硅基生物的理解程度，网站的建设过程具有强烈的试验性，每一次更新对于大灰狼先生都是一次挑战，他永远都不知道网站会在什么时候神秘消失，他也永远不知道你何时从这里轻轻走过。</p>
-		</div>
-		<div>
-			<h3>谁是大灰狼先生？</h3>
-			<p>大灰狼先生是一位温文尔雅、礼貌谦逊的绅士。他不仅希望能在泥沙俱下的社会中寻找到安身立命的手段，更希望在匆匆忙忙的生活中找到自己的爱好、幸福与小确幸。大灰狼先生正在努力点满自己的技能树，成为满技能的全能小王子，有兴趣可以更多的关注他哟~</p>
-		</div>
-		<div>
-			<h3>网站创办了多久？</h3>
-			<p>大灰狼先生坦白的告诉你，他根本计算不过来。2010年大灰狼先生着手编写网站中的相关内容。2012年受到世界末日的影响网站中的信息悉数丢失。2016年在取得充足资金支持的情况下重新恢复运行。2017年网站翻新逐渐使用现代Web技术优化用户体验。2018年受益于技术实力的提升对网站进行了技术升级与内容扩充。</p>
-		</div>
-		<div>
-			<h3>这个网站是什么？</h3>
-			<p>大灰狼先生作为漫漫硅基网络中的一角，能与你相见已经实属不易也愿意与你成为朋友。但奈何你不能顺着网线爬过来，水龙头般的网络带宽可能会把你压成肉饼。同时因为网络中到处充斥着非碳基生物的探索活动，大灰狼先生非常担心个人信息被暴露。如果你真的想与他联系，请在页面下方找到他。</p>
-		</div>
-	</div>
-</section>
+    <section class="wb-cover">
+        <div class="text-center" id="cover-title">
+            <p>嗜之越笃 技巧越工</p>
+            <h1>WolfBolin</h1>
+            <button id="explore">开始探索</button>
+        </div>
+    </section>
+    <section class="wb-section wb-white-schema">
+        <div class="container">
+            <div class="title text-center">
+                <p>Hello,world!</p>
+                <h2>你好,世界!</h2>
+            </div>
+            <div class="wb-content">
+                <div class="row">
+                    <div class="col-md-6 col-sm-12">
+                        <h3>这个网站是什么？</h3>
+                        <p>wolfbolin.com是大灰狼先生创办的个人网站，旨在向所有线上玩家展示其对硅基生物的理解程度，网站的建设过程具有强烈的试验性，每一次更新对于大灰狼先生都是一次挑战，他永远都不知道网站会在什么时候神秘消失，他也永远不知道你何时从这里轻轻走过。</p>
+                    </div>
+                    <div class="col-md-6 col-sm-12">
+                        <h3>谁是大灰狼先生？</h3>
+                        <p>大灰狼先生是一位温文尔雅、礼貌谦逊的绅士。他不仅希望能在泥沙俱下的社会中寻找到安身立命的手段，更希望在匆匆忙忙的生活中找到自己的爱好、幸福与小确幸。大灰狼先生正在努力点满自己的技能树，成为满技能的全能小王子，如果有兴趣可以更多的关注他哟~</p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 col-sm-12">
+                        <h3>网站创办了多久？</h3>
+                        <p>大灰狼先生坦白的告诉你，他根本计算不过来。2010年大灰狼先生着手编写网站中的相关内容。2012年受到世界末日的影响网站中的信息悉数丢失。2016年在取得充足资金支持的情况下重新恢复运行。2017年网站翻新逐渐使用现代Web技术优化用户体验。2018年受益于技术实力的提升对网站进行了技术升级与内容扩充。</p>
+                    </div>
+
+                    <div class="col-md-6 col-sm-12">
+                        <h3>这个网站是什么？</h3>
+                        <p>大灰狼先生作为漫漫硅基网络中的一角，能与你相见已经实属不易也愿意与你成为朋友。但奈何你不能顺着网线爬过来，水龙头般的网络带宽可能会把你压成肉饼。同时因为网络中到处充斥着非碳基生物的探索活动，大灰狼先生非常担心个人信息被暴露。如果你真的想与他联系，请在页面下方找到他。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 {% endblock %}

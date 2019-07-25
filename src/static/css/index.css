@@ -1,21 +1,24 @@
-.wb-cover p{
-	line-height: 40px;
+.wb-cover p {
+    margin: 0;
+    font-size: 2em;
+    color: #404040;
+    line-height: 40px;
     font-weight: 400;
     letter-spacing: 2px;
-    color: #404040;
-    margin: 0;
 }
-.wb-cover h1{
+
+.wb-cover h1 {
     color: #404040;
-	font-size: 3em;
+    font-size: 6em;
     font-weight: 400;
     line-height: 90px;
     margin: 30px 0 20px;
     letter-spacing: 8px;
 }
-.wb-cover button{
+
+.wb-cover button {
     color: #404040;
-    font-size: 15px;
+    font-size: 1em;
     font-weight: 400;
     padding: .5em 1em;
     border-radius: 1000px;
@@ -23,3 +26,26 @@
     background-color: transparent;
 }
 
+.wb-section-white {
+    background-color: hsla(0, 0%, 100%, .7);
+}
+
+.wb-section-white .title p {
+    margin: 1em 0 0 0;
+    color: #404040;
+    font-size: 28px;
+    font-weight: 100;
+}
+
+.wb-section-white .title h2 {
+    margin: 0 0 1em 0;
+    color: #66b1ff;
+    font-size: 3em;
+    font-weight: 400;
+}
+.wb-section-white .wb-content h3 {
+    margin: 1em 0;
+}
+.wb-section-white .wb-content div {
+    padding: 0 2em;
+}
