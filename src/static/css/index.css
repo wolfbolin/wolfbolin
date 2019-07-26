@@ -1,5 +1,4 @@
 .wb-cover p {
-    margin: 0;
     font-size: 2em;
     color: #404040;
     line-height: 40px;
@@ -26,26 +25,41 @@
     background-color: transparent;
 }
 
-.wb-section-white {
-    background-color: hsla(0, 0%, 100%, .7);
+.wb-section {
+    padding: 2em 0;
 }
 
-.wb-section-white .title p {
-    margin: 1em 0 0 0;
-    color: #404040;
-    font-size: 28px;
+.wb-section .title p {
+    font-size: 1.5em;
     font-weight: 100;
 }
 
-.wb-section-white .title h2 {
-    margin: 0 0 1em 0;
-    color: #66b1ff;
+.wb-section .title h2 {
     font-size: 3em;
     font-weight: 400;
+    margin-bottom: 1em;
 }
-.wb-section-white .wb-content h3 {
+
+.wb-section .wb-content h3 {
+    font-size: 1.17em;
+    font-weight: bold;
     margin: 1em 0;
 }
-.wb-section-white .wb-content div {
+
+.wb-section .wb-content div {
     padding: 0 2em;
 }
+
+.wb-white-schema {
+    background-color: hsla(0, 0%, 100%, .7);
+}
+
+.wb-white-schema .title p {
+    color: #404040;
+}
+
+.wb-white-schema .title p {
+    color: #66b1ff;
+}
+
+
