@@ -120,7 +120,7 @@
                                     </span>
                                     <span class="tl-time-wrapper"><span class="tl-time">{{ item.time }}</span></span>
                                 </div>
-                                <div class="tl-desc">{{ item.content }}</div>
+                                <div class="tl-desc">{{ item.text }}</div>
                             </div>
                         </li>
                     {% endfor %}
@@ -134,69 +134,50 @@
                 <p>{{ section5.title.subtitle }}</p>
                 <h2>{{ section5.title.title }}</h2>
             </div>
-            <div class="wb-desc">
-                <div class="card-deck">
-                    <div class="card">
-                        <h3 class="card-header">Card title</h3>
-                        <div class="card-body">
-                            <p class="card-text">This is a longer card with supporting text below as a natural lead-in
-                                to additional content. This content is a little bit longer.</p>
-                            <p class="card-text">
-                                <small class="text-muted">tag1 tag2 tag3</small>
-                            </p>
-                        </div>
-                        <div class="card-footer">
-                            <small class="text-muted">Last updated 3 mins ago</small>
-                            <a href="#" class="btn btn-sm btn-primary">Go somewhere</a>
-                        </div>
+            <div class="wb-card">
+                {% for item in section5.content %}
+                    {% if loop.index0 % 3 == 0 %}
+                        <div class="card-deck">{% endif %}
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title">
+                            <a href="{{ item.link }}">{{ item.title }}</a><br/>
+                            <small class="text-muted wb-muted">
+                                {% for tag in item.tags %}
+                                    <a href="{{ tag[0] }}" target="_blank">#{{ tag[1] }}#</a>
+                                {% endfor %}
+                            </small>
+                        </h3>
+                        <p class="card-text">{{ item.desc }}</p>
                     </div>
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Card title</h5>
-                            <p class="card-text">This card has supporting text below as a natural lead-in to additional
-                                content.</p>
-                            <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-deck">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Card title</h5>
-                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to
-                                additional content. This card has even longer content than the first to show that equal
-                                height action.</p>
-                            <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Card title</h5>
-                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to
-                                additional content. This card has even longer content than the first to show that equal
-                                height action.</p>
-                            <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
-                        </div>
+                    <div class="card-footer">
+                        <small class="text-muted">{{ item.time }}</small>
+                        <a href="{{ item.link }}" target="_blank"
+                           class="btn btn-sm btn-outline-primary">
+                            查看原文
+                        </a>
                     </div>
                 </div>
+                {% if loop.index0 % 3 == 2 %}</div>{% endif %}
+                {% endfor %}
             </div>
         </div>
     </section>
     <section class="wb-section wb-grey-schema">
         <div class="container">
             <div class="title text-center">
-                <p>{{ section5.title.subtitle }}</p>
-                <h2>{{ section5.title.title }}</h2>
+                <p>{{ section6.title.subtitle }}</p>
+                <h2>{{ section6.title.title }}</h2>
             </div>
             <div class="wb-desc">
                 <div class="row align-items-center">
                     <div class="col-lg-6 col-md-4 col-sm-12">
-                        {{ section5.content.desc }}
+                        {{ section6.content.desc }}
                     </div>
                     <div class="col">
                         <div class="container">
                             <div class="row justify-content-md-center">
-                                {% for item in section5.content.icon %}
+                                {% for item in section6.content.icon %}
                                     <div class="col-xl-3 col-md-6 col-sm-3 wb-icon-box">
                                         <a href="{{ item.href }}"><img src="{{ item.img }}" class="wb-icon"/></a>
                                     </div>
@@ -211,11 +192,11 @@
     <section class="wb-section wb-white-schema">
         <div class="container">
             <div class="title text-center">
-                <p>{{ section6.title.subtitle }}</p>
-                <h2>{{ section6.title.title }}</h2>
+                <p>{{ section7.title.subtitle }}</p>
+                <h2>{{ section7.title.title }}</h2>
             </div>
             <div class="wb-desc">
-                {% for item in section6.content %}
+                {% for item in section7.content %}
                     {% if loop.index0 % 2 == 0 %}
                         <div class="row">
                     {% endif %}

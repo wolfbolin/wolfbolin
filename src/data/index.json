@@ -137,8 +137,15 @@
   },
   "section5": {
     "title": {
-      "subtitle": "GROWTH",
-      "title": "进阶之路"
+      "subtitle": "BLOG",
+      "title": "个人博客"
+    },
+    "content": []
+  },
+  "section6": {
+    "title": {
+      "subtitle": "LINK",
+      "title": "与我联系"
     },
     "content": {
       "desc": "大灰狼先生作为社会中的一份子，在各大社交平台上都留下了自己的身影，如果你希望与他学习、交流、合作，你可以在右边的这些平台上找到他。不过他不希望被无趣的人和事物打扰生活，我们彼此之间需要更多的尊重。",
@@ -162,7 +169,7 @@
       ]
     }
   },
-  "section6": {
+  "section7": {
     "title": {
       "subtitle": "FRIEND",
       "title": "合作伙伴"

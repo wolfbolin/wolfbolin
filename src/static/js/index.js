@@ -26,7 +26,7 @@ $(function () {
         if (fatherWidth >= 960) {
             fatherWidth = 960;
         }
-        if (fatherWidth >= 510) {
+        if (fatherWidth > 660) {
             $(".tl-timeline").css("width", fatherWidth + "px");
             $(".tl-direction-r").css("width", (fatherWidth / 2 - 30) + "px");
             $(".tl-direction-l").css("width", (fatherWidth / 2 - 30) + "px");
