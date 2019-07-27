@@ -26,7 +26,7 @@
 }
 
 .wb-section {
-    padding: 2em 0;
+    padding: 2em 0 3em 0;
 }
 
 .wb-section .title p {
@@ -37,13 +37,13 @@
 .wb-section .title h2 {
     font-size: 3em;
     font-weight: 400;
-    margin-bottom: 1em;
+    margin-bottom: 0.8em;
 }
 
 .wb-section .wb-content h3 {
     font-size: 1.17em;
     font-weight: bold;
-    margin: 1em 0;
+    margin-bottom: 1em;
 }
 
 .wb-section .wb-content div {
@@ -58,8 +58,44 @@
     color: #404040;
 }
 
-.wb-white-schema .title p {
+.wb-white-schema .title h2 {
     color: #66b1ff;
+}
+
+.wb-grey-schema {
+    background-color: hsla(0, 0%, 80%, .7);
+}
+
+.wb-grey-schema .title p {
+    color: #000000;
+}
+
+.wb-grey-schema .title h2 {
+    color: #ffffff;
+}
+
+.wb-timeline .tl-desc {
+    font-size: 1em;
+}
+
+.wb-desc .card-deck {
+    margin-bottom: 2em;
+}
+
+.wb-desc .btn, .wb-desc .card-text .text-muted {
+    float: right;
+}
+
+.wb-desc .wb-icon {
+    display: inline-block;
+    vertical-align: middle;
+    border-radius: 25%;
+    width: 100px;
+    height: 100px;
+}
+.wb-desc .wb-icon-box {
+    margin: 1em 0;
+    text-align: center;
 }
 
 

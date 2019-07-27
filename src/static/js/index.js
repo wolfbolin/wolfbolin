@@ -7,7 +7,7 @@ console.log(
     "     \\/  \\/ \\___/|_|_| |____/ \\___/|_|_|_| |_|  \n" +
     "=================================================");
 console.log("Welcome to WolfBolin.com ~ \nContact me at: mailto@wolfbolin.com");
-$(function() {
+$(function () {
     function cover_screen() {
         let exploreBtn = $("#explore");
         let coverTitle = $("#cover-title");
@@ -19,8 +19,28 @@ $(function() {
             $(window).scrollTo(clientHeight - 60, 400);
         })
     }
+
+    function timeline() {
+        let fatherWidth = $(".wb-timeline").width();
+        console.log(fatherWidth);
+        if (fatherWidth >= 960) {
+            fatherWidth = 960;
+        }
+        if (fatherWidth >= 510) {
+            $(".tl-timeline").css("width", fatherWidth + "px");
+            $(".tl-direction-r").css("width", (fatherWidth / 2 - 30) + "px");
+            $(".tl-direction-l").css("width", (fatherWidth / 2 - 30) + "px");
+        }else{
+            $(".tl-timeline").css("width", "");
+            $(".tl-direction-r").css("width", "");
+            $(".tl-direction-l").css("width", "");
+        }
+    }
+
     cover_screen();
+    timeline();
     $(window).resize(function () {
         cover_screen();
+        timeline();
     });
 });
