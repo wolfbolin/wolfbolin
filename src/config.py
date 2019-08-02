@@ -2,6 +2,7 @@
 
 
 class Config:
+    RSS = "https://blog.wolfbolin.com/feed"
     COPYRIGHT = "CopyRight © 2017-2020 WolfBolin. All Rights Reserved."
     NAV_ITEM = [
         {
