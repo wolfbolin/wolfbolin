@@ -18,7 +18,8 @@ def merge_base_context(context):
 
 
 def load_web_context(name):
-    file_path = "{}/data/{}.json".format(current_app.base_path, name)
+    base_path = current_app.config.get('BASE_PATH')
+    file_path = "{}/data/{}.json".format(base_path, name)
     with open(file_path, "r", encoding="utf-8") as file:
         return json.loads(file.read())
 
@@ -30,20 +31,22 @@ def parse_time(time_obj):
     return time
 
 
-def update_blog_feed(rss_url):
+def update_blog_feed(rss_url, base_path):
     try:
         http_result = requests.get(url=rss_url, timeout=10)
     except requests.exceptions.ConnectTimeout as e:
         print("Connect rss failed => %s", e)
         return
     if http_result.status_code == 200:
-        file_path = "{}/data/feed.xml".format(current_app.base_path)
-        with open(file_path, "w") as file:
+        file_path = "{}/data/feed.xml".format(base_path)
+        with open(file_path, "w", encoding='utf-8') as file:
             file.write(http_result.text)
+            print("Update blog feed success")
 
 
 def parse_blog_rss():
-    file_path = "{}/data/feed.xml".format(current_app.base_path)
+    base_path = current_app.config.get('BASE_PATH')
+    file_path = "{}/data/feed.xml".format(base_path)
     rss = feedparser.parse(file_path)
     rss_info = []
     tag_url = "https://blog.wolfbolin.com/archives/tag/%s"

@@ -27,7 +27,6 @@ if __name__ == '__main__':
         web.config.from_object(configs[os.environ['WEB_ENVIRONMENT']])
     else:
         web.config.from_object(configs['production'])
-    web.base_path = os.path.split(os.path.abspath(__file__))[0]
     scheduler = APScheduler()
     scheduler.init_app(web)
     scheduler.start()
