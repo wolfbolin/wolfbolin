@@ -23,11 +23,16 @@ def index():
 
 
 if __name__ == '__main__':
+    # 获取配置文件
     if 'WEB_ENVIRONMENT' in os.environ and os.environ['WEB_ENVIRONMENT'] in configs:
         web.config.from_object(configs[os.environ['WEB_ENVIRONMENT']])
     else:
         web.config.from_object(configs['production'])
+    # 设置域名与端口
+    host = web.config.get("HOST")
+    port = web.config.get("PORT")
+    # 设置定时任务
     scheduler = APScheduler()
     scheduler.init_app(web)
     scheduler.start()
-    web.run()
+    web.run(host=host, port=port)

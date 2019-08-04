@@ -3,6 +3,8 @@ import os
 
 
 class Config:
+    HOST = '127.0.0.1'
+    PORT = 25680
     # 设置运行路径
     BASE_PATH = os.path.split(os.path.abspath(__file__))[0]
     # 定时任务相关
@@ -37,7 +39,7 @@ class DevelopmentConfig(Config):
     DEBUG = True
     JOBS = [
         {
-            'id': 'job_1h_data',
+            'id': 'update_blog_feed',
             'func': 'func:update_blog_feed',
             'args': [Config.RSS, Config.BASE_PATH],
             'trigger': 'interval',
@@ -56,10 +58,12 @@ class IntranetConfig(DevelopmentConfig):
 
 
 class ProductionConfig(Config):
+    HOST = '0.0.0.0'
+    PORT = 25680
     DEBUG = False
     JOBS = [
         {
-            'id': 'job_1h_data',
+            'id': 'update_blog_feed',
             'func': 'func:update_blog_feed',
             'args': [Config.RSS, Config.BASE_PATH],
             'trigger': 'interval',
