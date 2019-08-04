@@ -82,53 +82,45 @@
     },
     "content": [
       {
-        "class": "tl-direction-r",
         "title": "Everyclass",
         "link": "https://everyclass.xyz",
         "time": "2018/6 - 2018/11",
         "text": "我们每天被各种大事小事忙得晕头转向、不知所措。每课（Everyclass）可以将你的课表导入到手机日历，让课程和你的日历事项在同一处展示，从而便于日程的安排。不仅如此，它还能查询和你上同一节课的同学，这是懒人的福利。"
       },
       {
-        "class": "tl-direction-l",
         "title": "Video log",
         "time": "2017/12",
         "text": "无法掩饰自己内心寂寞的大灰狼先生购买了一套摄影的设备，成为了一位半业余的Vloger，一段段充满年轻活力的时光都会被凝聚在视频中，这将成为他宝贵的回忆。"
       },
       {
-        "class": "tl-direction-r",
         "title": "Caremore",
         "link": "https://github.com/wolfbolin/Caremore",
         "time": "2017/6 - 2017/11",
         "text": "人工智能的浪潮席卷祖国的大江南北，在英特尔公司支持下，小组成员开发了一款基于深度学习的儿童安全预警系统，该系统基于IoT设备监控儿童周围环境，利用云计算智能识别存在风险的危险信息，主动的向儿童家长发出不同级别的儿童安全警告。"
       },
       {
-        "class": "tl-direction-l",
         "title": "ICPC",
         "time": "2016/2 - 2017/10",
         "text": "经历了长达一年的认真准备后，大灰狼先生的算法设计水平已经具备了与他人争锋的资格。学校委派大灰狼先生一行三人赴东北大学参加ICPC沈阳站的竞赛，经过三人不懈的奋斗与各种机缘巧合的发现，最终以银首的名次拿下银牌一块。"
       },
       {
-        "class": "tl-direction-r",
         "title": "Chattincrypted",
         "link": "https://github.com/wolfbolin/Chattincrypted",
         "time": "2017/7 - 2017/8",
         "text": "在学校实训项目的带动下，我带领小组成员完成了基于Java的PGP加密通信聊天工具，支持多用户之间的加密即时聊天、加密文件传输、黑名单等常见功能。"
       },
       {
-        "class": "tl-direction-l",
         "title": "Jigsaw",
         "link": "https://github.com/wolfbolin/Jigsaw",
         "time": "2017/6 - 2017/7",
         "text": "在学校实训项目的带动下，我带领小组成员完成了基于C++的八数码拼图游戏，支持在线天梯数据比拼，简单易用略有颜值。"
       },
       {
-        "class": "tl-direction-r",
         "title": "NLife健康APP",
         "time": "2017/2 - 2017/5",
         "text": "受益于学校的自由探索项目，我带领四人开发团队尝试建立一套基于AHP层次分析法的人体健康评估模型。现已有在移动终端上计算人体健康的算法和非正式论文一篇，但是由于资金和能力的限制，该项目在完成了七成的工作之后搁置了，非常期待他的二次开发。"
       },
       {
-        "class": "tl-direction-l",
         "title": "CSU Software",
         "time": "2016/9 - 2016/12",
         "text": "刚刚踏入高等学府大门的萌新，要在小小的赛场上小试牛刀展示实力，该项目是进入大学后第一个练手的网页作品，项目参与了学校组织的网页设计大赛，但因为能力所限，页面中存在Flash技术，对于用户体验有着一定的影响。"

@@ -41,7 +41,7 @@ class DevelopmentConfig(Config):
             'func': 'func:update_blog_feed',
             'args': [Config.RSS, Config.BASE_PATH],
             'trigger': 'interval',
-            'seconds': 10
+            'hours': 1
         }
     ]
 

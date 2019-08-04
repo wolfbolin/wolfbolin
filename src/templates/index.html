@@ -111,16 +111,20 @@
                 <ul class="tl-timeline">
                     {% for item in section4.content %}
                         <li>
-                            <div class="{{ item.class }}">
-                                <div class="tl-flag-wrapper">
+                            {% if loop.index0 % 2 == 0 %}
+                                <div class="tl-direction-r">
+                            {% else %}
+                                <div class="tl-direction-l">
+                            {% endif %}
+                            <div class="tl-flag-wrapper">
                                     <span class="tl-flag">
                                         <a {% if item.link %}href="{{ item.link }}"{% endif %}>
                                             {{ item.title }}
                                         </a>
                                     </span>
-                                    <span class="tl-time-wrapper"><span class="tl-time">{{ item.time }}</span></span>
-                                </div>
-                                <div class="tl-desc">{{ item.text }}</div>
+                                <span class="tl-time-wrapper"><span class="tl-time">{{ item.time }}</span></span>
+                            </div>
+                            <div class="tl-desc">{{ item.text }}</div>
                             </div>
                         </li>
                     {% endfor %}

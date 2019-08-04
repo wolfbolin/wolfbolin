@@ -6,6 +6,7 @@ from flask import render_template
 from config import configs
 from func import parse_blog_rss
 from func import load_web_context
+from func import update_blog_feed
 from func import merge_base_context
 from flask_apscheduler import APScheduler
 
@@ -18,7 +19,6 @@ def index():
     context = load_web_context("index")
     context['section5']['content'] = parse_blog_rss()
     context = merge_base_context(context)
-    print(json.dumps(context))
     return render_template("index.html", **context)
 
 
