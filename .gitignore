@@ -1,1 +1,7 @@
 .idea
+webpage
+__pycache__
+service/log/*
+service/Config/*.py
+!service/Config/__init__.py
+!service/Config/example.py
