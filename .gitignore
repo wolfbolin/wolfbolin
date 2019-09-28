@@ -1,5 +1,5 @@
 .idea
-webpage
+webpage2
 __pycache__
 service/log/*
 service/Config/*.py
