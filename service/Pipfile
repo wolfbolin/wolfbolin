@@ -8,10 +8,11 @@ verify_ssl = true
 [packages]
 flask = "*"
 flask-cors = "*"
-coloredlogs = "*"
+flask-apscheduler = "*"
 pymysql = "*"
 dbutils = "*"
-dnspodx = "*"
+feedparser = "*"
+requests = "*"
 
 [requires]
 python_version = "3.7"

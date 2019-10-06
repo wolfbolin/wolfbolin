@@ -1,6 +1,7 @@
 # coding=utf-8
 import os
 import logging
+import configparser
 
 
 def get_config():
@@ -9,14 +10,20 @@ def get_config():
     if 'SERVICE_ENV' in os.environ:
         run_env = os.environ['SERVICE_ENV']
 
-    config_path = '{}/{}.py'.format(os.path.split(os.path.abspath(__file__))[0], run_env)
+    config_path = '{}/{}.conf'.format(os.path.split(os.path.abspath(__file__))[0], run_env)
     if os.path.isfile(config_path):
+        config = configparser.ConfigParser()
+        config.read(config_path, encoding='utf-8')
 
-        logging.info('===========ENVIRONMENT===========')
-        logging.info('Running environment: %s' % run_env)
-        logging.info('=================================')
+        app_config = dict()
+        for section in config.sections():
+            if section in ('FLASK', 'DOCKER'):
+                for option in config.options(section):
+                    app_config[option.upper()] = config.get(section, option)
+            if section in ('MYSQL', 'POOL', 'DNSPOD'):
+                app_config[section] = dict(config.items(section))
 
-        return config_path
+        return app_config
     else:
         logging.error("Config not exist")
         exit()

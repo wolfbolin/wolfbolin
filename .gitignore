@@ -1,7 +1,7 @@
 .idea
 webpage2
 __pycache__
-service/log/*
-service/Config/*.py
-!service/Config/__init__.py
-!service/Config/example.py
+service/cache/*
+service/Config/*.conf
+!service/Config/__init__.conf
+!service/Config/example.conf
