@@ -34,7 +34,7 @@ app.config.from_mapping(app_config)
 # app.mysql_pool = PooledDB(creator=pymysql, **mysql_config, **pool_config)
 
 # 初始化路由
-app.register_blueprint(webpage_blue)
+app.register_blueprint(webpage_blue, url_prefix='/webPage')
 CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
 
 

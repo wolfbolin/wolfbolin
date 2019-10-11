@@ -13,13 +13,13 @@ export default new Router({
       name: 'index',
       component: Index
     },
-    // {
-    //   path: '/about',
-    //   name: 'about',
-    //   // route level code-splitting
-    //   // this generates a separate chunk (about.[hash].js) for this route
-    //   // which is lazy-loaded when the route is visited.
-    //   component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
-    // }
+    // route level code-splitting
+    // which is lazy-loaded when the route is visited.
+    {
+      path: '/tools',
+      alias: ['/tools/:box', '/tools/:box/:tool'],
+      name: 'tools',
+      component: () => import(/* webpackChunkName: "tool" */ './views/Tool.vue')
+    }
   ]
 })

@@ -1,0 +1,15 @@
+[
+  {
+    "label": "参数配置",
+    "name": "parameter",
+    "tool_list": [
+      {
+        "title": "DNS修改工具",
+        "name": "dns_mod",
+        "auth": true,
+        "desc": "功能测试中",
+        "detail": "功能说明测试中"
+      }
+    ]
+  }
+]

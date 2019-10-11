@@ -6,13 +6,6 @@ import feedparser
 from flask import current_app
 
 
-def load_webpage_data(name):
-    base_path = current_app.config.get('BASE_PATH')
-    file_path = "{}/data/{}.json".format(base_path, name)
-    with open(file_path, "r", encoding="utf-8") as file:
-        return json.loads(file.read())
-
-
 def update_blog_feed(rss_url, base_path):
     try:
         http_result = requests.get(url=rss_url, timeout=10)

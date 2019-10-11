@@ -105,18 +105,35 @@
                     <p style="font-size: 2em; text-align: center">T_T 嘤嘤嘤，数据加载失败了</p>
                 </div>
                 <div class="wb-desc" v-else>
-                    <el-card class="wb-card" v-for="item in blog_selection" :key="item.title">
-                        <div slot="header">
-                            <a class="title" :href="item.link">{{item.title}}</a>
-                            <div class="tag-box">
-                                <el-tag size="small" type="info" v-for="tag in item.tags" :key="tag[0]">
-                                    <a :href="tag[0]">{{tag[1]}}</a>
-                                </el-tag>
-                            </div>
-                        </div>
-                        <p>{{item.desc}}</p>
-                        <p class="card-time">{{item.time}}</p>
-                    </el-card>
+                    <!--                                        <el-card class="wb-card" v-for="item in blog_selection" :key="item.title">-->
+                    <!--                                            <div slot="header">-->
+                    <!--                                                <a class="title" :href="item.link">{{item.title}}</a>-->
+                    <!--                                                <div class="tag-box">-->
+                    <!--                                                    <el-tag size="small" type="info" v-for="tag in item.tags" :key="tag[0]">-->
+                    <!--                                                        <a :href="tag[0]">{{tag[1]}}</a>-->
+                    <!--                                                    </el-tag>-->
+                    <!--                                                </div>-->
+                    <!--                                            </div>-->
+                    <!--                                            <p>{{item.desc}}</p>-->
+                    <!--                                            <p class="card-time">{{item.time}}</p>-->
+                    <!--                                        </el-card>-->
+                    <el-timeline class="wb-timeline">
+                        <template v-for="item in blog_selection">
+                            <el-timeline-item :key="item.title" :timestamp="item.time" placement="top">
+                                <el-card class="wb-card">
+                                    <div slot="header">
+                                        <a class="title" :href="item.link">{{item.title}}</a>
+                                    </div>
+                                    <p>{{item.desc}}</p>
+                                    <div class="tag-box">
+                                        <el-tag size="small" type="info" v-for="tag in item.tags" :key="tag[0]">
+                                            <a :href="tag[0]">{{tag[1]}}</a>
+                                        </el-tag>
+                                    </div>
+                                </el-card>
+                            </el-timeline-item>
+                        </template>
+                    </el-timeline>
                 </div>
             </div>
         </section>
@@ -218,10 +235,10 @@
                 }
                 let that = this;
                 let host = this.$store.state.host;
-                this.$http.get(host + '/webData/blogSelection')
+                this.$http.get(host + '/webPage/blogSelection')
                     .then(function (res) {
                         if (res.data.status === 'success') {
-                            console.log(res.data.data);
+                            // console.log(res.data.data);
                             that.blog_selection = res.data.data;
                             that.$store.state.blog_selection = res.data.data;
                         } else {
@@ -256,17 +273,12 @@
         src: url('../../public/static/FZXY.ttf')
     }
 
-    @font-face {
-        font-family: fzxiyuan;
-        src: url('../../public/static/FZXY.ttf')
-    }
-
     .wb-index {
+        font-family: fzxiyuanx, sans-serif;
         background: url("../../public/static/background.jpg") no-repeat fixed top;
         /* background 必在 background-size 前 */
         background-size: cover;
         position: relative;
-        font-family: fzxiyuanx, fzxiyuan, sans-serif;
     }
 
     .wb-cover {
@@ -376,37 +388,6 @@
             margin-bottom: 2em;
         }
 
-        .wb-card {
-            margin: 15px;
-            .title {
-                color: #91BEF0;
-                font-size: 1.38em;
-                text-decoration: none;
-            }
-
-            p {
-                font-size: 1.15em;
-                word-break: break-all;
-            }
-
-            .card-time {
-                font-size: 1em;
-                padding-top: 0.5em;
-            }
-
-            .tag-box {
-                padding-top: 1em;
-                .el-tag {
-                    margin-right: 0.5em;
-                    a{
-                        color: #909399;
-                        font-size: 1.15em;
-                        text-decoration: none;
-                    }
-                }
-            }
-        }
-
         .wb-icon {
             .desc-box {
                 padding: 15px 15px 15px 26px;
@@ -444,5 +425,39 @@
             font-size: 1.15em;
         }
 
+        .wb-card {
+            margin: 15px;
+
+            .title {
+                color: #91BEF0;
+                font-size: 1.38em;
+                text-decoration: none;
+            }
+
+            p {
+                font-size: 1.15em;
+                word-break: break-all;
+            }
+
+            .tag-box {
+                padding-top: 20px;
+
+                .el-tag {
+                    margin-right: 0.5em;
+
+                    a {
+                        color: #909399;
+                        font-size: 1.15em;
+                        text-decoration: none;
+                    }
+                }
+            }
+        }
+    }
+</style>
+
+<style>
+    .el-timeline-item__timestamp{
+        font-size: 20px;
     }
 </style>

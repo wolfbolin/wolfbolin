@@ -8,9 +8,9 @@
                     <img v-if="user_agent==='phone'" src="./assets/logo_nav-s.png" alt="logo"/>
                 </div>
                 <div class="float-right">
-                    <ul>
+                    <ul class="menu">
                         <li v-for="item in nav_list" :key="item.id" :class="item.class">
-                            <a href="javascript:void(0);" v-on:click="page_switch(item.href)">{{ item.name }}</a>
+                            <a href="javascript:void(0);" v-on:click="page_switch(item.href)">{{ item.label }}</a>
                         </li>
                     </ul>
                 </div>
@@ -41,11 +41,11 @@
             return {
                 user_agent: 'pc',
                 nav_list: [
-                    {"id": "index", "href": "/", "name": "主页", "class": ""},
-                    {"id": "note", "href": "/note", "name": "笔记", "class": ""},
-                    {"id": "blog", "href": "/blog", "name": "博客", "class": ""},
-                    {"id": "album", "href": "/album", "name": "相册", "class": ""},
-                    {"id": "tools", "href": "/tools", "name": "工具", "class": ""}
+                    {"id": "index", "href": "/", "name": "index", "label": "主页", "class": ""},
+                    {"id": "note", "href": "/note", "name": "", "label": "笔记", "class": ""},
+                    {"id": "blog", "href": "/blog", "name": "", "label": "博客", "class": ""},
+                    {"id": "album", "href": "/album", "name": "", "label": "相册", "class": ""},
+                    {"id": "tools", "href": "/tools", "name": "tools", "label": "工具", "class": ""}
                 ],
             }
         },
@@ -55,7 +55,7 @@
                     this.$router.push(path);
                 }
                 for (let item of this.nav_list) {
-                    if (item.href === path) {
+                    if (this.$route.name === item.name) {
                         item.class = 'active';
                     } else {
                         item.class = '';
@@ -93,7 +93,7 @@
 </script>
 
 <style lang="scss">
-    * {
+    html, body {
         margin: 0;
         padding: 0;
     }
@@ -110,6 +110,10 @@
         position: fixed;
         font-weight: 200;
         background-color: #404040;
+
+        .menu {
+            margin: 0 1em;
+        }
 
         .float-left {
             float: left;
@@ -134,16 +138,11 @@
                 border-bottom: 4px solid #91BEF0;
             }
 
-            ul {
-                margin: 0;
-                padding: 0;
-
-                li {
-                    height: 60px;
-                    color: white;
-                    display: inline-block;
-                    text-align: -webkit-match-parent;
-                }
+            li {
+                height: 60px;
+                color: white;
+                display: inline-block;
+                text-align: -webkit-match-parent;
             }
 
             a {
