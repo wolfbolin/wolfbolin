@@ -275,7 +275,7 @@
 
     .wb-index {
         font-family: fzxiyuanx, sans-serif;
-        background: url("../../public/static/background.jpg") no-repeat fixed top;
+        background: url("../../public/static/cover.jpg") no-repeat fixed top;
         /* background 必在 background-size 前 */
         background-size: cover;
         position: relative;

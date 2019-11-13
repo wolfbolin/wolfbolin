@@ -99,7 +99,7 @@
     }
 
     .inner {
-        max-width: 1140px;
+        max-width: 1180px;
         margin: 0 auto;
     }
 

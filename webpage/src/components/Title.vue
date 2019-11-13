@@ -1,6 +1,6 @@
 <template>
     <div class="wb-title">
-        <div class="inner content">
+        <div class="content inner">
             <h1>{{title}}</h1>
             <p>{{desc}}</p>
         </div>
@@ -38,32 +38,18 @@
 </script>
 
 <style lang="scss" scoped>
-    .wb-title {
-        padding-top: 72px;
-        background: url("../../public/static/background.jpg") no-repeat 10% 10%;
-        /* background 必在 background-size 前 */
-        background-size: cover;
 
-        .content {
-            padding: 36px;
-            h1 {
-                font-size: 2.4em;
-            }
-            p {
-                font-size: 1.38em;
-            }
+    .wb-title {
+        padding-top: 60px;
+
+        @media screen and (min-width: 768px) {
+            background: url("../../public/static/title.jpg") no-repeat;
+            /* background 必在 background-size 前 */
+            background-size: cover;
         }
 
-        @media screen and (max-width: 768px) {
-            .content {
-                padding: 12px 12px;
-                h1 {
-                    font-size: 2.4em;
-                }
-                p {
-                    font-size: 1.38em;
-                }
-            }
+        .content {
+            padding: 8px;
         }
     }
 </style>

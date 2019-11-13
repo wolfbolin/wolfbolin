@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Index from './views/Index.vue'
 
 Vue.use(Router);
 
@@ -11,13 +10,13 @@ export default new Router({
     {
       path: '/',
       name: 'index',
-      component: Index
+      component: () => import(/* webpackChunkName: "tool" */ './views/Index.vue')
     },
     // route level code-splitting
     // which is lazy-loaded when the route is visited.
     {
       path: '/tools',
-      alias: ['/tools/:box', '/tools/:box/:tool'],
+      alias: ['/tools/:tool'],
       name: 'tools',
       component: () => import(/* webpackChunkName: "tool" */ './views/Tool.vue')
     }
