@@ -3,13 +3,7 @@
         <Title path="tools"></Title>
         <div class="wb-content inner">
             <div class="path">
-                <el-breadcrumb separator-class="el-icon-arrow-right">
-                    <template v-for="item in nav_path">
-                        <el-breadcrumb-item :to="{ path: item.path }" :replace="true" :key="item.path">
-                            {{item.name}}
-                        </el-breadcrumb-item>
-                    </template>
-                </el-breadcrumb>
+
             </div>
             <el-divider></el-divider>
             <div class="tool">
@@ -164,7 +158,7 @@
 
 <style lang="scss" scoped>
     .wb-tool {
-        .wb-content {
+            .wb-content {
             padding: 0 8px;
             .path {
                 margin: 24px 0;

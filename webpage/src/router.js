@@ -16,7 +16,7 @@ export default new Router({
     // which is lazy-loaded when the route is visited.
     {
       path: '/tools',
-      alias: ['/tools/:tool'],
+      alias: ['/tools/:box', '/tools/:box/:tool'],
       name: 'tools',
       component: () => import(/* webpackChunkName: "tool" */ './views/Tool.vue')
     }
