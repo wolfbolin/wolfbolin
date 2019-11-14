@@ -10,15 +10,18 @@ import {
     Tag,
     Tabs,
     Card,
+    Form,
     Input,
     Alert,
     Table,
     Button,
+    Switch,
     TabPane,
     Divider,
     Timeline,
     Carousel,
     Collapse,
+    FormItem,
     Breadcrumb,
     TableColumn,
     TimelineItem,
@@ -32,15 +35,18 @@ Vue.component(Col.name, Col);
 Vue.component(Tag.name, Tag);
 Vue.component(Tabs.name, Tabs);
 Vue.component(Card.name, Card);
+Vue.component(Form.name, Form);
 Vue.component(Input.name, Input);
 Vue.component(Alert.name, Alert);
 Vue.component(Table.name, Table);
 Vue.component(Button.name, Button);
+Vue.component(Switch.name, Switch);
 Vue.component(TabPane.name, TabPane);
 Vue.component(Divider.name, Divider);
 Vue.component(Timeline.name, Timeline);
 Vue.component(Carousel.name, Carousel);
 Vue.component(Collapse.name, Collapse);
+Vue.component(FormItem.name, FormItem);
 Vue.component(Breadcrumb.name, Breadcrumb);
 Vue.component(TableColumn.name, TableColumn);
 Vue.component(TimelineItem.name, TimelineItem);
