@@ -1,4 +1,7 @@
 .idea
+webpage2
 __pycache__
-
-src/data/feed.xml
+service/cache/*
+service/Config/*.conf
+!service/Config/__init__.conf
+!service/Config/example.conf
