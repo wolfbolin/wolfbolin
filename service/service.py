@@ -12,14 +12,19 @@ from Config import get_config
 from DBUtils.PooledDB import PooledDB
 
 from Webpage import webpage_blue
+from Network import network_blue
 
 # 获取配置
 app_config = get_config()
 base_path = os.path.split(os.path.abspath(__file__))[0]
 app_config['CACHE'] = '{}/cache'.format(base_path)
+log_path = '{}/log'.format(app_config['CACHE'])
+
+# 创建缓存
+if not os.path.exists(log_path):
+    os.makedirs(log_path)
 
 # 启动日志
-log_path = '{}/log'.format(app_config['CACHE'])
 log_path = '{}/{}.log'.format(log_path, Util.str_time('%Y%m%d%H%M%S'))
 logging.basicConfig(filename=log_path, datefmt='%Y-%m-%d %H:%M:%S')
 coloredlogs.install(fmt='%(asctime)s %(levelname)s %(message)s')
@@ -34,23 +39,24 @@ app.config.from_mapping(app_config)
 # app.mysql_pool = PooledDB(creator=pymysql, **mysql_config, **pool_config)
 
 # 初始化路由
-app.register_blueprint(webpage_blue, url_prefix='/webPage')
+app.register_blueprint(webpage_blue, url_prefix='/webpage')
+app.register_blueprint(network_blue, url_prefix='/network')
 CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
 
 
 @app.errorhandler(403)
 def http_forbidden(msg):
-    return Util.common_rsp(str(msg)[15:], code=94030, status='forbidden')
+    return Util.common_rsp(str(msg)[15:], status='forbidden')
 
 
 @app.errorhandler(404)
 def http_not_found(msg):
-    return Util.common_rsp(str(msg)[15:], code=94040, status='not_found')
+    return Util.common_rsp(str(msg)[15:], status='not_found')
 
 
 @app.errorhandler(500)
 def service_error(msg):
-    return Util.common_rsp(str(msg)[15:], code=95000, status='error')
+    return Util.common_rsp(str(msg)[15:], status='failed')
 
 
 if __name__ == '__main__':

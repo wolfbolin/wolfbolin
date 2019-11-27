@@ -1,5 +1,4 @@
 .idea
-webpage2
 __pycache__
 service/cache/*
 service/Config/*.conf

@@ -7,18 +7,31 @@ from flask import jsonify
 from flask import current_app
 from Util import database as Dao
 
+rsp_code = {
+    "success": 92000,
+    "forbidden": 94030,
+    "not_found": 94040,
+    "failed": 95000
+}
 
-def common_rsp(data, code=92000, status='success', rsp_format='json'):
-    if rsp_format == 'text':
+
+def common_rsp(data, status='success'):
+    if status in rsp_code.keys():
+        code = rsp_code[status]
+    else:
+        code = 95001
+    rsp_format = request.args.get('format')
+    if rsp_format == 'raw':
         return data
-    return jsonify({
-        'code': code,
-        'status': status,
-        'time': Util.unix_time(),
-        'method': Util.func_name(2),
-        'timestamp': Util.str_time(),
-        'data': data
-    })
+    else:
+        return jsonify({
+            'code': code,
+            'status': status,
+            'time': Util.unix_time(),
+            'method': Util.func_name(2),
+            'timestamp': Util.str_time(),
+            'data': data
+        })
 
 
 def verify_user(func):

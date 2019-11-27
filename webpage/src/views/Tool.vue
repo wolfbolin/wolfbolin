@@ -1,6 +1,6 @@
 <template>
     <div class="wb-tool">
-        <Title path="tools"></Title>
+        <Title path="tools"/>
         <div class="wb-path inner">
             <el-breadcrumb separator-class="el-icon-arrow-right" class="wb-crumb">
                 <template v-for="item in nav_path">
@@ -9,7 +9,7 @@
                     </el-breadcrumb-item>
                 </template>
             </el-breadcrumb>
-            <el-divider></el-divider>
+            <el-divider/>
         </div>
 
         <div class="wb-content inner">
@@ -53,7 +53,7 @@
                 </el-col>
                 <el-col :xs="24" :sm="18">
                     <el-card class="wb-tool">
-                        <component :is="mod_now"></component>
+                        <component :is="mod_now"/>
                     </el-card>
                 </el-col>
             </el-row>
