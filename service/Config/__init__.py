@@ -9,7 +9,7 @@ def get_config():
     run_env = 'production'
     if 'SERVICE_ENV' in os.environ:
         run_env = os.environ['SERVICE_ENV']
-
+    print("Load config [%s]" % run_env)
     config_path = '{}/{}.conf'.format(os.path.split(os.path.abspath(__file__))[0], run_env)
     if os.path.isfile(config_path):
         config = configparser.ConfigParser()
@@ -20,7 +20,7 @@ def get_config():
             if section in ('FLASK', 'DOCKER'):
                 for option in config.options(section):
                     app_config[option.upper()] = config.get(section, option)
-            if section in ('MYSQL', 'POOL', 'DNSPOD'):
+            else:
                 app_config[section] = dict(config.items(section))
 
         return app_config

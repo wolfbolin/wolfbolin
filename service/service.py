@@ -12,6 +12,7 @@ from Config import get_config
 from DBUtils.PooledDB import PooledDB
 
 from Webpage import webpage_blue
+from Network import network_blue
 
 # 获取配置
 app_config = get_config()
@@ -34,7 +35,8 @@ app.config.from_mapping(app_config)
 # app.mysql_pool = PooledDB(creator=pymysql, **mysql_config, **pool_config)
 
 # 初始化路由
-app.register_blueprint(webpage_blue, url_prefix='/webPage')
+app.register_blueprint(webpage_blue, url_prefix='/webpage')
+app.register_blueprint(network_blue, url_prefix='/network')
 CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
 
 

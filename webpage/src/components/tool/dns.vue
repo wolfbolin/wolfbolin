@@ -207,7 +207,7 @@
             },
             mark_record: function (row) {
                 let index = row.rowIndex;
-                // console.log("Mark record: ", index, "=>", row);
+                console.log("Mark record: ", index, "=>", row);
 
                 if (index >= this.source_table.length) {
                     return "new-row";

@@ -8,17 +8,19 @@ from flask import current_app
 from Util import database as Dao
 
 
-def common_rsp(data, code=92000, status='success', rsp_format='json'):
-    if rsp_format == 'text':
+def common_rsp(data, code=92000, status='success'):
+    rsp_format = request.args.get('format')
+    if rsp_format == 'raw':
         return data
-    return jsonify({
-        'code': code,
-        'status': status,
-        'time': Util.unix_time(),
-        'method': Util.func_name(2),
-        'timestamp': Util.str_time(),
-        'data': data
-    })
+    else:
+        return jsonify({
+            'code': code,
+            'status': status,
+            'time': Util.unix_time(),
+            'method': Util.func_name(2),
+            'timestamp': Util.str_time(),
+            'data': data
+        })
 
 
 def verify_user(func):

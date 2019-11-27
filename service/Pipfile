@@ -13,6 +13,8 @@ pymysql = "*"
 dbutils = "*"
 feedparser = "*"
 requests = "*"
+coloredlogs = "*"
+dnspodx = "*"
 
 [requires]
 python_version = "3.7"
