@@ -16,8 +16,6 @@ from Network import network_blue
 app_config = get_config()
 base_path = os.path.split(os.path.abspath(__file__))[0]
 app_config['CACHE'] = '{}/cache'.format(base_path)
-if not os.path.exists(app_config['CACHE']):
-    os.makedirs(app_config['CACHE'])
 
 # 初始化应用
 app = Flask(__name__)
