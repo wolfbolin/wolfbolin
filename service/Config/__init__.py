@@ -17,7 +17,7 @@ def get_config():
 
         app_config = dict()
         for section in config.sections():
-            if section in ('FLASK', 'DOCKER'):
+            if section in ('FLASK'):
                 for option in config.options(section):
                     app_config[option.upper()] = config.get(section, option)
             else:

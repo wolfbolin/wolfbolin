@@ -3,14 +3,20 @@ import json
 import Util
 import Webpage
 import feedparser
+from .page_data import *
+from flask import abort
 from flask import current_app
 
 
 @Webpage.webpage_blue.route('/blogSelection', methods=["GET"])
 def blog_data():
-    base_path = current_app.config.get('CACHE')
-    file_path = "{}/webpage/feed.xml".format(base_path)
-    rss = feedparser.parse(file_path)
+    cache_status, feed_data = read_cache()
+    if not cache_status:
+        update_status, feed_data = update_blog_feed(current_app.config.get('RSS')['url'])
+        if not update_status:
+            return abort(500, "Get feed list failed")
+
+    rss = feedparser.parse(feed_data)
     rss_info = []
     tag_url = "https://blog.wolfbolin.com/archives/tag/%s"
     for item in rss.entries[:9]:

@@ -23,13 +23,13 @@
                 </el-row>
             </div>
             <el-table :data="domain_table" :row-class-name="mark_record">>
-                <el-table-column prop="code" label="编号"></el-table-column>
-                <el-table-column prop="sub_domain" label="子域"></el-table-column>
-                <el-table-column prop="r_type" label="类型"></el-table-column>
-                <el-table-column prop="record" label="记录"></el-table-column>
-                <el-table-column prop="ttl" label="TTL"></el-table-column>
-                <el-table-column prop="mx" label="MX"></el-table-column>
-                <el-table-column prop="status" label="状态"></el-table-column>
+                <el-table-column prop="code" label="编号"/>
+                <el-table-column prop="sub_domain" label="子域"/>
+                <el-table-column prop="r_type" label="类型"/>
+                <el-table-column prop="record" label="记录"/>
+                <el-table-column prop="ttl" label="TTL"/>
+                <el-table-column prop="mx" label="MX"/>
+                <el-table-column prop="status" label="状态"/>
                 <el-table-column label="操作" width="240">
                     <template slot-scope="scope">
                         <el-button v-if="scope.$index !== edit_index"
@@ -50,33 +50,32 @@
                 <el-col :span="24">
                     <div class="edit-title">
                         <p>正在修改：{{edit_object.sub_domain}}.{{active_domain}}</p>
-                        <el-switch v-model="edit_object.status" active-color="#09bb07"
-                                   inactive-color="#e64340"></el-switch>
+                        <el-switch v-model="edit_object.status" active-color="#09bb07" inactive-color="#e64340"/>
                     </div>
                 </el-col>
                 <el-col :span="12">
                     <el-form label-position="left" label-width="auto" :model="edit_object">
                         <el-form-item label="域名">
-                            <el-input v-model="active_domain" :disabled="true"></el-input>
+                            <el-input v-model="active_domain" :disabled="true"/>
                         </el-form-item>
                         <el-form-item label="类型">
-                            <el-input v-model="edit_object.r_type"></el-input>
+                            <el-input v-model="edit_object.r_type"/>
                         </el-form-item>
                         <el-form-item label="TTL">
-                            <el-input v-model="edit_object.ttl"></el-input>
+                            <el-input v-model="edit_object.ttl"/>
                         </el-form-item>
                     </el-form>
                 </el-col>
                 <el-col :span="12">
                     <el-form label-position="left" label-width="auto" :model="edit_object">
                         <el-form-item label="子域">
-                            <el-input v-model="edit_object.sub_domain"></el-input>
+                            <el-input v-model="edit_object.sub_domain"/>
                         </el-form-item>
                         <el-form-item label="记录">
-                            <el-input v-model="edit_object.record"></el-input>
+                            <el-input v-model="edit_object.record"/>
                         </el-form-item>
                         <el-form-item label="MX">
-                            <el-input v-model="edit_object.mx"></el-input>
+                            <el-input v-model="edit_object.mx"/>
                         </el-form-item>
                     </el-form>
                 </el-col>
