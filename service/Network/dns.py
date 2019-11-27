@@ -9,9 +9,13 @@ from flask import current_app
 
 @Network.network_blue.route('/dns/report', methods=["POST"])
 def dns_report():
+    # Util.print_white("Receive report => {}".format(request.get_data()))
     server_info = request.get_json()
     client_ip = request.headers.get('X-Real-IP', '0.0.0.0')
-    if 'ip' not in server_info or server_info['ip'] != client_ip:
+
+    if server_info is None or set(server_info.keys()) != {'ip', 'server'}:
+        return Util.common_rsp("Reject request", status='failed')
+    if server_info['server'] != 'test-wolfbolin' and server_info['ip'] != client_ip:
         return Util.common_rsp("Reject IP", status='failed')
 
     server_index = current_app.config.get('SERVER')
@@ -27,11 +31,11 @@ def dns_report():
     record_list = domain.record_list()[0]
     for record in record_list:
         if record.name == server_domain:
-            if record.value != client_ip:
-                record.value = client_ip
+            if record.value != server_info['ip']:
+                record.value = server_info['ip']
                 record.modify()
                 return Util.common_rsp("Modify IP finish")
             else:
-                Util.common_rsp("Nothing to do.")
+                return Util.common_rsp("Nothing to do.")
 
     return Util.common_rsp("Create IP record first!")
