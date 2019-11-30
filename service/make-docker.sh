@@ -9,7 +9,7 @@ docker build -f Dockerfile --tag core-wolfbolin:"${time_now}" .
 echo -e "\033[5;36mOrz 镜像重建完成\033[0m"
 
 docker run -itd \
-	-p 12865:80 \
+	-p 12864:80 \
 	--restart always \
 	--name core-wolfbolin\
 	-v "$(pwd)"/cache:/var/app/cache \
