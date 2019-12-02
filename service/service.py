@@ -1,18 +1,17 @@
 # coding=utf-8
 import os
 import Util
-import time
-import pymysql
 import sentry_sdk
+import pymemobird
 from flask import Flask
-from flask import jsonify
 from flask_cors import CORS
 from Config import get_config
-from DBUtils.PooledDB import PooledDB
+from qcloudsms_py import SmsSingleSender
 from sentry_sdk.integrations.flask import FlaskIntegration
 
 from Webpage import webpage_blue
 from Network import network_blue
+from Message import message_blue
 
 # 获取配置
 app_config = get_config()
@@ -34,9 +33,24 @@ app.config.from_mapping(app_config)
 # mysql_config = app.config.get('MYSQL')
 # app.mysql_pool = PooledDB(creator=pymysql, **mysql_config, **pool_config)
 
+# 初始化打印机
+_key = app.config['PRINTER']['access_key']
+_id = app.config['PRINTER']['user_identify']
+_user = pymemobird.User(_key, _id)
+_machine = app.config['PRINTER']['memobird_id']
+_device = pymemobird.Device(_machine)
+_device.bind_user(_user)
+app.printer = _device
+
+# 初始化SMS
+_appid = app.config['SMS']['appid']
+_appkey = app.config['SMS']['appkey']
+app.sms = SmsSingleSender(_appid, _appkey)
+
 # 初始化路由
 app.register_blueprint(webpage_blue, url_prefix='/webpage')
 app.register_blueprint(network_blue, url_prefix='/network')
+app.register_blueprint(message_blue, url_prefix='/message')
 CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
 
 
@@ -53,7 +67,7 @@ def sentry_debug():
 
 @app.errorhandler(400)
 def http_forbidden(msg):
-    Util.print_red("{}: <HTTP 400> {}".format(Util.timestamp(), msg))
+    Util.print_red("{}: <HTTP 400> {}".format(Util.format_time(), msg))
     return Util.common_rsp("Bad Request", status='Bad Request')
 
 
@@ -69,7 +83,7 @@ def http_not_found(msg):
 
 @app.errorhandler(500)
 def service_error(msg):
-    Util.print_red("{}: <HTTP 500> {}".format(Util.timestamp(), msg))
+    Util.print_red("{}: <HTTP 500> {}".format(Util.format_time(), msg))
     return Util.common_rsp(str(msg)[15:], status='Internal Server Error')
 
 

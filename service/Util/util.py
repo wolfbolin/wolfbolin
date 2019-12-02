@@ -12,7 +12,8 @@ rsp_code = {
     "Bad Request": 94000,
     "Forbidden": 94030,
     "Not Found": 94040,
-    "Internal Server Error": 95000
+    "Internal Server Error": 95000,
+    "Bad Gateway": 95020
 }
 
 
@@ -30,7 +31,7 @@ def common_rsp(data, status='OK'):
             'status': status,
             'time': Util.unix_time(),
             'method': Util.func_name(2),
-            'timestamp': Util.str_time(),
+            'timestamp': Util.format_time(),
             'data': data
         })
 

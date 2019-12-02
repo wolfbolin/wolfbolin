@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "1bc204041d92494b738ea955859ee8796a5e2784579e4580d4df7d7b10258e20"
+            "sha256": "6fac76adbd17c6a28db6b954a88061adc7edd33a9fc5bf19ce4bed358c36c540"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -137,6 +137,14 @@
             ],
             "version": "==1.1.1"
         },
+        "pymemobird": {
+            "hashes": [
+                "sha256:58950fe207e9308e0ef0285cc8cf8797dc94578dc9568b07331d25070b213523",
+                "sha256:9152e79d46cd5c7115e4b76cb0173dcf00f28c1c26cc4e2e22fb4b062379475b"
+            ],
+            "index": "pypi",
+            "version": "==0.2.1"
+        },
         "pymysql": {
             "hashes": [
                 "sha256:3943fbbbc1e902f41daf7f9165519f140c4451c179380677e6a848587042561a",
@@ -144,6 +152,13 @@
             ],
             "index": "pypi",
             "version": "==0.9.3"
+        },
+        "qcloudsms-py": {
+            "hashes": [
+                "sha256:4dfcb8b1eba2be47a264e33183ba30d8a782346992e344b5a179bf548e130e1f"
+            ],
+            "index": "pypi",
+            "version": "==0.1.4"
         },
         "requests": {
             "hashes": [
