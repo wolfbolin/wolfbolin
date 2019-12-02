@@ -4,12 +4,15 @@ import re
 import sys
 import uuid
 import time
+import random
 import inspect
 import hashlib
 import platform
 
 
 # from bs4 import BeautifulSoup
+
+# Print tools
 
 def print_red(message, tag="ERROR"):
     print('\033[0;31m[{}] {}\033[0m'.format(tag, str(message)))  # 红色
@@ -39,48 +42,6 @@ def print_white(message, tag="INFO"):
     print('\033[0;37m[{}] {}\033[0m'.format(tag, str(message)))  # 白色
 
 
-def unix_time(unit=1):
-    return int(time.time() * unit)
-
-
-def str_time(pattern='%Y-%m-%d %H:%M:%S'):
-    return time.strftime(pattern, time.localtime(time.time()))
-
-
-def parse_time(time_obj):
-    time_format = "%d-%02d-%02d %02d:%02d"
-    time_str = time_format % (time_obj.tm_year, time_obj.tm_mon,
-                              time_obj.tm_mday, time_obj.tm_hour, time_obj.tm_min)
-    return time_str
-
-
-def timestamp():
-    return time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
-
-
-def timestamp2unix(v_timestamp):
-    return int(time.mktime(v_timestamp.timetuple()))
-
-
-def unix2timestamp(u_time):
-    return time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(u_time))
-
-
-def func_name(fa=1):
-    return inspect.stack()[fa][3]
-
-
-def random_code():
-    return str(uuid.uuid1()).split('-')[0]
-
-
-def calc_md5(seed):
-    seed = str(seed).encode('utf-8')
-    md5 = hashlib.md5()
-    md5.update(seed)
-    return md5.hexdigest()
-
-
 def process_bar(now, total, attach=''):
     # 在窗口底部动态显示进度条
     rate = now / total
@@ -99,21 +60,53 @@ def process_bar(now, total, attach=''):
     sys.stdout.flush()
 
 
+# Time tools
+
+def unix_time(unit=1):
+    return int(time.time() * unit)
+
+
+def format_time(pattern='%Y-%m-%d %H:%M:%S'):
+    return time.strftime(pattern, time.localtime(time.time()))
+
+
+def parse_time(time_obj):
+    time_format = "%d-%02d-%02d %02d:%02d"
+    time_str = time_format % (time_obj.tm_year, time_obj.tm_mon,
+                              time_obj.tm_mday, time_obj.tm_hour, time_obj.tm_min)
+    return time_str
+
+
+def timestamp2unix(v_timestamp):
+    return int(time.mktime(v_timestamp.timetuple()))
+
+
+def unix2timestamp(u_time):
+    return time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(u_time))
+
+
+# Calc tools
+
+def func_name(fa=1):
+    return inspect.stack()[fa][3]
+
+
+def random_code():
+    return str(uuid.uuid1()).split('-')[0]
+
+
+def calc_md5(seed):
+    seed = str(seed).encode('utf-8')
+    md5 = hashlib.md5()
+    md5.update(seed)
+    return md5.hexdigest()
+
+
 # def parse_xml(data):
 #     xml = re.sub(r'<!\[CDATA\[(.*)\]\]>', lambda m: m.group(1), data)
 #     xml = BeautifulSoup(xml, 'lxml')
 #     xml = xml.html.body.xml
 #     return xml
-
-
-def delete_old_file(dir_path, expire_time):
-    time_now = unix_time()
-    dir_path = os.path.abspath(dir_path)
-    for file in os.listdir(dir_path):
-        file_path = '{}/{}'.format(dir_path, file)
-        creat_time = os.path.getctime(file_path)
-        if time_now > creat_time + expire_time:
-            os.remove(file_path)
 
 
 def cpu_core():
@@ -126,6 +119,9 @@ def cpu_core():
         return 0
 
 
+# File tools
+
+
 def code_dir():
     file = os.path.abspath(__file__)
     return os.path.dirname(file)
@@ -133,3 +129,38 @@ def code_dir():
 
 def code_path():
     return os.path.abspath(__file__)
+
+
+def legalize_name(name):
+    legal_name = re.sub(r"[\/\\\:\*\?\"\<\>\|\s']", '_', name)
+    legal_name = re.sub(r'[‘’]', '_', legal_name)
+    if len(legal_name) == 0:
+        return 'null'
+    return legal_name
+
+
+def delete_old_file(dir_path, expire_time):
+    time_now = unix_time()
+    dir_path = os.path.abspath(dir_path)
+    for file in os.listdir(dir_path):
+        file_path = '{}/{}'.format(dir_path, file)
+        creat_time = os.path.getctime(file_path)
+        if time_now > creat_time + expire_time:
+            os.remove(file_path)
+
+
+# Network tools
+
+def parse_cookie(cookies):
+    if cookies == "":
+        return {}
+    cookie_dict = {}
+    for line in cookies.split(';'):
+        name, value = line.strip().split('=', 1)
+        cookie_dict[name] = value
+    return cookie_dict
+
+
+def random_ip():
+    return "{}.{}.{}.{}".format(random.randint(50, 250), random.randint(50, 250),
+                                random.randint(50, 250), random.randint(50, 250))

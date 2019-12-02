@@ -53,7 +53,7 @@ def sentry_debug():
 
 @app.errorhandler(400)
 def http_forbidden(msg):
-    Util.print_red("{}: <HTTP 400> {}".format(Util.timestamp(), msg))
+    Util.print_red("{}: <HTTP 400> {}".format(Util.format_time(), msg))
     return Util.common_rsp("Bad Request", status='Bad Request')
 
 
@@ -69,7 +69,7 @@ def http_not_found(msg):
 
 @app.errorhandler(500)
 def service_error(msg):
-    Util.print_red("{}: <HTTP 500> {}".format(Util.timestamp(), msg))
+    Util.print_red("{}: <HTTP 500> {}".format(Util.format_time(), msg))
     return Util.common_rsp(str(msg)[15:], status='Internal Server Error')
 
 
