@@ -12,7 +12,8 @@ rsp_code = {
     "Bad Request": 94000,
     "Forbidden": 94030,
     "Not Found": 94040,
-    "Internal Server Error": 95000
+    "Internal Server Error": 95000,
+    "Bad Gateway": 95020
 }
 
 

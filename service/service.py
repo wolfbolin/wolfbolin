@@ -6,6 +6,7 @@ import pymemobird
 from flask import Flask
 from flask_cors import CORS
 from Config import get_config
+from qcloudsms_py import SmsSingleSender
 from sentry_sdk.integrations.flask import FlaskIntegration
 
 from Webpage import webpage_blue
@@ -40,6 +41,11 @@ _machine = app.config['PRINTER']['memobird_id']
 _device = pymemobird.Device(_machine)
 _device.bind_user(_user)
 app.printer = _device
+
+# 初始化SMS
+_appid = app.config['SMS']['appid']
+_appkey = app.config['SMS']['appkey']
+app.sms = SmsSingleSender(_appid, _appkey)
 
 # 初始化路由
 app.register_blueprint(webpage_blue, url_prefix='/webpage')
