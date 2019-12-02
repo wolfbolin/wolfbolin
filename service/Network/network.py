@@ -1,8 +1,6 @@
 # coding=utf-8
-import json
 import Util
 import Network
-import feedparser
 from flask import request
 from flask import current_app
 

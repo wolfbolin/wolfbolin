@@ -6,6 +6,8 @@ import DNSPodX
 from flask import request
 from flask import current_app
 
+g_dns_report_key = {'ip', 'server'}
+
 
 @Network.network_blue.route('/dns/report', methods=["POST"])
 def dns_report():
@@ -13,14 +15,14 @@ def dns_report():
     server_info = request.get_json()
     client_ip = request.headers.get('X-Real-IP', '0.0.0.0')
 
-    if server_info is None or set(server_info.keys()) != {'ip', 'server'}:
-        return Util.common_rsp("Reject request", status='failed')
+    if server_info is None or set(server_info.keys()) != g_dns_report_key:
+        return Util.common_rsp("Reject request", status='Forbidden')
     if server_info['server'] != 'test-wolfbolin' and server_info['ip'] != client_ip:
-        return Util.common_rsp("Reject IP", status='failed')
+        return Util.common_rsp("Reject IP", status='Forbidden')
 
     server_index = current_app.config.get('SERVER')
     if server_info['server'] not in server_index:
-        return Util.common_rsp("Unknown server", status='failed')
+        return Util.common_rsp("Unknown server", status='Forbidden')
     else:
         server_domain = server_index[server_info['server']]
 
