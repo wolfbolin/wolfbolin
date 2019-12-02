@@ -1,6 +1,6 @@
 # coding=utf-8
 import Util
-import Network
+import Message
 import pymemobird
 from flask import request
 from flask import current_app
@@ -8,7 +8,7 @@ from flask import current_app
 g_printer_message_key = {'app', 'user', 'text'}
 
 
-@Network.network_blue.route('/message/printer', methods=["POST"])
+@Message.message_blue.route('/printer/text', methods=["POST"])
 def printer_message():
     message_info = request.get_json()
 
@@ -26,12 +26,12 @@ def printer_message():
     content += "--------------------------------\n\n"  # 32
     content += "{}\n".format(text)
     content += "\n================================\n"  # 32
-    content += r" _    _       _  ________       _ _       \n"
-    content += r"| |  | |     | |/ _| ___ \     | (_)      \n"
-    content += r"| |  | | ___ | | |_| |_/ / ___ | |_ _ __  \n"
-    content += r"| |/\| |/ _ \| |  _| ___ \/ _ \| | | '_ \ \n"
-    content += r"\  /\  / (_) | | | | |_/ / (_) | | | | | |\n"
-    content += r" \/  \/ \___/|_|_| \____/ \___/|_|_|_| |_|\n"
+    content += r'       _    _       _  __ ' + '\n'
+    content += r'      | |  | |     | |/ _|' + '\n'
+    content += r'      | |  | | ___ | | |_ ' + '\n'
+    content += r'      | |/\| |/ _ \| |  _|' + '\n'
+    content += r'      \  /\  / (_) | | |  ' + '\n'
+    content += r'       \/  \/ \___/|_|_|  ' + '\n'
 
     # 生成纸条对象
     paper = pymemobird.Paper(current_app.config['PRINTER']['access_key'])

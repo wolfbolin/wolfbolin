@@ -10,6 +10,7 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 
 from Webpage import webpage_blue
 from Network import network_blue
+from Message import message_blue
 
 # 获取配置
 app_config = get_config()
@@ -43,6 +44,7 @@ app.printer = _device
 # 初始化路由
 app.register_blueprint(webpage_blue, url_prefix='/webpage')
 app.register_blueprint(network_blue, url_prefix='/network')
+app.register_blueprint(message_blue, url_prefix='/message')
 CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
 
 
