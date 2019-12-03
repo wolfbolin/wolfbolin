@@ -34,6 +34,7 @@ app.config.from_mapping(app_config)
 # app.mysql_pool = PooledDB(creator=pymysql, **mysql_config, **pool_config)
 
 # 初始化打印机
+pymemobird.http_proxy = app.config['PROXY']['http_proxy']
 _key = app.config['PRINTER']['access_key']
 _id = app.config['PRINTER']['user_identify']
 _user = pymemobird.User(_key, _id)
