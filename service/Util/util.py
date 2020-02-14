@@ -31,7 +31,7 @@ def common_rsp(data, status='OK'):
             'status': status,
             'time': Util.unix_time(),
             'method': Util.func_name(2),
-            'timestamp': Util.format_time(),
+            'timestamp': Util.str_time(),
             'data': data
         })
 

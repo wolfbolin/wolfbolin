@@ -19,7 +19,7 @@ def printer_text_message():
     app = message_info['app']
     user = message_info['user']
     text = message_info['text']
-    format_time = Util.format_time()
+    format_time = Util.str_time()
     content = "================================\n\n"  # 32
     content += "应用：{}\n".format(app)
     content += "来源：{}\n".format(user)
