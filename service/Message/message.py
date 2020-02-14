@@ -4,7 +4,6 @@ import Message
 import pymemobird
 from flask import request
 from flask import current_app
-from qcloudsms_py.httpclient import HTTPError
 
 g_printer_message_key = {'app', 'user', 'text'}
 
@@ -49,17 +48,14 @@ def sms_text_message():
     if message_info is None or set(message_info.keys()) != g_printer_message_key:
         return Util.common_rsp("Reject request", status='Forbidden')
 
-    try:
-        sms_arg = {
-            'nationcode': 86,
-            'phone_number': current_app.config['SMS']['phone'],
-            'template_id': current_app.config['SMS']['template'],
-            'params': [message_info['app'], message_info['user'], message_info['text'][:12]],
-            'sign': current_app.config['SMS']['sign']
-        }
-        sms_res = current_app.sms.send_with_param(**sms_arg)
-        sms_res['message'] = "Send sms text success"
-        return Util.common_rsp(sms_res)
-    except HTTPError as e:
-        Util.print_red(e)
-    return Util.common_rsp({"message": "Send sms text failed."}, status="Bad Gateway")
+    sms_arg = {
+        "phone_numbers": [current_app.config['PHONE']['wolfbolin']],
+        "template": current_app.config['SMS']['message_push'],
+        "params": [message_info['app'], message_info['user'], message_info['text'][:12]]
+    }
+    sms_res, sms_msg = Util.send_sms_message(**sms_arg)
+
+    if sms_res:
+        return Util.common_rsp(sms_msg['detail'][0])
+    else:
+        return Util.common_rsp(sms_msg, status="Bad Gateway")

@@ -10,7 +10,7 @@ def get_config():
     if 'SERVICE_ENV' in os.environ:
         run_env = os.environ['SERVICE_ENV']
     print("Load config [%s]" % run_env)
-    config_path = '{}/{}.conf'.format(os.path.split(os.path.abspath(__file__))[0], run_env)
+    config_path = '{}/{}.ini'.format(os.path.split(os.path.abspath(__file__))[0], run_env)
     if os.path.isfile(config_path):
         config = configparser.ConfigParser()
         config.read(config_path, encoding='utf-8')

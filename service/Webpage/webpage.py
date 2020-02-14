@@ -2,7 +2,6 @@
 import json
 import Util
 import Webpage
-import feedparser
 from .page_data import *
 from flask import abort
 from flask import current_app
@@ -10,24 +9,31 @@ from flask import current_app
 
 @Webpage.webpage_blue.route('/blogSelection', methods=["GET"])
 def blog_data():
-    cache_status, feed_data = read_cache()
-    if not cache_status:
-        update_status, feed_data = update_blog_feed(current_app.config.get('RSS')['url'])
-        if not update_status:
-            return abort(500, "Get feed list failed")
+    # 读取缓存有效期
+    conn = current_app.mysql_pool.connection()
+    expire_time = Util.get_app_pair(conn, "blog_data", "expire_time")
+    if expire_time is None:
+        expire_time = 0
+    else:
+        expire_time = int(expire_time)
 
-    rss = feedparser.parse(feed_data)
-    rss_info = []
-    tag_url = "https://blog.wolfbolin.com/archives/tag/%s"
-    for item in rss.entries[:9]:
-        time = Util.parse_time(item.published_parsed)
-        tag_list = [(tag_url % tag.term, tag.term) for tag in item.tags]
-        desc_text = item.description.replace("&#46;&#46;&#46;", "...")
-        rss_info.append({
-            "time": time,
-            "tags": tag_list,
-            "link": item.link,
-            "desc": desc_text,
-            "title": item.title
-        })
-    return Util.common_rsp(rss_info)
+    # 计算并更新缓存
+    if expire_time <= Util.unix_time():
+        source = "refresh"
+        expire_time = Util.unix_time() + 3600
+        feed_data = fetch_blog_feed(current_app.config.get('RSS')['url'])
+        if feed_data is None:
+            return abort(500, "Get feed list failed")
+        Util.set_app_pair(conn, "blog_data", "expire_time", str(expire_time))
+        Util.set_app_pair(conn, "blog_data", "feed_data", str(feed_data))
+    else:
+        source = "cache"
+        feed_data = Util.get_app_pair(conn, "blog_data", "feed_data")
+        if feed_data is None:
+            return abort(500, "Read feed list failed")
+
+    rsp = {
+        "source": source,
+        "rss_info": parse_feed_data(feed_data)
+    }
+    return Util.common_rsp(rsp)

@@ -1,17 +1,20 @@
 # coding=utf-8
 import os
 import Util
+import pymysql
 import sentry_sdk
 import pymemobird
 from flask import Flask
 from flask_cors import CORS
 from Config import get_config
-from qcloudsms_py import SmsSingleSender
+from DBUtils.PooledDB import PooledDB
+from qcloudsms_py import SmsMultiSender
 from sentry_sdk.integrations.flask import FlaskIntegration
 
 from Webpage import webpage_blue
 from Network import network_blue
 from Message import message_blue
+from Monitor import monitor_blue
 
 # 获取配置
 app_config = get_config()
@@ -29,9 +32,12 @@ app = Flask(__name__)
 app.config.from_mapping(app_config)
 
 # 初始化连接池
-# pool_config = app.config.get('POOL')
-# mysql_config = app.config.get('MYSQL')
-# app.mysql_pool = PooledDB(creator=pymysql, **mysql_config, **pool_config)
+for key in app.config.get('POOL').keys():
+    app.config.get('POOL')[key] = int(app.config.get('POOL')[key])
+app.config.get('MYSQL')["port"] = int(app.config.get('MYSQL')["port"])
+pool_config = app.config.get('POOL')
+mysql_config = app.config.get('MYSQL')
+app.mysql_pool = PooledDB(creator=pymysql, **mysql_config, **pool_config)
 
 # 初始化打印机
 pymemobird.http_proxy = app.config['PROXY']['http_proxy']
@@ -46,12 +52,13 @@ app.printer = _device
 # 初始化SMS
 _appid = app.config['SMS']['appid']
 _appkey = app.config['SMS']['appkey']
-app.sms = SmsSingleSender(_appid, _appkey)
+app.sms = SmsMultiSender(_appid, _appkey)
 
 # 初始化路由
 app.register_blueprint(webpage_blue, url_prefix='/webpage')
 app.register_blueprint(network_blue, url_prefix='/network')
 app.register_blueprint(message_blue, url_prefix='/message')
+app.register_blueprint(monitor_blue, url_prefix='/monitor')
 CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
 
 
