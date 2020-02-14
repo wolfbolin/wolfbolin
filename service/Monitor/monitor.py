@@ -12,7 +12,6 @@ g_server_report_key = {'hostname', 'boot_time', 'unix_time', 'server_ip'}
 def server_report():
     server_info = request.get_json()
     client_ip = request.headers.get('X-Real-IP', '0.0.0.0')
-    print(server_info)
 
     # 消息完整性检查
     if server_info is None or set(server_info.keys()) != g_server_report_key:
