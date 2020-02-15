@@ -22,16 +22,17 @@ def get_app_pair(conn, app, key):
 
 def set_monitor_info(conn, data):
     with conn.cursor() as cursor:
-        sql = "REPLACE INTO `monitor`(`hostname`,`boot_time`,`unix_time`,`server_ip`)" \
-              "VALUES (%s, %s, %s, %s)"
-        cursor.execute(query=sql, args=[data["hostname"], data["boot_time"], data["unix_time"], data["server_ip"]])
+        sql = "REPLACE INTO `monitor`(`hostname`,`boot_time`,`unix_time`,`server_ip`,`status`)" \
+              "VALUES (%s, %s, %s, %s, %s)"
+        cursor.execute(query=sql, args=[data["hostname"], data["boot_time"], data["unix_time"],
+                                        data["server_ip"], data["status"]])
         conn.commit()
         return cursor.rowcount
 
 
 def get_monitor_info(conn, hostname):
     with conn.cursor() as cursor:
-        sql = "SELECT `hostname`,`boot_time`,`unix_time`,`server_ip` FROM `monitor` WHERE `hostname`=%s"
+        sql = "SELECT `hostname`,`boot_time`,`unix_time`,`server_ip`,`status` FROM `monitor` WHERE `hostname`=%s"
         cursor.execute(query=sql, args=[hostname])
         item = cursor.fetchone()
         if item and hostname == item[0]:
@@ -39,7 +40,8 @@ def get_monitor_info(conn, hostname):
                 "hostname": item[0],
                 "boot_time": item[1],
                 "unix_time": item[2],
-                "server_ip": item[3]
+                "server_ip": item[3],
+                "status": item[4]
             }
         else:
             return None
