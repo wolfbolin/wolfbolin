@@ -81,11 +81,8 @@ def str_time(pattern='%Y-%m-%d %H:%M:%S'):
     return time.strftime(pattern, time.localtime(time.time()))
 
 
-def format_time(time_obj):
-    time_format = "%d-%02d-%02d %02d:%02d"
-    time_str = time_format % (time_obj.tm_year, time_obj.tm_mon,
-                              time_obj.tm_mday, time_obj.tm_hour, time_obj.tm_min)
-    return time_str
+def format_time(time_obj, pattern='%Y-%m-%d %H:%M:%S'):
+    return time.strftime(pattern, time_obj)
 
 
 def timestamp2unix(time_string, pattern='%Y-%m-%d %H:%M:%S'):

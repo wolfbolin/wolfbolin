@@ -23,7 +23,7 @@ def parse_feed_data(feed_data):
     rss_info = []
     tag_url = "https://blog.wolfbolin.com/archives/tag/%s"
     for item in rss.entries[:9]:
-        time = Util.parse_time(item.published_parsed)
+        time = Util.format_time(item.published_parsed)
         tag_list = [(tag_url % tag.term, tag.term) for tag in item.tags]
         desc_text = item.description.replace("&#46;&#46;&#46;", "...")
         rss_info.append({
