@@ -12,7 +12,7 @@ docker run -itd \
 	-p 12864:80 \
 	--restart always \
 	--name core-wolfbolin\
-	-v "$(pwd)"/cache:/var/app/cache \
+	-v "$(pwd)":/var/app \
 	core-wolfbolin:"${time_now}"
 echo -e "\033[5;36mOrz 镜像启动完成\033[0m"
 docker ps -a

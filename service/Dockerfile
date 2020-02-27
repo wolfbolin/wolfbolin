@@ -16,7 +16,6 @@ RUN sed -i 's/deb.debian.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.li
 ENV SERVICE_ENV production
 
 WORKDIR /var/app
-COPY . /var/app
 
 RUN pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --upgrade pip \
     && pip install -i https://pypi.tuna.tsinghua.edu.cn/simple gunicorn \
