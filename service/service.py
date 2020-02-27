@@ -19,7 +19,6 @@ from Monitor import monitor_blue
 # 获取配置
 app_config = get_config()
 base_path = os.path.split(os.path.abspath(__file__))[0]
-app_config['CACHE'] = '{}/cache'.format(base_path)
 
 # Sentry
 sentry_sdk.init(
@@ -70,12 +69,12 @@ def hello_world():
 @app.route('/debug/sentry')
 def sentry_debug():
     Util.print_red("Test sentry: {}".format(1 / 0), tag="DEBUG")
-    return "DEBUG"
+    return Util.common_rsp("DEBUG")
 
 
 @app.errorhandler(400)
 def http_forbidden(msg):
-    Util.print_red("{}: <HTTP 400> {}".format(Util.format_time(), msg))
+    Util.print_red("{}: <HTTP 400> {}".format(Util.str_time(), msg))
     return Util.common_rsp("Bad Request", status='Bad Request')
 
 
@@ -91,7 +90,7 @@ def http_not_found(msg):
 
 @app.errorhandler(500)
 def service_error(msg):
-    Util.print_red("{}: <HTTP 500> {}".format(Util.format_time(), msg))
+    Util.print_red("{}: <HTTP 500> {}".format(Util.str_time(), msg))
     return Util.common_rsp(str(msg)[15:], status='Internal Server Error')
 
 
