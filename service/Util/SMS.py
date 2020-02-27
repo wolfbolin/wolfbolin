@@ -4,12 +4,13 @@ from flask import current_app
 from qcloudsms_py.httpclient import HTTPError
 
 
-def send_sms_message(phone_numbers, template, params):
+def send_sms_message(conn, phone_numbers, template, params):
     # 限制长度
     for i, msg in enumerate(params):
         params[i] = msg[:12]
 
     # 发送消息
+    message_log(conn, phone_numbers, template, params)
     try:
         sms_arg = {
             'nationcode': 86,
@@ -24,3 +25,10 @@ def send_sms_message(phone_numbers, template, params):
     except HTTPError as e:
         Util.print_red(e)
     return False, {"message": "Send sms text failed."}
+
+
+def message_log(conn, phone, template, params):
+    cursor = conn.cursor()
+    sql = "INSERT INTO `message`(`phone`,`template`,`params`,`unix_time`,`local_time`)VALUES(%s,%s,%s,%s,%s)"
+    cursor.execute(query=sql, args=[str(phone), str(template), str(params), Util.unix_time(), Util.str_time()])
+    conn.commit()

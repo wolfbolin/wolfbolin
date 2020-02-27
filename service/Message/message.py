@@ -3,7 +3,7 @@ import Util
 import Message
 import pymemobird
 from flask import request
-from flask import current_app
+from flask import current_app as app
 
 g_push_message_key = {"app", "user", "text"}
 g_send_message_key = {"phone", "template", "params"}
@@ -35,9 +35,9 @@ def printer_text_message():
     content += r"       \/  \/ \___/|_|_|  " + "\n"
 
     # 生成纸条对象
-    paper = pymemobird.Paper(current_app.config["PRINTER"]["access_key"])
+    paper = pymemobird.Paper(app.config["PRINTER"]["access_key"])
     paper.add_text(content)
-    current_app.printer.print_paper(paper)
+    app.printer.print_paper(paper)
 
     return Util.common_rsp("Send print message success: [{}]".format(paper.paper_id))
 
@@ -50,9 +50,10 @@ def sms_message_push():
         return Util.common_rsp("Reject request", status="Forbidden")
 
     sms_arg = {
-        "phone_numbers": [current_app.config["PHONE"]["wolfbolin"]],
-        "template": current_app.config["SMS"]["message_push"],
-        "params": [message_info["app"], message_info["user"], message_info["text"][:12]]
+        "phone_numbers": [app.config["PHONE"]["wolfbolin"]],
+        "template": app.config["SMS"]["message_push"],
+        "params": [message_info["app"], message_info["user"], message_info["text"][:12]],
+        "conn": app.mysql_pool.connection()
     }
     sms_res, sms_msg = Util.send_sms_message(**sms_arg)
 
@@ -81,7 +82,8 @@ def sms_message_send(phone):
     sms_arg = {
         "phone_numbers": [str(message_info["phone"])],
         "template": str(message_info["template"]),
-        "params": message_info["params"]
+        "params": message_info["params"],
+        "conn": app.mysql_pool.connection()
     }
     sms_res, sms_msg = Util.send_sms_message(**sms_arg)
 

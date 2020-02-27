@@ -66,7 +66,7 @@ def server_report():
             sms_msg = "Nothing happen."
     if sms_msg is None:
         sms_arg["phone_numbers"] = server_info["manager"]
-        _, sms_msg = Util.send_sms_message(**sms_arg)
+        _, sms_msg = Util.send_sms_message(conn, **sms_arg)
     result["Reboot"] = sms_msg
 
     # 刷新主机信息
@@ -115,7 +115,7 @@ def server_check():
                 "template": app.config["SMS"]["server_alarm"],
                 "params": [server_domain[hostname], Util.str_time("%H:%M:%S"), "异常下线"]
             }
-            _, sms_msg = Util.send_sms_message(**sms_arg)
+            _, sms_msg = Util.send_sms_message(conn, **sms_arg)
             health_status["comment"] = "System offline"
             health_status.update(sms_msg)
             server_info["status"] = "offline"
