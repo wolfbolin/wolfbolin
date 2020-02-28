@@ -68,16 +68,16 @@ def sms_message_send(phone):
     message_info = request.get_json()
 
     if message_info is None or set(message_info.keys()) != g_send_message_key:
-        return Util.common_rsp("Reject request", status="Forbidden")
+        return Util.common_rsp("Reject json key", status="Forbidden")
 
-    if phone is None or phone != message_info["phone"] or len(phone) != 11:
-        return Util.common_rsp("Reject request", status="Forbidden")
+    if phone is None or str(phone) != str(message_info["phone"]) or len(phone) != 11:
+        return Util.common_rsp("Reject phone number", status="Forbidden")
 
     if isinstance(message_info["params"], list):
         for i, item in enumerate(message_info["params"]):
             message_info["params"][i] = str(item)[:12]
     else:
-        return Util.common_rsp("Reject request", status="Forbidden")
+        return Util.common_rsp("Reject params", status="Forbidden")
 
     sms_arg = {
         "phone_numbers": [str(message_info["phone"])],

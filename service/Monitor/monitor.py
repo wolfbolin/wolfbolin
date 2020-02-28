@@ -52,14 +52,14 @@ def server_report():
     if cache_info is None:
         # 上线运行
         server_info["manager"] = [app.config["PHONE"]["wolfbolin"]]
-        sms_arg["params"] = [server_domain, server_info["boot_time"], "上线运行"]
+        sms_arg["params"] = [server_domain, server_info["boot_time"][-8:], "上线运行"]
     else:
         cache_report_time = int(cache_info["unix_time"])
         server_report_time = int(server_info["unix_time"])
         if abs(server_report_time - cache_report_time) > 120:
             # 设备重启
             server_info["manager"] = json.loads(cache_info["manager"])
-            sms_arg["params"] = [server_domain, server_info["boot_time"], "停机重启"]
+            sms_arg["params"] = [server_domain, server_info["boot_time"][-8:], "停机重启"]
         else:
             # 连续运行
             server_info["manager"] = json.loads(cache_info["manager"])
