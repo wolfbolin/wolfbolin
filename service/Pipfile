@@ -16,6 +16,7 @@ dnspodx = "*"
 sentry-sdk = {extras = ["flask"],version = "==0.13.4"}
 pymemobird = "*"
 qcloudsms-py = "*"
+pyyaml = "*"
 
 [requires]
 python_version = "3.7"
