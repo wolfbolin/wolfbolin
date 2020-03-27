@@ -2,7 +2,6 @@
 import Util
 import Network
 from flask import request
-from flask import current_app
 
 
 @Network.network_blue.route('/info/ip', methods=["GET"])

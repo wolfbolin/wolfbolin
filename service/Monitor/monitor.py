@@ -56,7 +56,7 @@ def server_report():
     else:
         cache_report_time = int(cache_info["unix_time"])
         server_report_time = int(server_info["unix_time"])
-        if abs(server_report_time - cache_report_time) > 120:
+        if abs(server_report_time - cache_report_time) > 150:
             # 设备重启
             server_info["manager"] = json.loads(cache_info["manager"])
             sms_arg["params"] = [server_domain, server_info["boot_time"][-8:], "停机重启"]
@@ -103,7 +103,7 @@ def server_check():
             continue
 
         # 心跳时间检测
-        if abs(int(server_info["unix_time"]) - Util.unix_time()) < 120:
+        if abs(int(server_info["unix_time"]) - Util.unix_time()) < 150:
             health_status["comment"] = "System online"
             check_result[hostname] = health_status
             continue
