@@ -19,7 +19,7 @@ def proxy_clash():
     # 下载网络接口
     api_url = app.config["CLASH"]['api']
     http_result = requests.get(api_url)
-    api_data = yaml.load(http_result.text, Loader=yaml.CLoader)
+    api_data = yaml.safe_load(http_result.text)
 
     # 预处理通用规则
     conn = app.mysql_pool.connection()
@@ -66,7 +66,7 @@ def proxy_clash():
         "Rule": rule_list
     }
 
-    return str(yaml.dump(clash_config, Dumper=yaml.CDumper, indent=4, allow_unicode=True, line_break="\r\n"))
+    return str(yaml.dump(clash_config, indent=4, allow_unicode=True, line_break="\r\n"))
 
 
 def parse_gfw_rule(rule_data):
