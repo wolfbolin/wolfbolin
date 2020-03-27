@@ -1,7 +1,7 @@
 blinker==1.4
 certifi==2019.11.28
 chardet==3.0.4
-Click==7.0
+click==7.1.1
 DBUtils==1.3
 DNSPodX==0.0.1
 feedparser==5.2.1
@@ -9,13 +9,14 @@ Flask==1.1.1
 Flask-Cors==3.0.8
 idna==2.8
 itsdangerous==1.1.0
-Jinja2==2.10.3
+Jinja2==2.11.1
 MarkupSafe==1.1.1
 pymemobird==0.2.2
 PyMySQL==0.9.3
+PyYAML==5.3.1
 qcloudsms-py==0.1.4
 requests==2.21.0
 sentry-sdk==0.13.4
-six==1.13.0
+six==1.14.0
 urllib3==1.24.3
-Werkzeug==0.16.0
+Werkzeug==1.0.0
