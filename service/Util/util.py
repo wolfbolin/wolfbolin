@@ -36,7 +36,7 @@ def common_rsp(data, status='OK'):
         })
 
 
-def verify_key(func):
+def verify_token(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         print('verify_user')
@@ -45,11 +45,11 @@ def verify_key(func):
         conn = current_app.mysql_pool.connection()
         token = Dao.get_app_pair(conn, "auth", "token")
         if token is None:
-            abort(400, "Not found key")
+            abort(400, "Not found token")
 
         md5_code = Util.calc_md5(t)
         if md5_code != token:
-            abort(403, 'Key error')
+            abort(403, "Token error")
 
         return func(*args, **kwargs)
 

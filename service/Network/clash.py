@@ -15,6 +15,7 @@ remove_keyword = ["Sakura", "KDDI", "IDCF", "Netflix", "HKT", "TVB", "HBO", "CN2
 
 
 @Network.network_blue.route('/proxy/clash', methods=["GET"])
+@Util.verify_token
 def proxy_clash():
     # 下载网络接口
     api_url = app.config["CLASH"]['api']
