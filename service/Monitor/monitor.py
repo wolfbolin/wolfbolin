@@ -93,7 +93,7 @@ def server_check():
     server_domain = app.config.get("DOMAIN")
     check_list = app.config.get("CHECK_LIST")
     for hostname in check_list.keys():
-        if check_list[hostname] is "ignore":
+        if check_list[hostname] == "ignore":
             continue
         health_status = {}
         server_info = Util.get_monitor_info(conn, hostname)
