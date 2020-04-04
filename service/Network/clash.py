@@ -11,7 +11,7 @@ from flask import current_app as app
 
 remove_keyword = ["Sakura", "KDDI", "IDCF", "Netflix", "HKT", "TVB", "HBO", "CN2", "GIA", "hulu",
                   "AbemaTV", "happyon", "GMO", "HKBN", "HGC", "WTT", "PCCW", "Hinet", "BBC", "ITV",
-                  "C4", "F4"]
+                  "C4", "F4", "Azure"]
 
 
 @Network.network_blue.route('/proxy/clash', methods=["GET"])
@@ -60,6 +60,10 @@ def proxy_clash():
         "Proxy Group": [
             proxy_group(foreign_list + transfer_list, "Foreign"),
             proxy_group(domestic_list, "Domestic"),
+            {"name": "DEV", "type": "select", "proxies": ["DIRECT", "CHK", "CTW"]},
+            {"name": "CHK", "type": "select", "proxies": pick_api(foreign_list + transfer_list, ["香港"])},
+            {"name": "CTW", "type": "select", "proxies": pick_api(foreign_list + transfer_list, ["台湾"])},
+            {"name": "USA", "type": "select", "proxies": pick_api(foreign_list + transfer_list, ["美国"])},
             {"name": "VAC", "type": "select", "proxies": ["DIRECT", "Foreign", "Domestic"]},
             {"name": "ACC", "type": "select", "proxies": ["DIRECT", "Foreign", "Domestic"]},
             {"name": "LAN", "type": "select", "proxies": ["DIRECT", "Foreign", "Domestic"]},
@@ -121,6 +125,15 @@ def read_proxy_rule(conn):
     for rule in cursor.fetchall():
         rule_list.append("{},{},{}".format(rule["type"], rule["content"], rule["group"]))
     return rule_list
+
+
+def pick_api(api_list, keywords):
+    api_group = []
+    for api in api_list:
+        for keyword in keywords:
+            if keyword in api["name"]:
+                api_group.append(api["name"])
+    return api_group
 
 
 def proxy_group(api_list, group_name):
