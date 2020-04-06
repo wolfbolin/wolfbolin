@@ -28,7 +28,7 @@ def proxy_clash():
     gfw_data = base64.b64decode(gfw_list).decode()
     gfw_rule = parse_gfw_rule(gfw_data)
 
-    rule_list = gfw_rule + read_proxy_rule(conn)
+    rule_list = read_proxy_rule(conn) + gfw_rule
 
     rule_list.append("IP-CIDR,10.0.0.0/8,DIRECT")
     rule_list.append("IP-CIDR,127.0.0.0/8,DIRECT")
