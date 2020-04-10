@@ -60,13 +60,37 @@ def proxy_clash():
         "Proxy Group": [
             proxy_group(foreign_list + transfer_list, "Foreign"),
             proxy_group(domestic_list, "Domestic"),
-            {"name": "DEV", "type": "select", "proxies": ["DIRECT", "CHK", "CTW"]},
-            {"name": "CHK", "type": "select", "proxies": pick_api(foreign_list + transfer_list, ["香港"])},
-            {"name": "CTW", "type": "select", "proxies": pick_api(foreign_list + transfer_list, ["台湾"])},
-            {"name": "USA", "type": "select", "proxies": pick_api(foreign_list + transfer_list, ["美国"])},
-            {"name": "VAC", "type": "select", "proxies": ["DIRECT", "Foreign", "Domestic"]},
-            {"name": "ACC", "type": "select", "proxies": ["DIRECT", "Foreign", "Domestic"]},
-            {"name": "LAN", "type": "select", "proxies": ["DIRECT", "Foreign", "Domestic"]},
+            {
+                "name": "DEV", "type": "select",
+                "proxies": ["DIRECT", "CHK", "CTW"]
+            },
+            {
+                "name": "CHK", "type": "url-test",
+                "interval": 300, "url": "https://www.gstatic.com/generate_204",
+                "proxies": pick_api(foreign_list + transfer_list, ["香港"])
+            },
+            {
+                "name": "CTW", "type": "url-test",
+                "interval": 300, "url": "https://www.gstatic.com/generate_204",
+                "proxies": pick_api(foreign_list + transfer_list, ["台湾"])
+            },
+            {
+                "name": "USA", "type": "url-test",
+                "interval": 300, "url": "https://www.gstatic.com/generate_204",
+                "proxies": pick_api(foreign_list + transfer_list, ["美国"])
+            },
+            {
+                "name": "VAC", "type": "select",
+                "proxies": ["DIRECT", "Foreign", "CHK", "CTW", "USA", "Domestic"]
+            },
+            {
+                "name": "ACC", "type": "select",
+                "proxies": ["DIRECT", "Foreign", "CHK", "CTW", "USA", "Domestic"]
+            },
+            {
+                "name": "LAN", "type": "select",
+                "proxies": ["DIRECT", "Foreign", "CHK", "CTW", "USA", "Domestic"]
+            },
         ],
         "Rule": rule_list
     }
