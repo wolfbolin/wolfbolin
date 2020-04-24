@@ -125,8 +125,7 @@ def server_check():
             _, sms_msg = Util.send_sms_message(conn, **sms_arg)
             health_status["comment"] = "System offline"
             health_status.update(sms_msg)
-            server_info["status"] = "offline"
-            Util.set_monitor_info(conn, server_info)
+            Util.set_host_offline(conn, server_info["hostname"])
         else:
             health_status["comment"] = "System not recovered"
         check_result[hostname] = health_status
