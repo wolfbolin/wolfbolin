@@ -11,12 +11,15 @@ flask-cors = "*"
 pymysql = "*"
 dbutils = "*"
 feedparser = "*"
-requests = "*"
+requests = "==2.23.0"
 dnspodx = "*"
-sentry-sdk = {extras = ["flask"],version = "==0.13.4"}
+sentry-sdk = "==0.14.3"
 pymemobird = "*"
 qcloudsms-py = "*"
 pyyaml = "*"
+jinja2 = "==2.11.2"
+idna = "==2.9"
+urllib3 = "==1.25.9"
 
 [requires]
 python_version = "3.8"

@@ -41,7 +41,7 @@ def proxy_clash():
     foreign_list = []
     transfer_list = []
     domestic_list = []
-    for api in api_data["Proxy"]:
+    for api in api_data["proxies"]:
         for keyword in remove_keyword:
             api["name"] = api["name"].replace(keyword, "")
         api["name"] = api["name"].strip()
@@ -56,8 +56,8 @@ def proxy_clash():
             foreign_list.append(api)
 
     clash_config = {
-        "Proxy": foreign_list + transfer_list + domestic_list,
-        "Proxy Group": [
+        "proxies": foreign_list + transfer_list + domestic_list,
+        "proxy-groups": [
             proxy_group(foreign_list + transfer_list, "Foreign"),
             proxy_group(domestic_list, "Domestic"),
             {
@@ -92,7 +92,7 @@ def proxy_clash():
                 "proxies": ["DIRECT", "Foreign", "CHK", "CTW", "USA", "Domestic"]
             },
         ],
-        "Rule": rule_list
+        "rules": rule_list
     }
 
     return str(yaml.dump(clash_config, indent=4, allow_unicode=True, line_break="\r\n"))
