@@ -103,7 +103,7 @@ def server_check():
             continue
 
         # 心跳时间检测
-        if abs(int(server_info["unix_time"]) - Util.unix_time()) < 150:
+        if abs(int(server_info["unix_time"]) - Util.unix_time()) < 180:
             health_status["comment"] = "System online"
             check_result[hostname] = health_status
             continue

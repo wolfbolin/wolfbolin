@@ -28,7 +28,7 @@ def proxy_clash():
     gfw_data = base64.b64decode(gfw_list).decode()
     gfw_rule = parse_gfw_rule(gfw_data)
 
-    rule_list = gfw_rule + read_proxy_rule(conn)
+    rule_list = read_proxy_rule(conn) + gfw_rule
 
     rule_list.append("IP-CIDR,10.0.0.0/8,DIRECT")
     rule_list.append("IP-CIDR,127.0.0.0/8,DIRECT")
@@ -41,7 +41,7 @@ def proxy_clash():
     foreign_list = []
     transfer_list = []
     domestic_list = []
-    for api in api_data["Proxy"]:
+    for api in api_data["proxies"]:
         for keyword in remove_keyword:
             api["name"] = api["name"].replace(keyword, "")
         api["name"] = api["name"].strip()
@@ -56,19 +56,43 @@ def proxy_clash():
             foreign_list.append(api)
 
     clash_config = {
-        "Proxy": foreign_list + transfer_list + domestic_list,
-        "Proxy Group": [
+        "proxies": foreign_list + transfer_list + domestic_list,
+        "proxy-groups": [
             proxy_group(foreign_list + transfer_list, "Foreign"),
             proxy_group(domestic_list, "Domestic"),
-            {"name": "DEV", "type": "select", "proxies": ["DIRECT", "CHK", "CTW"]},
-            {"name": "CHK", "type": "select", "proxies": pick_api(foreign_list + transfer_list, ["香港"])},
-            {"name": "CTW", "type": "select", "proxies": pick_api(foreign_list + transfer_list, ["台湾"])},
-            {"name": "USA", "type": "select", "proxies": pick_api(foreign_list + transfer_list, ["美国"])},
-            {"name": "VAC", "type": "select", "proxies": ["DIRECT", "Foreign", "Domestic"]},
-            {"name": "ACC", "type": "select", "proxies": ["DIRECT", "Foreign", "Domestic"]},
-            {"name": "LAN", "type": "select", "proxies": ["DIRECT", "Foreign", "Domestic"]},
+            {
+                "name": "DEV", "type": "select",
+                "proxies": ["DIRECT", "CHK", "CTW"]
+            },
+            {
+                "name": "CHK", "type": "url-test",
+                "interval": 300, "url": "https://www.gstatic.com/generate_204",
+                "proxies": pick_api(foreign_list + transfer_list, ["香港"])
+            },
+            {
+                "name": "CTW", "type": "url-test",
+                "interval": 300, "url": "https://www.gstatic.com/generate_204",
+                "proxies": pick_api(foreign_list + transfer_list, ["台湾"])
+            },
+            {
+                "name": "USA", "type": "url-test",
+                "interval": 300, "url": "https://www.gstatic.com/generate_204",
+                "proxies": pick_api(foreign_list + transfer_list, ["美国"])
+            },
+            {
+                "name": "VAC", "type": "select",
+                "proxies": ["DIRECT", "Foreign", "CHK", "CTW", "USA", "Domestic"]
+            },
+            {
+                "name": "ACC", "type": "select",
+                "proxies": ["DIRECT", "Foreign", "CHK", "CTW", "USA", "Domestic"]
+            },
+            {
+                "name": "LAN", "type": "select",
+                "proxies": ["DIRECT", "Foreign", "CHK", "CTW", "USA", "Domestic"]
+            },
         ],
-        "Rule": rule_list
+        "rules": rule_list
     }
 
     return str(yaml.dump(clash_config, indent=4, allow_unicode=True, line_break="\r\n"))
