@@ -29,8 +29,11 @@ def server_report():
     if server_info["hostname"] != "test-wolfbolin" and server_info["server_ip"] != client_ip:
         return Util.common_rsp("Reject IP", status="Forbidden")
 
+    # 确定接收时间
+    time_now = Util.unix_time()
+
     # 时间真实性验证
-    if abs(int(server_info["unix_time"]) - Util.unix_time()) > 10:
+    if abs(int(server_info["unix_time"]) - time_now) > 10:
         return Util.common_rsp("Reject timestamp", status="Forbidden")
 
     # 连接数据库
@@ -85,6 +88,9 @@ def server_check():
     if client_ip != "127.0.0.1":
         return Util.common_rsp("Reject IP", status="Forbidden")
 
+    # 确定接收时间
+    time_now = Util.unix_time()
+
     # 连接数据库
     conn = app.mysql_pool.connection()
 
@@ -103,17 +109,18 @@ def server_check():
             continue
 
         # 心跳时间检测
-        if abs(int(server_info["unix_time"]) - Util.unix_time()) < 180:
+        if abs(int(server_info["unix_time"]) - time_now) < 180:
             health_status["comment"] = "System online"
             check_result[hostname] = health_status
             continue
 
         # 标记主机下线
         if server_info["status"] == "online":
+            print(hostname, "report_time: {} => time_now: {}".format(int(server_info["unix_time"]), time_now))
             sms_arg = {
                 "phone_numbers": json.loads(server_info["manager"]),
                 "template": app.config["SMS"]["server_alarm"],
-                "params": [server_domain[hostname], Util.str_time("%H:%M:%S"), "异常下线"]
+                "params": [server_domain[hostname], Util.str_time("%H:%M:%S", time_now), "异常下线"]
             }
             _, sms_msg = Util.send_sms_message(conn, **sms_arg)
             health_status["comment"] = "System offline"
