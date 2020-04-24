@@ -59,7 +59,7 @@ def server_report():
     else:
         cache_report_time = int(cache_info["unix_time"])
         server_report_time = int(server_info["unix_time"])
-        if abs(server_report_time - cache_report_time) > 150:
+        if abs(server_report_time - cache_report_time) > 180:
             # 设备重启
             server_info["manager"] = json.loads(cache_info["manager"])
             sms_arg["params"] = [server_domain, server_info["boot_time"][-8:], "停机重启"]
