@@ -41,6 +41,14 @@ def proxy_clash():
     foreign_list = []
     transfer_list = []
     domestic_list = []
+
+    if "Proxy" in api_data.keys():
+        api_data["proxies"] = api_data["Proxy"]
+    if "Proxy Group" in api_data.keys():
+        api_data["proxy-groups"] = api_data["Proxy Group"]
+    if "Rule" in api_data.keys():
+        api_data["rules"] = api_data["Rule"]
+
     for api in api_data["proxies"]:
         for keyword in remove_keyword:
             api["name"] = api["name"].replace(keyword, "")
