@@ -83,6 +83,11 @@ def proxy_clash():
                 "proxies": pick_api(foreign_list + transfer_list, ["台湾"])
             },
             {
+                "name": "JPN", "type": "url-test",
+                "interval": 300, "url": "https://www.gstatic.com/generate_204",
+                "proxies": pick_api(foreign_list + transfer_list, ["日本"])
+            },
+            {
                 "name": "USA", "type": "url-test",
                 "interval": 300, "url": "https://www.gstatic.com/generate_204",
                 "proxies": pick_api(foreign_list + transfer_list, ["美国"])
