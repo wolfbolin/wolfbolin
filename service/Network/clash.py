@@ -41,6 +41,14 @@ def proxy_clash():
     foreign_list = []
     transfer_list = []
     domestic_list = []
+
+    if "Proxy" in api_data.keys():
+        api_data["proxies"] = api_data["Proxy"]
+    if "Proxy Group" in api_data.keys():
+        api_data["proxy-groups"] = api_data["Proxy Group"]
+    if "Rule" in api_data.keys():
+        api_data["rules"] = api_data["Rule"]
+
     for api in api_data["proxies"]:
         for keyword in remove_keyword:
             api["name"] = api["name"].replace(keyword, "")
@@ -58,11 +66,21 @@ def proxy_clash():
     clash_config = {
         "proxies": foreign_list + transfer_list + domestic_list,
         "proxy-groups": [
-            proxy_group(foreign_list + transfer_list, "Foreign"),
-            proxy_group(domestic_list, "Domestic"),
+            {
+                "name": "VAC", "type": "select",
+                "proxies": ["DIRECT", "Foreign", "CHK", "CTW", "USA"]
+            },
+            {
+                "name": "ACC", "type": "select",
+                "proxies": ["DIRECT", "Foreign", "CHK", "CTW", "USA"]
+            },
             {
                 "name": "DEV", "type": "select",
-                "proxies": ["DIRECT", "CHK", "CTW"]
+                "proxies": ["DIRECT", "Foreign", "CHK", "CTW", "USA"]
+            },
+            {
+                "name": "LAN", "type": "select",
+                "proxies": ["DIRECT", "Foreign", "CHK", "CTW", "USA"]
             },
             {
                 "name": "CHK", "type": "url-test",
@@ -75,22 +93,16 @@ def proxy_clash():
                 "proxies": pick_api(foreign_list + transfer_list, ["台湾"])
             },
             {
+                "name": "JPN", "type": "url-test",
+                "interval": 300, "url": "https://www.gstatic.com/generate_204",
+                "proxies": pick_api(foreign_list + transfer_list, ["日本"])
+            },
+            {
                 "name": "USA", "type": "url-test",
                 "interval": 300, "url": "https://www.gstatic.com/generate_204",
                 "proxies": pick_api(foreign_list + transfer_list, ["美国"])
             },
-            {
-                "name": "VAC", "type": "select",
-                "proxies": ["DIRECT", "Foreign", "CHK", "CTW", "USA", "Domestic"]
-            },
-            {
-                "name": "ACC", "type": "select",
-                "proxies": ["DIRECT", "Foreign", "CHK", "CTW", "USA", "Domestic"]
-            },
-            {
-                "name": "LAN", "type": "select",
-                "proxies": ["DIRECT", "Foreign", "CHK", "CTW", "USA", "Domestic"]
-            },
+            proxy_group(foreign_list + transfer_list, "Foreign"),
         ],
         "rules": rule_list
     }
@@ -162,8 +174,8 @@ def pick_api(api_list, keywords):
 
 def proxy_group(api_list, group_name):
     group_info = {
-        "name": group_name,
-        "type": "select",
+        "name": group_name,"type": "url-test",
+        "interval": 300, "url": "https://www.gstatic.com/generate_204",
         "proxies": [api["name"] for api in api_list]
     }
     return group_info

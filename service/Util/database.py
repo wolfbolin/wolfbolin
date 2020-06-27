@@ -31,6 +31,14 @@ def set_monitor_info(conn, data):
     return cursor.rowcount
 
 
+def set_host_offline(conn, hostname):
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
+    sql = "UPDATE `monitor` SET `status`='offline' WHERE `hostname`=%s"
+    cursor.execute(query=sql, args=[str(hostname)])
+    conn.commit()
+    return cursor.rowcount
+
+
 def get_monitor_info(conn, hostname):
     cursor = conn.cursor(pymysql.cursors.DictCursor)
     sql = "SELECT `hostname`,`boot_time`,`unix_time`,`server_ip`,`status`,`manager` FROM `monitor` WHERE `hostname`=%s"

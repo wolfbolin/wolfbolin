@@ -77,8 +77,8 @@ def unix_time(unit=1):
     return int(time.time() * unit)
 
 
-def str_time(pattern='%Y-%m-%d %H:%M:%S'):
-    return time.strftime(pattern, time.localtime(time.time()))
+def str_time(pattern='%Y-%m-%d %H:%M:%S', timing=time.time()):
+    return time.strftime(pattern, time.localtime(timing))
 
 
 def format_time(time_obj, pattern='%Y-%m-%d %H:%M:%S'):

@@ -29,8 +29,11 @@ def server_report():
     if server_info["hostname"] != "test-wolfbolin" and server_info["server_ip"] != client_ip:
         return Util.common_rsp("Reject IP", status="Forbidden")
 
+    # 确定接收时间
+    time_now = Util.unix_time()
+
     # 时间真实性验证
-    if abs(int(server_info["unix_time"]) - Util.unix_time()) > 10:
+    if abs(int(server_info["unix_time"]) - time_now) > 10:
         return Util.common_rsp("Reject timestamp", status="Forbidden")
 
     # 连接数据库
@@ -56,7 +59,7 @@ def server_report():
     else:
         cache_report_time = int(cache_info["unix_time"])
         server_report_time = int(server_info["unix_time"])
-        if abs(server_report_time - cache_report_time) > 150:
+        if abs(server_report_time - cache_report_time) > 180:
             # 设备重启
             server_info["manager"] = json.loads(cache_info["manager"])
             sms_arg["params"] = [server_domain, server_info["boot_time"][-8:], "停机重启"]
@@ -85,6 +88,9 @@ def server_check():
     if client_ip != "127.0.0.1":
         return Util.common_rsp("Reject IP", status="Forbidden")
 
+    # 确定接收时间
+    time_now = Util.unix_time()
+
     # 连接数据库
     conn = app.mysql_pool.connection()
 
@@ -103,23 +109,23 @@ def server_check():
             continue
 
         # 心跳时间检测
-        if abs(int(server_info["unix_time"]) - Util.unix_time()) < 180:
+        if abs(int(server_info["unix_time"]) - time_now) < 180:
             health_status["comment"] = "System online"
             check_result[hostname] = health_status
             continue
 
         # 标记主机下线
         if server_info["status"] == "online":
+            print(hostname, "report_time: {} => time_now: {}".format(int(server_info["unix_time"]), time_now))
             sms_arg = {
                 "phone_numbers": json.loads(server_info["manager"]),
                 "template": app.config["SMS"]["server_alarm"],
-                "params": [server_domain[hostname], Util.str_time("%H:%M:%S"), "异常下线"]
+                "params": [server_domain[hostname], Util.str_time("%H:%M:%S", time_now), "异常下线"]
             }
             _, sms_msg = Util.send_sms_message(conn, **sms_arg)
             health_status["comment"] = "System offline"
             health_status.update(sms_msg)
-            server_info["status"] = "offline"
-            Util.set_monitor_info(conn, server_info)
+            Util.set_host_offline(conn, server_info["hostname"])
         else:
             health_status["comment"] = "System not recovered"
         check_result[hostname] = health_status
