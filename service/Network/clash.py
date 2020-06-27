@@ -66,11 +66,21 @@ def proxy_clash():
     clash_config = {
         "proxies": foreign_list + transfer_list + domestic_list,
         "proxy-groups": [
-            proxy_group(foreign_list + transfer_list, "Foreign"),
-            proxy_group(domestic_list, "Domestic"),
+            {
+                "name": "VAC", "type": "select",
+                "proxies": ["DIRECT", "Foreign", "CHK", "CTW", "USA"]
+            },
+            {
+                "name": "ACC", "type": "select",
+                "proxies": ["DIRECT", "Foreign", "CHK", "CTW", "USA"]
+            },
             {
                 "name": "DEV", "type": "select",
-                "proxies": ["DIRECT", "CHK", "CTW"]
+                "proxies": ["DIRECT", "Foreign", "CHK", "CTW", "USA"]
+            },
+            {
+                "name": "LAN", "type": "select",
+                "proxies": ["DIRECT", "Foreign", "CHK", "CTW", "USA"]
             },
             {
                 "name": "CHK", "type": "url-test",
@@ -92,18 +102,7 @@ def proxy_clash():
                 "interval": 300, "url": "https://www.gstatic.com/generate_204",
                 "proxies": pick_api(foreign_list + transfer_list, ["美国"])
             },
-            {
-                "name": "VAC", "type": "select",
-                "proxies": ["DIRECT", "Foreign", "CHK", "CTW", "USA", "Domestic"]
-            },
-            {
-                "name": "ACC", "type": "select",
-                "proxies": ["DIRECT", "Foreign", "CHK", "CTW", "USA", "Domestic"]
-            },
-            {
-                "name": "LAN", "type": "select",
-                "proxies": ["DIRECT", "Foreign", "CHK", "CTW", "USA", "Domestic"]
-            },
+            proxy_group(foreign_list + transfer_list, "Foreign"),
         ],
         "rules": rule_list
     }
@@ -175,8 +174,8 @@ def pick_api(api_list, keywords):
 
 def proxy_group(api_list, group_name):
     group_info = {
-        "name": group_name,
-        "type": "select",
+        "name": group_name,"type": "url-test",
+        "interval": 300, "url": "https://www.gstatic.com/generate_204",
         "proxies": [api["name"] for api in api_list]
     }
     return group_info
