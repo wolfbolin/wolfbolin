@@ -23,6 +23,7 @@ def get_config():
             else:
                 app_config[section] = dict(config.items(section))
 
+        app_config["RUN_ENV"] = run_env
         return app_config
     else:
         logging.error("Config not exist")

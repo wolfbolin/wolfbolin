@@ -8,12 +8,10 @@ import random
 import inspect
 import hashlib
 import platform
+from bs4 import BeautifulSoup
 
-
-# from bs4 import BeautifulSoup
 
 # Print tools
-
 def _print(message, code=None, tag=None, end=None):
     if tag is None:
         message = '[{}] {}'.format(tag, message)
@@ -111,21 +109,24 @@ def calc_md5(seed):
     return md5.hexdigest()
 
 
-# def parse_xml(data):
-#     xml = re.sub(r'<!\[CDATA\[(.*)\]\]>', lambda m: m.group(1), data)
-#     xml = BeautifulSoup(xml, 'lxml')
-#     xml = xml.html.body.xml
-#     return xml
+def parse_xml(data):
+    xml = re.sub(r'<!\[CDATA\[(.*)\]\]>', lambda m: m.group(1), data)
+    xml = BeautifulSoup(xml, 'lxml')
+    xml = xml.html.body.xml
+    return xml
 
 
 def cpu_core():
-    sys_platform = platform.system()
-    if sys_platform == "Windows":
+    if run_platform() == "windows":
         return int(os.popen("echo %NUMBER_OF_PROCESSORS%").read())
-    elif sys_platform == "Linux":
+    elif run_platform() == "linux":
         return int(os.popen(r"cat /proc/cpuinfo | grep 'cpu cores' | uniq | awk '{print $4}'").read())
     else:
         return 0
+
+
+def run_platform():
+    return platform.system().lower()
 
 
 # File tools

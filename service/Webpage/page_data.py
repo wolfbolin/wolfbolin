@@ -4,6 +4,7 @@ import json
 import Util
 import requests
 import feedparser
+from bs4 import BeautifulSoup
 from flask import current_app
 
 
@@ -22,10 +23,13 @@ def parse_feed_data(feed_data):
     rss = feedparser.parse(feed_data)
     rss_info = []
     tag_url = "https://blog.wolfbolin.com/archives/tag/%s"
-    for item in rss.entries[:9]:
+    for item in rss.entries[:16]:
         time = Util.format_time(item.published_parsed)
         tag_list = [(tag_url % tag.term, tag.term) for tag in item.tags]
-        desc_text = item.description.replace("&#46;&#46;&#46;", "...")
+        content = BeautifulSoup(item.content[0]["value"], 'lxml')
+        desc_text = "".join([it for it in content.stripped_strings])
+        if len(desc_text) > 128:
+            desc_text = desc_text[:128] + "..."
         rss_info.append({
             "time": time,
             "tags": tag_list,

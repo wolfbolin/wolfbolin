@@ -23,7 +23,8 @@ base_path = os.path.split(os.path.abspath(__file__))[0]
 # Sentry
 sentry_sdk.init(
     dsn=app_config['SENTRY']['dsn'],
-    integrations=[FlaskIntegration()]
+    integrations=[FlaskIntegration()],
+    environment=app_config["RUN_ENV"]
 )
 
 # 初始化应用

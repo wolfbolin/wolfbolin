@@ -7,7 +7,7 @@ from flask import abort
 from flask import current_app
 
 
-@Webpage.webpage_blue.route('/blogSelection', methods=["GET"])
+@Webpage.webpage_blue.route('/blog_selection', methods=["GET"])
 def blog_data():
     # 读取缓存有效期
     conn = current_app.mysql_pool.connection()
@@ -19,7 +19,7 @@ def blog_data():
 
     # 计算并更新缓存
     if expire_time <= Util.unix_time():
-        source = "refresh"
+        source = "fetch-{}".format(Util.unix_time())
         expire_time = Util.unix_time() + 3600
         feed_data = fetch_blog_feed(current_app.config.get('RSS')['url'])
         if feed_data is None:
@@ -27,7 +27,7 @@ def blog_data():
         Util.set_app_pair(conn, "blog_data", "expire_time", str(expire_time))
         Util.set_app_pair(conn, "blog_data", "feed_data", str(feed_data))
     else:
-        source = "cache"
+        source = "cache-{}".format(int(expire_time) - 3600)
         feed_data = Util.get_app_pair(conn, "blog_data", "feed_data")
         if feed_data is None:
             return abort(500, "Read feed list failed")
