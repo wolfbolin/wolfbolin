@@ -1,13 +1,11 @@
 # coding=utf-8
-import json
-import Util
 import Webpage
 from .page_data import *
 from flask import abort
 from flask import current_app
 
 
-@Webpage.webpage_blue.route('/blog_selection', methods=["GET"])
+@Webpage.webpage_blue.route('/blog/selection', methods=["GET"])
 def blog_data():
     # 读取缓存有效期
     conn = current_app.mysql_pool.connection()

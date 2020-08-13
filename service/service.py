@@ -2,6 +2,7 @@
 import os
 import Util
 import pymysql
+import logging
 import sentry_sdk
 import pymemobird
 from flask import Flask
@@ -30,6 +31,13 @@ sentry_sdk.init(
 # 初始化应用
 app = Flask(__name__)
 app.config.from_mapping(app_config)
+
+# 服务日志
+file_logger = logging.getLogger('file_log')
+file_logger.setLevel(logging.INFO)
+file_handler = logging.FileHandler(filename='./log/run.log', encoding="utf-8")
+app.logger.addHandler(file_handler)
+app.logger.setLevel(logging.INFO)
 
 # 初始化连接池
 for key in app.config.get('POOL').keys():
@@ -95,6 +103,11 @@ def service_error(msg):
     return Util.common_rsp(str(msg)[15:], status='Internal Server Error')
 
 
+if __name__ != '__main__':
+    gunicorn_logger = logging.getLogger('gunicorn.error')
+    app.logger.handlers = gunicorn_logger.handlers
+    app.logger.setLevel(gunicorn_logger.level)
+
 if __name__ == '__main__':
-    app.run(host=app_config['HOST'], port=app_config['PORT'])
+    app.run(host='127.0.0.1', port=12880, debug=True)
     exit()

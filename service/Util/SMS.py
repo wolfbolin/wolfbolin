@@ -24,7 +24,7 @@ def send_sms_message(conn, phone_numbers, template, params):
         return True, sms_res
     except HTTPError as e:
         Util.print_red(e)
-    return False, {"message": "Send sms text failed."}
+    return False, {"message": "Send sms text failed"}
 
 
 def message_log(conn, phone, template, params):

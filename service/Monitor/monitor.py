@@ -4,130 +4,124 @@ import Util
 import Monitor
 from flask import request
 from flask import current_app as app
-from .dns_modify import modify_server_domain
+from .common import modify_server_domain
 
-g_server_report_key = {"hostname", "boot_time", "unix_time", "server_ip"}
+g_server_location_key = {"hostname", "unix_time", "server_ip"}
+g_server_heartbeat_key = {"hostname", "unix_time", "boot_time"}
 
 
-@Monitor.monitor_blue.route("/server/report", methods=["POST"])
-def server_report():
+@Monitor.monitor_blue.route("/server/report/heartbeat", methods=["POST"])
+@Util.req_check_json_key(g_server_heartbeat_key)
+@Util.req_check_hostname
+@Util.req_check_unixtime
+def server_report_heartbeat():
+    time_now = Util.unix_time()
     server_info = request.get_json()
+    conn = app.mysql_pool.connection()
+
+    # 更新信息
+    Util.update_active_time(conn, server_info["hostname"], time_now)
+    Util.update_server_info(conn, server_info)
+
+    result = {
+        "msg": "Success;Update server info success"
+    }
+    app.logger.info(time_now, int(server_info["unix_time"]))
+    if abs(time_now - int(server_info["unix_time"])) > 60:
+        result["msg"] += "(The clock needs to be updated)"
+
+    return Util.common_rsp(result)
+
+
+@Monitor.monitor_blue.route("/server/report/location", methods=["POST"])
+@Util.req_check_json_key(g_server_location_key)
+@Util.req_check_hostname
+@Util.req_check_unixtime
+def server_report_location():
+    server_info = request.get_json()
+    conn = app.mysql_pool.connection()
+
     client_ip = request.headers.get("X-Real-IP", "0.0.0.0")
-
-    # 消息完整性检查
-    if server_info is None or set(server_info.keys()) != g_server_report_key:
-        return Util.common_rsp("Reject request", status="Forbidden")
-
-    # 主机名许可列表
-    server_index = app.config.get("DOMAIN")
-    if server_info["hostname"] not in server_index:
-        return Util.common_rsp("Unknown server", status="Forbidden")
-    else:
-        server_domain = server_index[server_info["hostname"]]
-
     # 链路真实性验证
     if server_info["hostname"] != "test-wolfbolin" and server_info["server_ip"] != client_ip:
         return Util.common_rsp("Reject IP", status="Forbidden")
 
-    # 确定接收时间
-    time_now = Util.unix_time()
-
-    # 时间真实性验证
-    if abs(int(server_info["unix_time"]) - time_now) > 10:
-        return Util.common_rsp("Reject timestamp", status="Forbidden")
-
-    # 连接数据库
-    conn = app.mysql_pool.connection()
-
-    # 读取主机早期信息
-    result = {}
-    cache_info = Util.get_monitor_info(conn, server_info["hostname"])
-
     # 检查DNS记录
+    result = {
+        "msg": "Nothing to do"
+    }
+    cache_info = Util.get_monitor_info(conn, server_info["hostname"])
     if cache_info is None or cache_info["server_ip"] != server_info["server_ip"]:
-        result.update(modify_server_domain(server_domain, server_info["server_ip"]))
-    else:
-        result.update({"DNS": "Nothing to do."})
-
-    # 检查开机时间
-    sms_msg = None
-    sms_arg = {"template": app.config["SMS"]["server_alarm"]}
-    if cache_info is None:
-        # 上线运行
-        server_info["manager"] = [app.config["PHONE"]["wolfbolin"]]
-        sms_arg["params"] = [server_domain, server_info["boot_time"][-8:], "上线运行"]
-    else:
-        cache_report_time = int(cache_info["unix_time"])
-        server_report_time = int(server_info["unix_time"])
-        if abs(server_report_time - cache_report_time) > 180:
-            # 设备重启
-            server_info["manager"] = json.loads(cache_info["manager"])
-            sms_arg["params"] = [server_domain, server_info["boot_time"][-8:], "停机重启"]
-        else:
-            # 连续运行
-            server_info["manager"] = json.loads(cache_info["manager"])
-            sms_msg = "Nothing happen."
-    if sms_msg is None:
-        sms_arg["phone_numbers"] = server_info["manager"]
-        _, sms_msg = Util.send_sms_message(conn, **sms_arg)
-    result["Reboot"] = sms_msg
-
-    # 刷新主机信息
-    server_info["status"] = "online"
-    server_info["manager"] = json.dumps(server_info["manager"])
-    Util.set_monitor_info(conn, server_info)
+        server_index = app.config.get("HOST")
+        server_domain = server_index[server_info["hostname"]]
+        result["msg"] = modify_server_domain(server_domain, server_info["server_ip"])
 
     return Util.common_rsp(result)
 
 
 @Monitor.monitor_blue.route("/server/check", methods=["GET"])
 def server_check():
+    app.logger.info("Test info")
+    # 本地数据校验
     client_ip = request.headers.get("X-Real-IP", "0.0.0.0")
-
-    # 检查消息来源
     if client_ip != "127.0.0.1":
         return Util.common_rsp("Reject IP", status="Forbidden")
 
-    # 确定接收时间
+    expire_time = 180
     time_now = Util.unix_time()
-
-    # 连接数据库
     conn = app.mysql_pool.connection()
 
     # 检查上报时间
-    check_result = {}
-    server_domain = app.config.get("DOMAIN")
+    check_result = []
     check_list = app.config.get("CHECK_LIST")
     for hostname in check_list.keys():
         if check_list[hostname] == "ignore":
             continue
-        health_status = {}
+
+        health_status = {
+            "hostname": hostname
+        }
+
         server_info = Util.get_monitor_info(conn, hostname)
         if server_info is None:
             health_status["comment"] = "System not enabled"
-            check_result[hostname] = health_status
+            check_result.append(health_status)
             continue
 
-        # 心跳时间检测
-        if abs(int(server_info["unix_time"]) - time_now) < 180:
-            health_status["comment"] = "System online"
-            check_result[hostname] = health_status
-            continue
-
-        # 标记主机下线
-        if server_info["status"] == "online":
-            print(hostname, "report_time: {} => time_now: {}".format(int(server_info["unix_time"]), time_now))
-            sms_arg = {
-                "phone_numbers": json.loads(server_info["manager"]),
-                "template": app.config["SMS"]["server_alarm"],
-                "params": [server_domain[hostname], Util.str_time("%H:%M:%S", time_now), "异常下线"]
-            }
-            _, sms_msg = Util.send_sms_message(conn, **sms_arg)
+        dt_time = abs(int(server_info["active_time"]) - time_now)
+        if server_info["status"] == "online" and dt_time < expire_time:
+            # 保持在线
+            health_status["comment"] = "System keeps online"
+            sms_msg = None
+        elif server_info["status"] == "offline" and dt_time >= expire_time:
+            # 保持下线
+            health_status["comment"] = "System remains offline"
+            sms_msg = None
+        elif server_info["status"] == "online" and dt_time >= expire_time:
+            # 主机下线
+            Util.set_host_status(conn, hostname, "offline")
             health_status["comment"] = "System offline"
-            health_status.update(sms_msg)
-            Util.set_host_offline(conn, server_info["hostname"])
+            sms_msg = "异常下线"
+        elif server_info["status"] == "offline" and dt_time < expire_time:
+            # 主机上线
+            Util.set_host_status(conn, hostname, "online")
+            health_status["comment"] = "System online"
+            sms_msg = "恢复上线"
         else:
-            health_status["comment"] = "System not recovered"
-        check_result[hostname] = health_status
+            app.logger.info("什么情况：status:{},dt_time:{}".format(server_info["status"], dt_time))
+            health_status["comment"] = "System unknown status"
+            sms_msg = None
+
+        if sms_msg is not None:
+            app.logger.info(hostname, "active_time: {} => time_now: {}".format(int(server_info["active_time"]), time_now))
+            # sms_arg = {
+            #     "phone_numbers": json.loads(server_info["manager"]),
+            #     "template": app.config["SMS"]["server_alarm"],
+            #     "params": [server_domain[hostname], Util.str_time("%H:%M:%S", time_now), sms_msg]
+            # }
+            # _, sms_msg = Util.send_sms_message(conn, **sms_arg)
+            # health_status["sms_res"] = sms_msg
+
+        check_result.append(health_status)
 
     return Util.common_rsp(check_result)

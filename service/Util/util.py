@@ -4,8 +4,10 @@ import functools
 from flask import abort
 from flask import request
 from flask import jsonify
+from functools import wraps
 from flask import current_app
 from Util import database as Dao
+from flask import current_app as app
 
 rsp_code = {
     "OK": 92000,
@@ -39,8 +41,8 @@ def common_rsp(data, status='OK'):
 def verify_token(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        print('verify_user')
         t = str(request.args.get('token', 'guest'))
+        app.logger.info("正在验证Token：{}".format(t))
 
         conn = current_app.mysql_pool.connection()
         token = Dao.get_app_pair(conn, "auth", "token")
@@ -54,3 +56,41 @@ def verify_token(func):
         return func(*args, **kwargs)
 
     return wrapper
+
+
+def req_check_json_key(key_list):
+    def deco(func):
+        @wraps(func)
+        def check_json_key(*args, **kwargs):
+            server_info = request.get_json()
+            if server_info is None or set(server_info.keys()) != key_list:
+                return Util.common_rsp("Error request key-value", status="Forbidden")
+            return func(*args, **kwargs)
+
+        return check_json_key
+
+    return deco
+
+
+def req_check_hostname(func):
+    @wraps(func)
+    def check_hostname(*args, **kwargs):
+        server_info = request.get_json()
+        server_index = app.config.get("HOST")
+        if server_info["hostname"] not in server_index:
+            return Util.common_rsp("Unknown server", status="Forbidden")
+        return func(*args, **kwargs)
+
+    return check_hostname
+
+
+def req_check_unixtime(func):
+    @wraps(func)
+    def check_unixtime(*args, **kwargs):
+        server_info = request.get_json()
+        time_now = Util.unix_time()
+        if abs(time_now - int(server_info["unix_time"])) > 300:
+            return Util.common_rsp("The message has expired", status="Forbidden")
+        return func(*args, **kwargs)
+
+    return check_unixtime
