@@ -40,6 +40,7 @@ app.logger.addHandler(file_handler)
 app.logger.setLevel(logging.INFO)
 
 # 初始化连接池
+print(app.config.get('POOL'))
 for key in app.config.get('POOL').keys():
     app.config.get('POOL')[key] = int(app.config.get('POOL')[key])
 app.config.get('MYSQL')["port"] = int(app.config.get('MYSQL')["port"])
