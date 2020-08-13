@@ -65,7 +65,7 @@ def server_check():
     if client_ip != "127.0.0.1":
         return Util.common_rsp("Reject IP", status="Forbidden")
 
-    expire_time = 180
+    expire_time = 120
     time_now = Util.unix_time()
     conn = app.mysql_pool.connection()
 
