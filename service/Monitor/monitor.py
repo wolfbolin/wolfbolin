@@ -26,7 +26,6 @@ def server_report_heartbeat():
     result = {
         "msg": "Success;Update server info success"
     }
-    app.logger.info(time_now, int(server_info["unix_time"]))
     if abs(time_now - int(server_info["unix_time"])) > 60:
         result["msg"] += "(The clock needs to be updated)"
 
@@ -61,7 +60,6 @@ def server_report_location():
 
 @Monitor.monitor_blue.route("/server/check", methods=["GET"])
 def server_check():
-    app.logger.info("Test info")
     # 本地数据校验
     client_ip = request.headers.get("X-Real-IP", "0.0.0.0")
     if client_ip != "127.0.0.1":
@@ -113,7 +111,8 @@ def server_check():
             sms_msg = None
 
         if sms_msg is not None:
-            app.logger.info(hostname, "active_time: {} => time_now: {}".format(int(server_info["active_time"]), time_now))
+            app.logger.info("发送提醒：主机{}状态变更：active_time: {} => time_now: {}"
+                            .format(hostname, int(server_info["active_time"]), time_now))
             # sms_arg = {
             #     "phone_numbers": json.loads(server_info["manager"]),
             #     "template": app.config["SMS"]["server_alarm"],
