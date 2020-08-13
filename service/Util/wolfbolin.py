@@ -8,7 +8,7 @@ import random
 import inspect
 import hashlib
 import platform
-# from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup
 
 
 # Print tools
@@ -111,7 +111,7 @@ def calc_md5(seed):
 
 def parse_xml(data):
     xml = re.sub(r'<!\[CDATA\[(.*)\]\]>', lambda m: m.group(1), data)
-    # xml = BeautifulSoup(xml, 'lxml')
+    xml = BeautifulSoup(xml, 'lxml')
     xml = xml.html.body.xml
     return xml
 

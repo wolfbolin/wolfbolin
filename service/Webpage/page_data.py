@@ -1,11 +1,8 @@
 # coding=utf-8
-import os
-import json
 import Util
 import requests
 import feedparser
 from bs4 import BeautifulSoup
-from flask import current_app
 
 
 def fetch_blog_feed(rss_url):
