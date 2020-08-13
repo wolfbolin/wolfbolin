@@ -71,6 +71,7 @@ def server_check():
 
     # 检查上报时间
     check_result = []
+    server_domain = app.config.get("HOST")
     check_list = app.config.get("CHECK_LIST")
     for hostname in check_list.keys():
         if check_list[hostname] == "ignore":
@@ -106,20 +107,24 @@ def server_check():
             health_status["comment"] = "System online"
             sms_msg = "恢复上线"
         else:
-            app.logger.info("什么情况：status:{},dt_time:{}".format(server_info["status"], dt_time))
+            app.logger.info("未知状况：status:{},dt_time:{}".format(server_info["status"], dt_time))
             health_status["comment"] = "System unknown status"
             sms_msg = None
 
         if sms_msg is not None:
-            app.logger.info("发送提醒：主机{}状态变更：active_time: {} => time_now: {}"
-                            .format(hostname, int(server_info["active_time"]), time_now))
-            # sms_arg = {
-            #     "phone_numbers": json.loads(server_info["manager"]),
-            #     "template": app.config["SMS"]["server_alarm"],
-            #     "params": [server_domain[hostname], Util.str_time("%H:%M:%S", time_now), sms_msg]
-            # }
-            # _, sms_msg = Util.send_sms_message(conn, **sms_arg)
-            # health_status["sms_res"] = sms_msg
+            msg_format = "发送提醒：主机{}状态变更[{}]：active_time: {} <=> time_now: {}"
+            active_time = Util.unix2timestamp(int(server_info["active_time"]))
+            timestamp_now = Util.unix2timestamp(time_now)
+            app.logger.info(msg_format.format(hostname, sms_msg, active_time, timestamp_now))
+
+            # 发送短信
+            sms_arg = {
+                "phone_numbers": json.loads(server_info["manager"]),
+                "template": app.config["SMS"]["server_alarm"],
+                "params": [server_domain[hostname], Util.str_time("%H:%M:%S", time_now), sms_msg]
+            }
+            _, sms_msg = Util.send_sms_message(conn, **sms_arg)
+            health_status["sms_res"] = sms_msg
 
         check_result.append(health_status)
 
