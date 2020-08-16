@@ -54,6 +54,7 @@ def server_report_location():
         server_index = app.config.get("HOST")
         server_domain = server_index[server_info["hostname"]]
         result["msg"] = modify_server_domain(server_domain, server_info["server_ip"])
+        Util.update_server_ip(conn, server_info["hostname"], client_ip)
 
     return Util.common_rsp(result)
 
@@ -98,12 +99,12 @@ def server_check():
             sms_msg = None
         elif server_info["status"] == "online" and dt_time >= expire_time:
             # 主机下线
-            Util.set_host_status(conn, hostname, "offline")
+            Util.update_host_status(conn, hostname, "offline")
             health_status["comment"] = "System offline"
             sms_msg = "异常下线"
         elif server_info["status"] == "offline" and dt_time < expire_time:
             # 主机上线
-            Util.set_host_status(conn, hostname, "online")
+            Util.update_host_status(conn, hostname, "online")
             health_status["comment"] = "System online"
             sms_msg = "恢复上线"
         else:
