@@ -63,11 +63,11 @@
                 console.log("Designed by WolfBolin ~ \nContact me at: mailto@wolfbolin.com");
                 // 确定后台服务地址
                 if (window.location.host.indexOf("localhost") !== -1) {
-                    this.$store.state.host = "http://127.0.0.1:12880"
+                    this.$store.commit("modify_host", "http://127.0.0.1:12880");
                 } else if (window.location.host.indexOf("127.0.0.1") !== -1) {
-                    this.$store.state.host = "http://127.0.0.1:12880"
+                    this.$store.commit("modify_host", "http://127.0.0.1:12880");
                 } else {
-                    this.$store.state.host = "http://core.wolfbolin.com"
+                    this.$store.commit("modify_host", "http://core.wolfbolin.com");
                 }
                 console.log("Connect to:", this.$store.state.host);
                 // 设置激活导航栏
