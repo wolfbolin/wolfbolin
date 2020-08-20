@@ -44,9 +44,9 @@
                 nav_list: [
                     {"id": "index", "href": "/", "label": "主页", "class": ""},
                     // {"id": "note", "href": "/note", "label": "笔记", "class": ""},
-                    // {"id": "blog", "href": "/blog", "label": "博客", "class": ""},
+                    // {"id": "blog", "href": "http://blog.wolfbolin.com", "label": "博客", "class": ""},
                     // {"id": "album", "href": "/album", "label": "相册", "class": ""},
-                    {"id": "tools", "href": "/tools", "label": "工具", "class": ""}
+                    // {"id": "tools", "href": "/tools", "label": "工具", "class": ""}
                 ],
             }
         },
@@ -61,6 +61,15 @@
                     "     \\/  \\/ \\___/|_|_| |____/ \\___/|_|_|_| |_|  \n" +
                     "=================================================");
                 console.log("Designed by WolfBolin ~ \nContact me at: mailto@wolfbolin.com");
+                // 确定后台服务地址
+                if (window.location.host.indexOf("localhost") !== -1) {
+                    this.$store.state.host = "http://127.0.0.1:12880"
+                } else if (window.location.host.indexOf("127.0.0.1") !== -1) {
+                    this.$store.state.host = "http://127.0.0.1:12880"
+                } else {
+                    this.$store.state.host = "http://core.wolfbolin.com"
+                }
+                console.log("Connect to:", this.$store.state.host);
                 // 设置激活导航栏
                 this.set_active_nav()
                 let clientWidth = document.documentElement.clientWidth;

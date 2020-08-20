@@ -6,7 +6,7 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    host: 'http://127.0.0.1:12880',
+    host: "",
     home_data: Home,
     blog_data: null
   },
