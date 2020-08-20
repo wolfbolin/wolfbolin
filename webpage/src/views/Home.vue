@@ -220,8 +220,8 @@
                     return 0;
                 }
                 let that = this;
-                let host = this.$store.state.host;
-                this.$http.get(host + '/webpage/blog/selection')
+                let data_host = this.$store.state.host;
+                this.$http.get(data_host + '/webpage/blog/selection')
                     .then(function (res) {
                         if (res.data.status === 'OK') {
                             console.log("博客数据源", res.data.data["source"]);

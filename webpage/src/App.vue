@@ -103,7 +103,7 @@
                 this.switch_page(to);
             }
         },
-        mounted: function () {
+        created: function () {
             this.app_init();
         }
     }
