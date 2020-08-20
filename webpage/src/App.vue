@@ -4,28 +4,28 @@
         <header class="wb-nav">
             <div class="inner">
                 <div class="float-left">
-                    <img v-if="user_agent==='pc'" src="./assets/logo_nav.png" alt="logo"/>
-                    <img v-if="user_agent==='phone'" src="./assets/logo_nav-s.png" alt="logo"/>
+                    <img :src="logo_src" alt="logo"/>
                 </div>
                 <div class="float-right">
                     <ul class="menu">
                         <li v-for="item in nav_list" :key="item.id" :class="item.class">
-                            <a href="javascript:void(0);" v-on:click="page_switch(item.href)">{{ item.label }}</a>
+                            <a href="javascript:void(0);" v-on:click="switch_page(item.href)">{{ item.label }}</a>
                         </li>
                     </ul>
                 </div>
             </div>
         </header>
 
+        <!-- 页面内容 -->
         <router-view/>
 
         <!-- 祖传页脚 -->
         <footer class="wb-footer">
             <div class="inner">
-                <p class="copyright" v-if="user_agent==='pc'">
+                <p class="copyright" v-if="run_env==='desktop'">
                     CopyRight © 2017-2020 WolfBolin.All Rights Reserved.
                 </p>
-                <p class="copyright" v-if="user_agent==='phone'">
+                <p class="copyright" v-if="run_env==='phone'">
                     CopyRight © 2017-2020 WolfBolin.<br/>All Rights Reserved.
                 </p>
                 <a href="http://www.miitbeian.gov.cn" class="icp">豫ICP备19033794号</a>
@@ -39,55 +39,63 @@
         name: 'app',
         data() {
             return {
-                user_agent: 'pc',
+                run_env: "desktop",
+                logo_src: "",
                 nav_list: [
-                    {"id": "index", "href": "/", "name": "index", "label": "主页", "class": ""},
-                    {"id": "note", "href": "/note", "name": "", "label": "笔记", "class": ""},
-                    {"id": "blog", "href": "/blog", "name": "", "label": "博客", "class": ""},
-                    {"id": "album", "href": "/album", "name": "", "label": "相册", "class": ""},
-                    {"id": "tools", "href": "/tools", "name": "tools", "label": "工具", "class": ""}
+                    {"id": "index", "href": "/", "label": "主页", "class": ""},
+                    // {"id": "note", "href": "/note", "label": "笔记", "class": ""},
+                    // {"id": "blog", "href": "/blog", "label": "博客", "class": ""},
+                    // {"id": "album", "href": "/album", "label": "相册", "class": ""},
+                    {"id": "tools", "href": "/tools", "label": "工具", "class": ""}
                 ],
             }
         },
         methods: {
-            page_switch: function (path) {
+            app_init: function () {
+                console.log(
+                    " __          __   _  __ ____        _ _  \n" +
+                    " \\ \\        / /  | |/ _|  _ \\      | (_)  \n" +
+                    "  \\ \\  /\\  / /__ | | |_| |_) | ___ | |_ _ __  \n" +
+                    "   \\ \\/  \\/ / _ \\| |  _|  _ < / _ \\| | | '_ \\  \n" +
+                    "    \\  /\\  / (_) | | | | |_) | (_) | | | | | |  \n" +
+                    "     \\/  \\/ \\___/|_|_| |____/ \\___/|_|_|_| |_|  \n" +
+                    "=================================================");
+                console.log("Designed by WolfBolin ~ \nContact me at: mailto@wolfbolin.com");
+                // 设置激活导航栏
+                this.set_active_nav()
+                let clientWidth = document.documentElement.clientWidth;
+                if (clientWidth < 768) {
+                    this.logo_src = require("@/assets/img/logo_nav-s.png");
+                } else {
+                    this.logo_src = require("@/assets/img/logo_nav.png");
+                }
+            },
+            switch_page: function (path) {
+                console.log("switch_page:", path);
                 if (this.$route.path !== path) {
                     this.$router.push(path);
                 }
+                this.set_active_nav()
+            },
+            set_active_nav: function () {
+                let path_prefix = this.$route.path.split("/")[1];
+                path_prefix = "/" + path_prefix;
                 for (let item of this.nav_list) {
-                    if (this.$route.name === item.name) {
+                    if (path_prefix === item.href) {
                         item.class = 'active';
                     } else {
                         item.class = '';
                     }
                 }
-            },
-            set_nav_logo: function () {
-                let clientWidth = document.documentElement.clientWidth;
-                if (clientWidth < 768) {
-                    this.user_agent = "phone"
-                } else {
-                    this.user_agent = "pc"
-                }
             }
         },
         watch: {
             '$route.path': function (to) {
-                this.page_switch(to);
+                this.switch_page(to);
             }
         },
         mounted: function () {
-            console.log(
-                " __          __   _  __ ____        _ _  \n" +
-                " \\ \\        / /  | |/ _|  _ \\      | (_)  \n" +
-                "  \\ \\  /\\  / /__ | | |_| |_) | ___ | |_ _ __  \n" +
-                "   \\ \\/  \\/ / _ \\| |  _|  _ < / _ \\| | | '_ \\  \n" +
-                "    \\  /\\  / (_) | | | | |_) | (_) | | | | | |  \n" +
-                "     \\/  \\/ \\___/|_|_| |____/ \\___/|_|_|_| |_|  \n" +
-                "=================================================");
-            console.log("Designed by WolfBolin ~ \nContact me at: mailto@wolfbolin.com");
-            this.page_switch(this.$route.path);
-            this.set_nav_logo();
+            this.app_init();
         }
     }
 </script>
@@ -167,7 +175,7 @@
 
         .copyright {
             margin: 0;
-            color: #91BEF0;
+            color: #B0B0B0;
             padding: 10px;
             display: block;
             text-align: center;
@@ -175,7 +183,7 @@
 
         .icp {
             margin: 0;
-            color: #91BEF0;
+            color: #B0B0B0;
             display: block;
             text-align: center;
             padding-bottom: 5px;

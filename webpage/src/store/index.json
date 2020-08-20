@@ -1,15 +1,5 @@
 {
-  "section0": {
-    "title": {
-      "subtitle": "嗜之越笃 技巧越工",
-      "title": "WolfBolin"
-    }
-  },
   "section1": {
-    "title": {
-      "subtitle": "Hello,world!",
-      "title": "你好,世界!"
-    },
     "content": [
       [
         {
@@ -40,23 +30,23 @@
     },
     "content": [
       {
-        "src": "./static/index-photo1.jpg",
-        "title": "1",
+        "src": "./statics/img/default1.jpg",
+        "title": "default1",
         "subtitle": ""
       },
       {
-        "src": "./static/index-photo2.jpg",
-        "title": "2",
+        "src": "./statics/img/default2.jpg",
+        "title": "default2",
         "subtitle": ""
       },
       {
-        "src": "./static/index-photo3.jpg",
-        "title": "3",
+        "src": "./statics/img/default3.jpg",
+        "title": "default3",
         "subtitle": ""
       },
       {
-        "src": "./static/index-photo4.jpg",
-        "title": "4",
+        "src": "./statics/img/default4.jpg",
+        "title": "default4",
         "subtitle": ""
       }
     ]
@@ -96,13 +86,20 @@
     },
     "content": [
       {
+        "title": "Tencent trainee",
+        "link": "https://blog.wolfbolin.com/archives/tag/tencent",
+        "time": "2019/7 - 2019/12",
+        "text": "步入社会的第一步就是观察社会，这半年我在腾讯微视负责后台服务开发工作。在这里我见识不同技术架构的博弈，参与团队DevOps的升级，认识了许多可爱的人。这段短暂的旅程注定是人生中浓墨重彩的一笔。"
+      },
+      {
         "title": "Everyclass",
         "link": "https://everyclass.xyz",
-        "time": "2018/6 - 2018/11",
+        "time": "2018/6 - 2019/10",
         "text": "我们每天被各种大事小事忙得晕头转向、不知所措。每课（Everyclass）可以将你的课表导入到手机日历，让课程和你的日历事项在同一处展示，从而便于日程的安排。不仅如此，它还能查询和你上同一节课的同学，这是懒人的福利。"
       },
       {
         "title": "Video log",
+        "link": "https://blog.wolfbolin.com/archives/tag/vlog",
         "time": "2017/12",
         "text": "无法掩饰自己内心寂寞的大灰狼先生购买了一套摄影的设备，成为了一位半业余的Vloger，一段段充满年轻活力的时光都会被凝聚在视频中，这将成为他宝贵的回忆。"
       },
@@ -132,12 +129,17 @@
       {
         "title": "NLife健康APP",
         "time": "2017/2 - 2017/5",
-        "text": "受益于学校的自由探索项目，我带领四人开发团队尝试建立一套基于AHP层次分析法的人体健康评估模型。现已有在移动终端上计算人体健康的算法和非正式论文一篇，但是由于资金和能力的限制，该项目在完成了七成的工作之后搁置了，非常期待他的二次开发。"
+        "text": "受益于学校的自由探索项目，四人小组尝试建立一套基于AHP层次分析法的人体健康评估模型。形成一套计算算法和非正式论文一篇，该项目在完成了七成的工作之后搁置了，非常期待他的二次开发。（才不"
       },
       {
         "title": "CSU Software",
         "time": "2016/9 - 2016/12",
-        "text": "刚刚踏入高等学府大门的萌新，要在小小的赛场上小试牛刀展示实力，该项目是进入大学后第一个练手的网页作品，项目参与了学校组织的网页设计大赛，但因为能力所限，页面中存在Flash技术，对于用户体验有着一定的影响。"
+        "text": "刚刚踏入高等学府大门的萌新，要在小小的赛场上小试牛刀展示实力，该项目是进入大学后第一个练手的网页作品，页面中使用的Flash技术展示了一定的时代局限性。"
+      },
+      {
+        "title": "Join CSU",
+        "time": "2016/08",
+        "text": "快看，萌新来了！萌新本萌在一系列机缘巧合之下进入CSU，希望在祖国人才的摇篮中茁壮成长。"
       }
     ]
   },
@@ -158,22 +160,22 @@
         {
           "name": "CSDN",
           "href": "https://blog.csdn.net/qq_36731677",
-          "img": "/static/csdn.png"
+          "img": "./statics/img/csdn.png"
         },
         {
           "name": "Github",
           "href": "https://github.com/wolfbolin",
-          "img": "/static/github.png"
+          "img": "./statics/img/github.png"
         },
         {
           "name": "Bilibili",
           "href": "https://space.bilibili.com/72835041/#/",
-          "img": "/static/bilibili.png"
+          "img": "./statics/img/bilibili.png"
         },
         {
           "name": "E-mail",
           "href": "mailto:mailto@wolfbolin.com",
-          "img": "/static/gmail.png"
+          "img": "./statics/img/gmail.png"
         }
       ]
     }

@@ -17,12 +17,9 @@ def get_config():
 
         app_config = dict()
         for section in config.sections():
-            if section in ('FLASK'):
-                for option in config.options(section):
-                    app_config[option.upper()] = config.get(section, option)
-            else:
-                app_config[section] = dict(config.items(section))
+            app_config[section] = dict(config.items(section))
 
+        app_config["RUN_ENV"] = run_env
         return app_config
     else:
         logging.error("Config not exist")
