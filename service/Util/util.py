@@ -6,7 +6,7 @@ from flask import request
 from flask import jsonify
 from functools import wraps
 from flask import current_app
-from Util import database as Dao
+from Util import database as db
 from flask import current_app as app
 
 rsp_code = {
@@ -45,7 +45,7 @@ def verify_token(func):
         app.logger.info("正在验证Token：{}".format(t))
 
         conn = current_app.mysql_pool.connection()
-        token = Dao.get_app_pair(conn, "auth", "token")
+        token = db.get_app_pair(conn, "auth", "token")
         if token is None:
             abort(400, "Not found token")
 

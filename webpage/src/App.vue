@@ -17,7 +17,9 @@
         </header>
 
         <!-- 页面内容 -->
-        <router-view/>
+        <div class="wb-view">
+            <router-view/>
+        </div>
 
         <!-- 祖传页脚 -->
         <footer class="wb-footer">
@@ -46,7 +48,7 @@
                     // {"id": "note", "href": "/note", "label": "笔记", "class": ""},
                     // {"id": "blog", "href": "http://blog.wolfbolin.com", "label": "博客", "class": ""},
                     // {"id": "album", "href": "/album", "label": "相册", "class": ""},
-                    // {"id": "tools", "href": "/tools", "label": "工具", "class": ""}
+                    {"id": "tools", "href": "/tools", "label": "工具", "class": ""}
                 ],
             }
         },
@@ -80,7 +82,7 @@
                 }
             },
             switch_page: function (path) {
-                console.log("switch_page:", path);
+                console.log("Switch page:", path);
                 if (this.$route.path !== path) {
                     this.$router.push(path);
                 }
@@ -177,6 +179,10 @@
         }
 
 
+    }
+
+    .wb-view {
+        padding-top: 60px;
     }
 
     .wb-footer {

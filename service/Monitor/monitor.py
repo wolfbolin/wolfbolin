@@ -3,6 +3,7 @@ import json
 import Util
 import Monitor
 from flask import request
+from Monitor import database as db
 from flask import current_app as app
 from .common import modify_server_domain
 
@@ -20,8 +21,8 @@ def server_report_heartbeat():
     conn = app.mysql_pool.connection()
 
     # 更新信息
-    Util.update_active_time(conn, server_info["hostname"], time_now)
-    Util.update_server_info(conn, server_info)
+    db.update_active_time(conn, server_info["hostname"], time_now)
+    db.update_server_info(conn, server_info)
 
     result = {
         "msg": "Success;Update server info success"
@@ -49,12 +50,12 @@ def server_report_location():
     result = {
         "msg": "Nothing to do"
     }
-    cache_info = Util.get_monitor_info(conn, server_info["hostname"])
+    cache_info = db.get_monitor_info(conn, server_info["hostname"])
     if cache_info is None or cache_info["server_ip"] != server_info["server_ip"]:
         server_index = app.config.get("HOST")
         server_domain = server_index[server_info["hostname"]]
         result["msg"] = modify_server_domain(server_domain, server_info["server_ip"])
-        Util.update_server_ip(conn, server_info["hostname"], client_ip)
+        db.update_server_ip(conn, server_info["hostname"], client_ip)
 
     return Util.common_rsp(result)
 
@@ -82,7 +83,7 @@ def server_check():
             "hostname": hostname
         }
 
-        server_info = Util.get_monitor_info(conn, hostname)
+        server_info = db.get_monitor_info(conn, hostname)
         if server_info is None:
             health_status["comment"] = "System not enabled"
             check_result.append(health_status)
@@ -99,12 +100,12 @@ def server_check():
             sms_msg = None
         elif server_info["status"] == "online" and dt_time >= expire_time:
             # 主机下线
-            Util.update_host_status(conn, hostname, "offline")
+            db.update_host_status(conn, hostname, "offline")
             health_status["comment"] = "System offline"
             sms_msg = "异常下线"
         elif server_info["status"] == "offline" and dt_time < expire_time:
             # 主机上线
-            Util.update_host_status(conn, hostname, "online")
+            db.update_host_status(conn, hostname, "online")
             health_status["comment"] = "System online"
             sms_msg = "恢复上线"
         else:
