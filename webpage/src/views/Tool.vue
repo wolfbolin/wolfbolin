@@ -21,6 +21,12 @@
                                         </el-button>
                                     </el-input>
                                 </div>
+                                <div class="login-alert">
+                                    <el-alert title="Token验证成功" type="success"
+                                              v-if="token_res === 'success'"></el-alert>
+                                    <el-alert title="Token验证失败" type="error"
+                                              v-if="token_res === 'error'"></el-alert>
+                                </div>
                             </el-card>
                         </div>
                         <div class="wb-part">
@@ -53,17 +59,12 @@
         name: "Tool",
         data() {
             return {
+                token_res: "none",
                 user_token: this.$store.state.user_token,
                 active_box: null,
                 active_tool: null,
                 active_mod: () => import(`@/components/tools/welcome`),
-                box_list: [
-                    {
-                        "label": "network",
-                        "name": "Network",
-                        "tool_list": [{"label": "dns", "name": "DNS工具", "desc": "功能测试中"}]
-                    }
-                ]
+                box_list: this.$store.state.tool_data
             }
         },
         methods: {
@@ -73,10 +74,14 @@
                 this.$http.get(data_host + `/webpage/check/token?token=${this.user_token}`)
                     .then(function (res) {
                         if (res.data.data === 'Success') {
+                            that.token_res = "success"
                             that.$store.commit("setData", {key: "user_token", val: that.user_token})
+                        } else {
+                            that.token_res = "error"
                         }
                     })
                     .catch(function (res) {
+                        that.token_res = "error"
                         console.log(res);
                     })
             },
@@ -139,6 +144,12 @@
 
         .wb-part {
             margin-bottom: 16px;
+        }
+
+        .wb-login {
+            .login-alert {
+                margin-top: 16px;
+            }
         }
     }
 </style>
