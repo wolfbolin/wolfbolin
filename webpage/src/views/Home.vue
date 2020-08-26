@@ -193,7 +193,7 @@
                 // 设置封面内边距
                 let client_height = document.documentElement.clientHeight;
                 let title_height = this.$refs.cover.clientHeight;
-                let padding = ((client_height - title_height) / 2) - 60;
+                let padding = ((client_height - title_height - 60) / 2);
                 this.cover_padding = `${padding}px 0px`;
             },
             set_gallery_height: function () {
@@ -263,6 +263,7 @@
         text-align: center;
 
         p {
+            margin-top: 0;
             font-size: 2em;
             color: #2E2E2E;
             font-weight: 100;
@@ -275,7 +276,7 @@
             font-size: 6em;
             font-weight: 400;
             line-height: 90px;
-            margin: 30px 0 20px;
+            margin: 30px 0 0 0;
             letter-spacing: 8px;
         }
 

@@ -8,11 +8,18 @@ export default new Vuex.Store({
     state: {
         host: "",
         home_data: Home,
-        blog_data: null
+        blog_data: null,
+        user_token: ""
     },
     mutations: {
-        modify_host(state, host) {
-            state.host = host;
+        setData(state, param) {
+            let val = param.val;
+            if (typeof param.val == "object") {
+                val = JSON.stringify(val);
+            } else if (typeof param.val == "string") {
+                val = `"${val}"`
+            }
+            eval(`state.${param.key}=${val}`);
         }
     },
     actions: {},

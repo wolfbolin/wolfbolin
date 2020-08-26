@@ -5,6 +5,12 @@ from flask import abort
 from flask import current_app as app
 
 
+@Webpage.webpage_blue.route('/check/token', methods=["GET"])
+@Util.verify_token
+def check_token():
+    return Util.common_rsp("Success")
+
+
 @Webpage.webpage_blue.route('/blog/selection', methods=["GET"])
 def blog_data():
     # 读取缓存有效期

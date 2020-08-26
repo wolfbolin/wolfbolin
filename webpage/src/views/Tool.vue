@@ -16,8 +16,9 @@
                                     <span>身份验证</span>
                                 </div>
                                 <div class="login-body">
-                                    <el-input type="password" placeholder="请输入秘钥" clearable>
-                                        <el-button slot="append" type="primary" plain>验证</el-button>
+                                    <el-input type="password" placeholder="请输入秘钥" v-model="user_token" clearable>
+                                        <el-button slot="append" type="primary" @click="check_token" plain>验证
+                                        </el-button>
                                     </el-input>
                                 </div>
                             </el-card>
@@ -52,6 +53,7 @@
         name: "Tool",
         data() {
             return {
+                user_token: this.$store.state.user_token,
                 active_box: null,
                 active_tool: null,
                 active_mod: () => import(`@/components/tools/welcome`),
@@ -65,6 +67,19 @@
             }
         },
         methods: {
+            check_token: function () {
+                let that = this;
+                let data_host = this.$store.state.host;
+                this.$http.get(data_host + `/webpage/check/token?token=${this.user_token}`)
+                    .then(function (res) {
+                        if (res.data.data === 'Success') {
+                            that.$store.commit("setData", {key: "user_token", val: that.user_token})
+                        }
+                    })
+                    .catch(function (res) {
+                        console.log(res);
+                    })
+            },
             open_mod: function (label) {
                 let box_label = this.active_box;
                 let tool_label = this.active_tool;
@@ -85,7 +100,7 @@
                 let tool_label = path_list[3];
                 this.active_box = box_label;
                 this.active_tool = tool_label;
-                if (this.active_tool === "") {
+                if (this.active_tool === undefined || this.active_tool === "") {
                     this.active_mod = () => import(`@/components/tools/welcome`)
                 } else {
                     this.active_mod = () => import(`@/components/tools/${box_label}_${tool_label}`);
