@@ -12,6 +12,11 @@
         "label": "dns",
         "name": "DNS工具*",
         "desc": "域名解析记录批量修改工具"
+      },
+      {
+        "label": "proxy",
+        "name": "Proxy规则*",
+        "desc": "私有代理网络路由配置面板"
       }
     ]
   }

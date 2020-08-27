@@ -1,7 +1,6 @@
 # coding=utf-8
 import json
 import Util
-import queue
 import Network
 import DNSPodX
 from flask import abort
@@ -113,10 +112,10 @@ def get_domain_record(domain):
 
 @Network.network_blue.route('/dns/domain/<domain>/record', methods=["PUT"])
 @Util.verify_token
-def update_domain_record(domain):
+def set_domain_record(domain):
     # 解析列表数据
-    record_task = request.get_data(as_text=True)
-    record_task = json.loads(record_task)
+    commit_record_list = request.get_data(as_text=True)
+    commit_record_list = json.loads(commit_record_list)
 
     # 读取现有记录
     dns_id = app.config.get('DNSPOD')['id']
@@ -135,40 +134,40 @@ def update_domain_record(domain):
 
         app.logger.debug("compare host record")
         app.logger.debug("{}\t{}".format(record.r_id, record.name))
-        app.logger.debug("{}\t{}".format(record_task[it]["id"], record_task[it]["record"]))
+        app.logger.debug("{}\t{}".format(commit_record_list[it]["id"], commit_record_list[it]["record"]))
 
         # 处理记录移位
-        if record.r_id != record_task[it]["id"]:
+        if record.r_id != commit_record_list[it]["id"]:
             record.remove()
             app.logger.info("[DNS]排序删除{}.{}".format(record.name, record.domain.name))
             continue
 
         # 根据反馈修改
-        if record_task[it]["edit"] == "none":
+        if commit_record_list[it]["edit"] == "none":
             it += 1
             continue
 
-        if record_task[it]["edit"] == "deleted":
+        if commit_record_list[it]["edit"] == "deleted":
             record.remove()
             app.logger.info("[DNS]标记删除{}.{}".format(record.name, record.domain.name))
             it += 1
             continue
 
-        if record_task[it]["edit"] == "edited":
-            record.name = record_task[it]["record"]
-            record.r_type = record_task[it]["type"]
-            record.value = record_task[it]["value"]
+        if commit_record_list[it]["edit"] == "edited":
+            record.name = commit_record_list[it]["record"]
+            record.r_type = commit_record_list[it]["type"]
+            record.value = commit_record_list[it]["value"]
             app.logger.info("[DNS]标记修改{}.{}".format(record.name, record.domain.name))
             it += 1
             continue
 
-    for it in range(it, len(record_task)):
-        if record_task[it]['edit'] == "deleted":
-            app.logger.info("[DNS]排除添加{}.{}".format(record_task[it]['record'], domain.name))
+    for it in range(it, len(commit_record_list)):
+        if commit_record_list[it]['edit'] == "deleted":
+            app.logger.info("[DNS]排除添加{}.{}".format(commit_record_list[it]['record'], domain.name))
             continue
-        app.logger.info("[DNS]添加解析{}.{}".format(record_task[it]['record'], domain.name))
-        record = DNSPodX.Record(user, domain, record_task[it]['record'], record_task[it]['type'],
-                                record_task[it]['value'], "默认", 600, 0, "enabled")
+        app.logger.info("[DNS]添加解析{}.{}".format(commit_record_list[it]['record'], domain.name))
+        record = DNSPodX.Record(user, domain, commit_record_list[it]['record'], commit_record_list[it]['type'],
+                                commit_record_list[it]['value'], "默认", 600, 0, "enabled")
         record.create()
 
     # 刷新DNS解析缓存

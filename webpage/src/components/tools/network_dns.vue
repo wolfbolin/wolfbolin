@@ -96,7 +96,7 @@
                 <div slot="footer" class="dialog-footer">
                     <el-button type="primary" @click="confirm_edit">确 定</el-button>
                     <el-button type="success" @click="cancel_edit">取 消</el-button>
-                    <el-button type="warning" @click="rollback_record" v-if="edit_index !== -1">回 滚</el-button>
+                    <el-button type="warning" @click="rollback_edit" v-if="edit_index !== -1">回 滚</el-button>
                     <el-button type="danger" @click="delete_record"
                                v-if="edit_index !== -1 && edit_data.edit !== 'deleted'">删 除
                     </el-button>
@@ -134,9 +134,13 @@
             }
         },
         methods: {
-            check_token: function(){
+            check_token: function () {
                 this.user_token = this.$store.state.user_token;
-                this.switch_host("refresh");
+                if (this.user_token.length === 0) {
+                    this.$message.error("请先完成用户Token验证")
+                } else {
+                    this.switch_host("refresh");
+                }
             },
             handle_tab_click: function (tab) {
                 if (tab.name === "refresh-force") {
@@ -180,6 +184,7 @@
                             console.log("记录数据源", res.data.data["source"]);
                             that.data_version_info = res.data.data["source"];
                             that.record_list = res.data.data["record_list"];
+                            that.$message('数据已刷新');
 
                             // 重建数据索引
                             that.original_data = {}
@@ -232,7 +237,7 @@
                     this.record_list[this.edit_index][key] = this.edit_mirror[key];
                 }
             },
-            rollback_record: function () {
+            rollback_edit: function () {
                 if (this.edit_index === -1) {
                     return;
                 }
@@ -287,6 +292,10 @@
                             console.log("记录数据源", res.data.data["source"]);
                             that.data_version_info = res.data.data["source"];
                             that.record_list = res.data.data["record_list"];
+                            that.$message({
+                                message: '数据更新成功',
+                                type: 'success'
+                            });
 
                             // 重建数据索引
                             that.original_data = {}
@@ -325,7 +334,7 @@
             },
             row_class: function ({row}) {
                 if (row.record === "www") {
-                    return "split_line"
+                    return "split-line"
                 }
 
                 if (row["edit"] === "deleted") {
@@ -370,7 +379,7 @@
             }
         },
         mounted() {
-            this.switch_host("refresh");
+            this.check_token()
         }
     }
 </script>
@@ -407,7 +416,7 @@
         }
     }
 
-    .el-table .split_line {
+    .el-table .split-line {
         background: #f4f4f5;
     }
 

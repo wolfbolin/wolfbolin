@@ -78,10 +78,12 @@
                             that.$store.commit("setData", {key: "user_token", val: that.user_token})
                         } else {
                             that.token_res = "error"
+                            that.$store.commit("setData", {key: "user_token", val: ""})
                         }
                     })
                     .catch(function (res) {
                         that.token_res = "error"
+                        that.$store.commit("setData", {key: "user_token", val: ""})
                         console.log(res);
                     })
             },
