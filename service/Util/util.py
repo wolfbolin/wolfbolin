@@ -42,7 +42,7 @@ def verify_token(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         t = str(request.args.get('token', 'guest'))
-        app.logger.info("正在验证Token：{}".format(t))
+        app.logger.info("正在验证Token：{} @ {}".format(t,request.url))
 
         conn = current_app.mysql_pool.connection()
         token = db.get_app_pair(conn, "auth", "token")
