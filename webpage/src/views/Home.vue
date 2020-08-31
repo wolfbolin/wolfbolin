@@ -1,6 +1,6 @@
 <template>
     <div class="wb-home">
-        <section class="wb-cover" :style="{padding: coverPadding}">
+        <section class="wb-cover" :style="{padding: cover_padding}">
             <div ref="cover" class="inner">
                 <p>嗜之越笃 技巧越工</p>
                 <h1>WolfBolin</h1>
@@ -180,7 +180,7 @@
         name: 'Home',
         data() {
             return {
-                coverPadding: '',
+                cover_padding: '',
                 galleryHeight: '',
                 auto_timeline: '',
                 auto_timeline_item: '',
@@ -191,10 +191,10 @@
         methods: {
             set_cover_padding: function () {
                 // 设置封面内边距
-                let clientHeight = document.documentElement.clientHeight;
-                let titleHeight = this.$refs.cover.clientHeight;
-                let padding = ((clientHeight - titleHeight) / 2);
-                this.coverPadding = `${padding}px 0px`;
+                let client_height = document.documentElement.clientHeight;
+                let title_height = this.$refs.cover.clientHeight;
+                let padding = ((client_height - title_height - 60) / 2);
+                this.cover_padding = `${padding}px 0px`;
             },
             set_gallery_height: function () {
                 let imageWidth = this.$refs.gallery.$el.clientWidth;
@@ -202,14 +202,14 @@
                 this.galleryHeight = `${imageHeight}px`;
             },
             set_timeline_width: function () {
-                let boxWidth = this.$refs.timeline.clientWidth;
-                if (boxWidth > 960) {
-                    boxWidth = 960;
+                let box_width = this.$refs.timeline.clientWidth;
+                if (box_width > 960) {
+                    box_width = 960;
                 }
-                if (boxWidth >= 768) {
-                    let itemWidth = boxWidth / 2 - 30;
-                    this.auto_timeline = `width: ${boxWidth}px`;
-                    this.auto_timeline_item = `width: ${itemWidth}px`;
+                if (box_width >= 768) {
+                    let item_width = box_width / 2 - 30;
+                    this.auto_timeline = `width: ${box_width}px`;
+                    this.auto_timeline_item = `width: ${item_width}px`;
                 } else {
                     this.auto_timeline = "";
                     this.auto_timeline_item = "";
@@ -220,20 +220,16 @@
                     return 0;
                 }
                 let that = this;
-                let host = this.$store.state.host;
-                this.$http.get(host + '/webpage/blog_selection')
+                let data_host = this.$store.state.host;
+                this.$http.get(data_host + '/webpage/blog/selection')
                     .then(function (res) {
                         if (res.data.status === 'OK') {
                             console.log("博客数据源", res.data.data["source"]);
                             that.blog_data = res.data.data["rss_info"];
-                            that.$store.state.blog_data = res.data.data;
-                        } else {
-                            that.$store.state.blog_data = null;
                         }
                     })
                     .catch(function (res) {
                         console.log(res);
-                        that.$store.state.blog_data = null;
                     })
             },
         },
@@ -267,6 +263,7 @@
         text-align: center;
 
         p {
+            margin-top: 0;
             font-size: 2em;
             color: #2E2E2E;
             font-weight: 100;
@@ -279,7 +276,7 @@
             font-size: 6em;
             font-weight: 400;
             line-height: 90px;
-            margin: 30px 0 20px;
+            margin: 30px 0 0 0;
             letter-spacing: 8px;
         }
 

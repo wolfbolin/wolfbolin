@@ -109,5 +109,6 @@ if __name__ != '__main__':
     app.logger.setLevel(gunicorn_logger.level)
 
 if __name__ == '__main__':
+    app.logger.setLevel(logging.DEBUG)
     app.run(host='127.0.0.1', port=12880, debug=True)
     exit()

@@ -1,0 +1,23 @@
+[
+  {
+    "label": "network",
+    "name": "Network",
+    "tool_list": [
+      {
+        "label": "ip",
+        "name": "IP查询",
+        "desc": "用户本机当前IP信息查询"
+      },
+      {
+        "label": "dns",
+        "name": "DNS工具*",
+        "desc": "域名解析记录批量修改工具"
+      },
+      {
+        "label": "proxy",
+        "name": "Proxy规则*",
+        "desc": "私有代理网络路由配置面板"
+      }
+    ]
+  }
+]

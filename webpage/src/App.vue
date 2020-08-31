@@ -17,7 +17,9 @@
         </header>
 
         <!-- 页面内容 -->
-        <router-view/>
+        <div class="wb-view">
+            <router-view/>
+        </div>
 
         <!-- 祖传页脚 -->
         <footer class="wb-footer">
@@ -44,7 +46,7 @@
                 nav_list: [
                     {"id": "index", "href": "/", "label": "主页", "class": ""},
                     // {"id": "note", "href": "/note", "label": "笔记", "class": ""},
-                    // {"id": "blog", "href": "/blog", "label": "博客", "class": ""},
+                    // {"id": "blog", "href": "http://blog.wolfbolin.com", "label": "博客", "class": ""},
                     // {"id": "album", "href": "/album", "label": "相册", "class": ""},
                     {"id": "tools", "href": "/tools", "label": "工具", "class": ""}
                 ],
@@ -53,14 +55,21 @@
         methods: {
             app_init: function () {
                 console.log(
-                    " __          __   _  __ ____        _ _  \n" +
-                    " \\ \\        / /  | |/ _|  _ \\      | (_)  \n" +
-                    "  \\ \\  /\\  / /__ | | |_| |_) | ___ | |_ _ __  \n" +
-                    "   \\ \\/  \\/ / _ \\| |  _|  _ < / _ \\| | | '_ \\  \n" +
-                    "    \\  /\\  / (_) | | | | |_) | (_) | | | | | |  \n" +
-                    "     \\/  \\/ \\___/|_|_| |____/ \\___/|_|_|_| |_|  \n" +
-                    "=================================================");
-                console.log("Designed by WolfBolin ~ \nContact me at: mailto@wolfbolin.com");
+                    `%c Designed by %c WolfBolin %c`,
+                    'background:#35495e ; padding: 1px; border-radius: 3px 0 0 3px;  color: #fff',
+                    'background:#41b883 ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff',
+                    'background:transparent'
+                )
+                console.log("Contact: mailto@wolfbolin.com");
+                // 确定后台服务地址
+                if (window.location.host.indexOf("localhost") !== -1) {
+                    this.$store.commit("setData", {key: "host", val: "http://127.0.0.1:12880"})
+                } else if (window.location.host.indexOf("127.0.0.1") !== -1) {
+                    this.$store.commit("setData", {key: "host", val: "http://127.0.0.1:12880"})
+                } else {
+                    this.$store.commit("setData", {key: "host", val: "https://core.wolfbolin.com"})
+                }
+                console.log("Server location:", this.$store.state.host);
                 // 设置激活导航栏
                 this.set_active_nav()
                 let clientWidth = document.documentElement.clientWidth;
@@ -71,7 +80,7 @@
                 }
             },
             switch_page: function (path) {
-                console.log("switch_page:", path);
+                console.log("Switch page:", path);
                 if (this.$route.path !== path) {
                     this.$router.push(path);
                 }
@@ -94,7 +103,7 @@
                 this.switch_page(to);
             }
         },
-        mounted: function () {
+        created: function () {
             this.app_init();
         }
     }
@@ -168,6 +177,10 @@
         }
 
 
+    }
+
+    .wb-view {
+        padding-top: 60px;
     }
 
     .wb-footer {
