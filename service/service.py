@@ -78,7 +78,7 @@ def hello_world():
 
 @app.route('/debug/sentry')
 def sentry_debug():
-    app.logger.info("[DEBUG]Test sentry: {}".format(1 / 0), tag="DEBUG")
+    app.logger.info("[DEBUG]Test sentry: {}".format(1 / 0))
     return Util.common_rsp("DEBUG")
 
 
