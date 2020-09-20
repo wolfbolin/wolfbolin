@@ -63,6 +63,7 @@ def server_report_location():
 
 
 @Monitor.monitor_blue.route("/server/check", methods=["GET"])
+@Util.verify_token
 def server_check():
     # 本地数据校验
     client_ip = request.headers.get("X-Real-IP", "0.0.0.0")
