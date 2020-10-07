@@ -3,14 +3,15 @@ import Util
 import requests
 import feedparser
 from bs4 import BeautifulSoup
+from flask import current_app as app
 
 
 def fetch_blog_feed(rss_url):
     try:
-        Util.print_purple("GET => {}".format(rss_url), tag="RPC")
+        app.logger.info("[RPC]GET => {}".format(rss_url))
         http_result = requests.get(url=rss_url, timeout=10)
     except requests.exceptions.ConnectTimeout as e:
-        Util.print_purple("Connect rss failed => {}".format(e), tag="RPC")
+        app.logger.error("[RPC]Connect rss failed => {}".format(e))
         return None
     if http_result.status_code == 200:
         return http_result.text

@@ -42,7 +42,6 @@ def verify_token(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         t = str(request.args.get('token', 'guest'))
-        app.logger.info("正在验证Token：{} @ {}".format(t,request.url))
 
         conn = current_app.mysql_pool.connection()
         token = db.get_app_pair(conn, "auth", "token")
@@ -51,6 +50,7 @@ def verify_token(func):
 
         md5_code = Util.calc_md5(t)
         if md5_code != token:
+            app.logger.warning("Token错误：{} @ {}".format(t, request.url))
             abort(403, "Token error")
 
         return func(*args, **kwargs)

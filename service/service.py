@@ -6,6 +6,7 @@ import logging
 import sentry_sdk
 import pymemobird
 from flask import Flask
+from flask import request
 from flask_cors import CORS
 from Config import get_config
 from DBUtils.PooledDB import PooledDB
@@ -77,13 +78,13 @@ def hello_world():
 
 @app.route('/debug/sentry')
 def sentry_debug():
-    Util.print_red("Test sentry: {}".format(1 / 0), tag="DEBUG")
+    app.logger.info("[DEBUG]Test sentry: {}".format(1 / 0))
     return Util.common_rsp("DEBUG")
 
 
 @app.errorhandler(400)
 def http_forbidden(msg):
-    Util.print_red("{}: <HTTP 400> {}".format(Util.str_time(), msg))
+    app.logger.warning("{}: <HTTP 400> {}".format(request.url, msg))
     return Util.common_rsp("Bad Request", status='Bad Request')
 
 
@@ -99,7 +100,7 @@ def http_not_found(msg):
 
 @app.errorhandler(500)
 def service_error(msg):
-    Util.print_red("{}: <HTTP 500> {}".format(Util.str_time(), msg))
+    app.logger.error("{}: <HTTP 400> {}".format(request.url, msg))
     return Util.common_rsp(str(msg)[15:], status='Internal Server Error')
 
 

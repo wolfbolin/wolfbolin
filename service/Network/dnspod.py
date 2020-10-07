@@ -126,7 +126,7 @@ def set_domain_record(domain):
     record_list.sort(key=lambda r: int(r.r_id))
 
     # 比对与修改数据
-    it = 0
+    it = 0  # 原始数据列表指针
     for record in record_list:
         # 跳过NS记录
         if record.r_type in ("NS", "MX"):
@@ -142,24 +142,26 @@ def set_domain_record(domain):
             app.logger.info("[DNS]排序删除{}.{}".format(record.name, record.domain.name))
             continue
 
-        # 根据反馈修改
-        if commit_record_list[it]["edit"] == "none":
-            it += 1
-            continue
-
+        # 根据反馈删除记录
         if commit_record_list[it]["edit"] == "deleted":
             record.remove()
             app.logger.info("[DNS]标记删除{}.{}".format(record.name, record.domain.name))
             it += 1
             continue
 
-        if commit_record_list[it]["edit"] == "edited":
+        # 对比内容以修改
+        if commit_record_list[it]["record"] != record.name \
+                or commit_record_list[it]["value"] != record.value \
+                or commit_record_list[it]["type"] != record.r_type:
             record.name = commit_record_list[it]["record"]
             record.r_type = commit_record_list[it]["type"]
             record.value = commit_record_list[it]["value"]
+            record.modify()
             app.logger.info("[DNS]标记修改{}.{}".format(record.name, record.domain.name))
             it += 1
             continue
+
+        it += 1  # 无变化跳过
 
     for it in range(it, len(commit_record_list)):
         if commit_record_list[it]['edit'] == "deleted":

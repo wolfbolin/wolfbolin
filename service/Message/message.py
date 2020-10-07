@@ -5,23 +5,22 @@ import pymemobird
 from flask import request
 from flask import current_app as app
 
-g_push_message_key = {"app", "user", "text"}
-g_send_message_key = {"phone", "template", "params"}
+g_printer_message_key = {"app", "user", "text"}
+g_sugar_message_key = {"user", "title", "text"}
+g_sms_message_key = {"phone", "template", "params"}
 
 
 @Message.message_blue.route("/printer/text", methods=["POST"])
+@Util.req_check_json_key(g_printer_message_key)
 def printer_text_message():
     message_info = request.get_json()
 
-    if message_info is None or set(message_info.keys()) != g_push_message_key:
-        return Util.common_rsp("Reject request", status="Forbidden")
-
-    app = message_info["app"]
+    name = message_info["app"]
     user = message_info["user"]
     text = message_info["text"]
     format_time = Util.str_time()
     content = "================================\n\n"  # 32
-    content += "应用：{}\n".format(app)
+    content += "应用：{}\n".format(name)
     content += "来源：{}\n".format(user)
     content += "时间：{}\n".format(format_time)
     content += "--------------------------------\n\n"  # 32
@@ -42,12 +41,24 @@ def printer_text_message():
     return Util.common_rsp("Send print message success: [{}]".format(paper.paper_id))
 
 
-@Message.message_blue.route("/sms/text", methods=["POST"])
-def sms_message_push():
+@Message.message_blue.route("/sugar/text", methods=["POST"])
+@Util.req_check_json_key(g_sugar_message_key)
+def sugar_message_push():
     message_info = request.get_json()
 
-    if message_info is None or set(message_info.keys()) != g_push_message_key:
-        return Util.common_rsp("Reject request", status="Forbidden")
+    user = message_info["user"]
+    title = message_info["title"]
+    text = message_info["text"]
+
+    res = Util.send_sugar_message(app.config, user, title, text)
+
+    return Util.common_rsp(res)
+
+
+@Message.message_blue.route("/sms/text", methods=["POST"])
+@Util.req_check_json_key(g_printer_message_key)
+def sms_message_push():
+    message_info = request.get_json()
 
     sms_arg = {
         "phone_numbers": [app.config["PHONE"]["wolfbolin"]],
@@ -64,11 +75,9 @@ def sms_message_push():
 
 
 @Message.message_blue.route("/sms/send/<phone>", methods=["POST"])
+@Util.req_check_json_key(g_sms_message_key)
 def sms_message_send(phone):
     message_info = request.get_json()
-
-    if message_info is None or set(message_info.keys()) != g_send_message_key:
-        return Util.common_rsp("Reject json key", status="Forbidden")
 
     if phone is None or str(phone) != str(message_info["phone"]) or len(phone) != 11:
         return Util.common_rsp("Reject phone number", status="Forbidden")
