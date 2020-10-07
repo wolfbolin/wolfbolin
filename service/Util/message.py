@@ -1,5 +1,7 @@
 # coding=utf-8
 import Util
+import json
+import requests
 from flask import current_app as app
 from qcloudsms_py.httpclient import HTTPError
 
@@ -32,3 +34,25 @@ def message_log(conn, phone, template, params):
     sql = "INSERT INTO `message`(`phone`,`template`,`params`,`unix_time`,`local_time`)VALUES(%s,%s,%s,%s,%s)"
     cursor.execute(query=sql, args=[str(phone), str(template), str(params), Util.unix_time(), Util.str_time()])
     conn.commit()
+
+
+def send_sugar_message(config, user, title, text):
+    format_time = Util.str_time()
+    content = "----\n\n"  # 32
+    content += "标题：{}\n\n".format(title)
+    content += "来源：{}\n\n".format(user)
+    content += "时间：{}\n\n".format(format_time)
+    content += "----\n\n"
+    content += "{}\n\n".format(text)
+    content += "----\n\n"
+
+    token = config["SUGAR"][user]
+    url = "https://sc.ftqq.com/{}.send".format(token)
+    params = {
+        "text": title,
+        "desp": content
+    }
+    res = requests.get(url, params=params)
+    res = json.loads(res.text)
+
+    return res

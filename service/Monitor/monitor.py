@@ -96,40 +96,41 @@ def server_check():
         if server_info["status"] == "online" and dt_time < expire_time:
             # 保持在线
             health_status["comment"] = "System keeps online"
-            sms_msg = None
+            msg_text = None
         elif server_info["status"] == "offline" and dt_time >= expire_time:
             # 保持下线
             health_status["comment"] = "System remains offline"
-            sms_msg = None
+            msg_text = None
         elif server_info["status"] == "online" and dt_time >= expire_time:
             # 主机下线
             db.update_host_status(conn, hostname, "offline")
             health_status["comment"] = "System offline"
-            sms_msg = "异常下线"
+            msg_text = "异常下线"
         elif server_info["status"] == "offline" and dt_time < expire_time:
             # 主机上线
             db.update_host_status(conn, hostname, "online")
             health_status["comment"] = "System online"
-            sms_msg = "恢复上线"
+            msg_text = "恢复上线"
         else:
             app.logger.info("未知状况：status:{},dt_time:{}".format(server_info["status"], dt_time))
             health_status["comment"] = "System unknown status"
-            sms_msg = None
+            msg_text = None
 
-        if sms_msg is not None:
+        if msg_text is not None:
             msg_format = "发送提醒：主机{}状态变更[{}]：active_time: {} <=> time_now: {}"
             active_time = Util.unix2timestamp(int(server_info["active_time"]))
             timestamp_now = Util.unix2timestamp(time_now)
-            app.logger.info(msg_format.format(hostname, sms_msg, active_time, timestamp_now))
+            app.logger.info(msg_format.format(hostname, msg_text, active_time, timestamp_now))
 
-            # 发送短信
-            sms_arg = {
-                "phone_numbers": json.loads(server_info["manager"]),
-                "template": app.config["SMS"]["server_alarm"],
-                "params": [server_domain[hostname], Util.str_time("%H:%M:%S", time_now), sms_msg]
-            }
-            _, sms_msg = Util.send_sms_message(conn, **sms_arg)
-            health_status["sms_res"] = sms_msg
+            # 发送提示
+            user_list = json.loads(server_info["manager"])
+            title = "{}主机{}".format(server_domain[hostname], msg_text)
+            text = "你的设备【{}】服务状态发生变化\n\n设备当前【{}】请及时检查主机状态" \
+                .format(server_domain[hostname], msg_text)
+            health_status["msg_res"] = []
+            for user in user_list:
+                msg_res = Util.send_sugar_message(app.config, user, title, text)
+                health_status["msg_res"].append(msg_res)
 
         check_result.append(health_status)
 
