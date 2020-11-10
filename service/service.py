@@ -69,6 +69,7 @@ app.register_blueprint(webpage_blue, url_prefix='/webpage')
 app.register_blueprint(network_blue, url_prefix='/network')
 app.register_blueprint(message_blue, url_prefix='/message')
 app.register_blueprint(monitor_blue, url_prefix='/monitor')
+app.register_blueprint(payment_blue, url_prefix='/payment')
 CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
 
 
