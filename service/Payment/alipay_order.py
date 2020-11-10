@@ -11,6 +11,11 @@ from flask import current_app as app
 
 g_trade_query_key = {"app", "order_str"}
 g_trade_status_index = {
+    "NOT_EXIST": "NOT_EXIST",
+    "WAITING": "WAITING",
+    "SUCCESS": "SUCCESS",
+    "FINISHED": "FINISHED",
+    "CLOSED": "CLOSED",
     "WAIT_BUYER_PAY": "WAITING",
     "TRADE_SUCCESS": "SUCCESS",
     "TRADE_FINISHED": "FINISHED",
@@ -19,28 +24,38 @@ g_trade_status_index = {
 
 
 @Payment.payment_blue.route('/alipay/notify', methods=["POST"])
-@Util.verify_token("alipay")
 def trade_notify():
-    notify_data = dict(request.args)
-    # 验证请求参数
-    if "sign" not in notify_data.keys():
-        return "Who are you?"
+    # 获取请求参数
+    notify_data = dict(request.form)
+
+    # 记录请求日志
     conn = app.mysql_pool.connection()
     log_id = db.write_pay_log(conn, "00000", "alipay.notify", json.dumps(notify_data, ensure_ascii=False))
-    Util.print_purple("Trade notify receive:[LOG:%s]" % log_id)
 
     # 整理验签数据
-    sign = notify_data["notify_data"]
-    notify_data.pop("sign_type")
-    notify_data = dict(sorted(notify_data.items()))
-    sign_str = "&".join(["{}={}".format(key, val) for key, val in notify_data.items()])
+    sign_data = {}
+    sign = notify_data["sign"]
+    for key, val in notify_data.items():
+        if key not in ["sign", "sign_type"] and len(val.strip()) != 0:
+            sign_data[key] = val
+    sign_data = dict(sorted(sign_data.items()))
+    sign_str = "&".join(["{}={}".format(key, val) for key, val in sign_data.items()])
     try:
-        verify_with_rsa2(sign_str, sign)
+        if notify_data["app_id"] == app.config["ALIPAY"]["test"]:
+            verify_with_rsa2(sign_str, sign, "Config/dev-alipay.pub")
+        else:
+            verify_with_rsa2(sign_str, sign, "Config/alipay.pub")
     except rsa.pkcs1.VerificationError:
         Util.print_red("rsa.pkcs1.VerificationError:[LOG:%s]" % log_id)
-        return "WA:Sign", None
+        return abort(400, "Error sign value")
 
-    return "OK"
+    # 修改订单状态
+    order_id = notify_data["out_trade_no"].replace("Bill-", "")
+    db.update_trade_status(conn, order_id, g_trade_status_index[notify_data["trade_status"]])
+    db.update_trade_info(conn, order_id, notify_data["buyer_logon_id"], notify_data["trade_no"])
+    Util.print_purple("Alipay trade notify: %s [LOG:%s]" % (notify_data["trade_status"], log_id))
+
+    return "Success"
 
 
 @Payment.payment_blue.route('/alipay', methods=["GET"])
@@ -51,22 +66,30 @@ def trade_query():
     trade_info = request.get_json()
     if trade_info["app"] not in app.config["ALIPAY"].keys():
         return abort(400, "Error app name")
+
+    # 查询本地数据
     conn = app.mysql_pool.connection()
+    order_str = trade_info["order_str"]
+    order_id = order_str.replace("Bill-", "")
+    status = db.read_trade_status(conn, order_id)
+    if status in ["SUCCESS", "FINISHED", "CLOSED"]:
+        return Util.common_rsp({
+            "order_str": order_str,
+            "order_status": status
+        })
 
     # 查询订单状态
-    order_str = trade_info["order_str"]
     res, data = alipay_query(conn, order_str, trade_info["app"])
     if res.split(":")[0] == "WA":
         return abort(500, "Service {} Error".format(res.split(":")[1]))
 
     # 修改订单状态
-    order_id = order_str.replace("Bill-", "")
-    db.update_trade_status(conn, order_id, g_trade_status_index[data[2]])
-    db.update_trade_info(conn, order_id, data[0], data[1])
+    db.update_trade_status(conn, order_id, g_trade_status_index[data[0]])
+    db.update_trade_info(conn, order_id, data[1], data[2])
 
     return Util.common_rsp({
         "order_str": order_str,
-        "order_status": g_trade_status_index[data[2]]
+        "order_status": g_trade_status_index[data[0]]
     })
 
 
@@ -74,10 +97,10 @@ def alipay_query(conn, order_str, app_name):
     app_id = app.config["ALIPAY"][app_name]
     # 组装请求数据
     if app_name == "test":
-        alipay_key_path = "config/dev-alipay.pub"
+        alipay_key_path = "Config/dev-alipay.pub"
         url = "https://openapi.alipaydev.com/gateway.do"
     else:
-        alipay_key_path = "config/alipay.pub"
+        alipay_key_path = "Config/alipay.pub"
         url = "https://openapi.alipay.com/gateway.do"
     params = {
         "app_id": app_id,
@@ -118,7 +141,10 @@ def alipay_query(conn, order_str, app_name):
     response = json.loads(res.text)
     data = response["alipay_trade_query_response"]
     log_id = db.write_pay_log(conn, data["code"], data["msg"], res.text)
-    Util.print_purple("Trade precreate success:[LOG:%s]" % log_id)
+    Util.print_purple("Alipay trade precreate: success [LOG:%s]" % log_id)
+
+    if data["code"] == "40004" and data["sub_code"] == "ACQ.TRADE_NOT_EXIST":
+        return "AC:Waiting", ("NOT_EXIST", "", "")
 
     if data["code"] != "10000":
         return "WA:Alipay", None
@@ -133,4 +159,4 @@ def alipay_query(conn, order_str, app_name):
         Util.print_red("rsa.pkcs1.VerificationError:[LOG:%s]" % log_id)
         return "WA:Sign", None
 
-    return "AC:Success", (data["buyer_logon_id"], data["trade_no"], data["trade_status"])
+    return "AC:Success", (data["trade_status"], data["buyer_logon_id"], data["trade_no"])

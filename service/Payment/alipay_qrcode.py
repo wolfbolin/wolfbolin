@@ -52,17 +52,17 @@ def alipay_precreate(conn, order_str, app_name, subject, volume):
     app_id = app.config["ALIPAY"][app_name]
     # 组装请求数据
     if app_name == "test":
-        alipay_key_path = "config/dev-alipay.pub"
+        alipay_key_path = "Config/dev-alipay.pub"
         url = "https://openapi.alipaydev.com/gateway.do"
     else:
-        alipay_key_path = "config/alipay.pub"
+        alipay_key_path = "Config/alipay.pub"
         url = "https://openapi.alipay.com/gateway.do"
     params = {
         "app_id": app_id,
         "biz_content": "",
         "charset": "utf-8",
         "method": "alipay.trade.precreate",
-        "notify_url": "https://core.wolfbolin.com",
+        "notify_url": app.config["ALIPAY"]["notify"],
         "sign_type": "RSA2",
         "timestamp": Util.str_time(),
         "version": "1.0",
@@ -100,7 +100,7 @@ def alipay_precreate(conn, order_str, app_name, subject, volume):
     response = json.loads(res.text)
     data = response["alipay_trade_precreate_response"]
     log_id = db.write_pay_log(conn, data["code"], data["msg"], res.text)
-    Util.print_purple("Trade precreate success:[LOG:%s]" % log_id)
+    Util.print_purple("Alipay trade precreate: success [LOG:%s]" % log_id)
 
     if data["code"] != "10000":
         return "WA:Alipay", None
