@@ -6,7 +6,7 @@ from flask import current_app as app
 
 
 @Webpage.webpage_blue.route('/check/token', methods=["GET"])
-@Util.verify_token
+@Util.verify_token()
 def check_token():
     return Util.common_rsp("Success")
 

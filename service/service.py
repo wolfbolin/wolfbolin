@@ -9,7 +9,7 @@ from flask import Flask
 from flask import request
 from flask_cors import CORS
 from Config import get_config
-from DBUtils.PooledDB import PooledDB
+from dbutils.pooled_db import PooledDB
 from qcloudsms_py import SmsMultiSender
 from sentry_sdk.integrations.flask import FlaskIntegration
 
@@ -17,6 +17,7 @@ from Webpage import webpage_blue
 from Network import network_blue
 from Message import message_blue
 from Monitor import monitor_blue
+from Payment import payment_blue
 
 # 获取配置
 app_config = get_config()

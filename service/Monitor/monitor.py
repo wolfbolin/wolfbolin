@@ -15,7 +15,7 @@ g_server_heartbeat_key = {"hostname", "unix_time", "boot_time"}
 @Util.req_check_json_key(g_server_heartbeat_key)
 @Util.req_check_hostname
 @Util.req_check_unixtime
-@Util.verify_token
+@Util.verify_token()
 def server_report_heartbeat():
     time_now = Util.unix_time()
     server_info = request.get_json()
@@ -38,7 +38,7 @@ def server_report_heartbeat():
 @Util.req_check_json_key(g_server_location_key)
 @Util.req_check_hostname
 @Util.req_check_unixtime
-@Util.verify_token
+@Util.verify_token()
 def server_report_location():
     server_info = request.get_json()
     conn = app.mysql_pool.connection()
@@ -63,7 +63,7 @@ def server_report_location():
 
 
 @Monitor.monitor_blue.route("/server/check", methods=["GET"])
-@Util.verify_token
+@Util.verify_token()
 def server_check():
     # 本地数据校验
     client_ip = request.headers.get("X-Real-IP", "0.0.0.0")

@@ -16,7 +16,7 @@ remove_keyword = ["Sakura", "KDDI", "IDCF", "Netflix", "HKT", "TVB", "HBO", "CN2
 
 
 @Network.network_blue.route('/proxy/rule', methods=["GET"])
-@Util.verify_token
+@Util.verify_token()
 def get_proxy_rule():
     # 读取代理规则列表
     conn = app.mysql_pool.connection()
@@ -26,7 +26,7 @@ def get_proxy_rule():
 
 
 @Network.network_blue.route('/proxy/rule', methods=["PUT"])
-@Util.verify_token
+@Util.verify_token()
 def set_proxy_rule():
     # 解析列表数据
     rule_list = request.get_data(as_text=True)
@@ -41,7 +41,7 @@ def set_proxy_rule():
 
 
 @Network.network_blue.route('/proxy/clash', methods=["GET"])
-@Util.verify_token
+@Util.verify_token()
 def proxy_clash():
     # 下载网络接口
     api_url = app.config["CLASH"]['api']

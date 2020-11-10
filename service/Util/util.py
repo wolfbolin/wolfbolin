@@ -38,24 +38,27 @@ def common_rsp(data, status='OK'):
         })
 
 
-def verify_token(func):
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        t = str(request.args.get('token', 'guest'))
+def verify_token(level="common"):
+    def deco(func):
+        @functools.wraps(func)
+        def check_user_token(*args, **kwargs):
+            t = str(request.args.get('token', 'guest'))
 
-        conn = current_app.mysql_pool.connection()
-        token = db.get_app_pair(conn, "auth", "token")
-        if token is None:
-            abort(400, "Not found token")
+            conn = current_app.mysql_pool.connection()
+            token = db.get_app_pair(conn, "auth", "token-{}".format(level))
+            if token is None:
+                abort(400, "Not found token")
 
-        md5_code = Util.calc_md5(t)
-        if md5_code != token:
-            app.logger.warning("Token错误：{} @ {}".format(t, request.url))
-            abort(403, "Token error")
+            md5_code = Util.calc_md5(t)
+            if md5_code != token:
+                app.logger.warning("Token错误：{} @ {}".format(t, request.url))
+                abort(403, "Token error")
 
-        return func(*args, **kwargs)
+            return func(*args, **kwargs)
 
-    return wrapper
+        return check_user_token
+
+    return deco
 
 
 def req_check_json_key(key_list):
