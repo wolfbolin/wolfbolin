@@ -2,6 +2,17 @@
 import pymysql
 
 
+def read_trade_info(conn, order_id):
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
+    sql = "SELECT * FROM `payment` WHERE `id`=%s"
+    cursor.execute(sql, args=[order_id])
+    res = cursor.fetchone()
+    if res is None:
+        return {}
+    else:
+        return res
+
+
 def read_trade_status(conn, order_id):
     cursor = conn.cursor()
     sql = "SELECT `status` FROM `payment` WHERE `id`=%s"

@@ -70,6 +70,18 @@ def trade_notify():
     db.update_trade_info(conn, order_id, trade_status, notify_data["seller_email"], notify_data["trade_no"])
     Kit.print_purple("Alipay trade notify: %s [LOG:%s]" % (notify_data["trade_status"], log_id))
 
+    # 发送收单通知
+    if trade_status == "SUCCEED":
+        trade_info = db.read_trade_info(conn, order_id)
+        text = "支付宝服务<{}>收款成功\n\n".format(trade_info["app"])
+        text += "交易流水：{}\n\n".format(trade_info["bill_id"])
+        text += "交易单号：Bill-{:08d}\n\n".format(trade_info["id"])
+        text += "交易名称：{}\n\n".format(trade_info["subject"])
+        text += "交易金额：{}元\n\n".format(trade_info["volume"])
+        text += "交易用户：{}\n\n".format(trade_info["buyer"])
+        text += "成交时间：{}\n\n".format(Kit.str_time())
+        Kit.send_sugar_message(app.config, "wolfbolin", "支付宝到账{}元".format(notify_data["total_amount"]), text)
+
     return "Success"
 
 
