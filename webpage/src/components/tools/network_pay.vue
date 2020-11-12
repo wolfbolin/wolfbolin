@@ -162,7 +162,7 @@ export default {
                                 that.order.order_status = "已关闭";
                                 break;
                         }
-                        if (["已支付", "已关闭"].indexOf(that.order.order_status) !== -1) {
+                        if (["已支付", "已终止", "已关闭"].indexOf(that.order.order_status) !== -1) {
                             clearInterval(that.timer)
                         }
                     }
