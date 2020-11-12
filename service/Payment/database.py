@@ -30,10 +30,11 @@ def update_trade_status(conn, order_id, status):
     return cursor.rowcount
 
 
-def update_trade_info(conn, order_id, buyer, bill_id):
+def update_trade_info(conn, order_id, status, buyer, bill_id):
     cursor = conn.cursor()
-    sql = "UPDATE `payment` SET `buyer`=%s, `bill_id`=%s WHERE `id`=%s"
-    cursor.execute(sql, args=[buyer, bill_id, order_id])
+    sql = "UPDATE `payment` SET `status`=%s, `buyer`=%s, `bill_id`=%s " \
+          "WHERE `id`=%s AND `status` NOT IN ('SUCCEED', 'FINISHED', 'CLOSED')"
+    cursor.execute(sql, args=[status, buyer, bill_id, order_id])
     conn.commit()
     return cursor.rowcount
 

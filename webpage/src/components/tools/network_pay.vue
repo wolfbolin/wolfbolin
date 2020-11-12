@@ -155,7 +155,10 @@ export default {
                             case "SUCCESS":
                                 that.order.order_status = "已支付";
                                 break;
-                            case "CLOSED":
+                            case "FINISH":
+                                that.order.order_status = "已终止";
+                                break;
+                            case "CLOSE":
                                 that.order.order_status = "已关闭";
                                 break;
                         }

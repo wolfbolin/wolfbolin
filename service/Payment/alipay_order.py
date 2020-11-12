@@ -16,12 +16,25 @@ g_trade_status_index = {
     "CREATED": "CREATED",  # 远程订单创建
     "WAITING": "WAITING",  # 等待订单支付
     "SUCCESS": "SUCCESS",  # 订单支付成功
-    "FINISHED": "FINISHED",
-    "CLOSED": "CLOSED",
+    "FINISH": "FINISH",  # 订单交易终止
+    "CLOSE": "CLOSE",  # 订单交易关闭
+
+    "SUCCEED": "SUCCESS",  # 订单最终确认
+    "FINISHED": "FINISH",  # 订单最终确认
+    "CLOSED": "CLOSE",  # 订单最终确认
+}
+g_trade_notify_status_index = {
+    "WAIT_BUYER_PAY": "WAITING",
+    "TRADE_SUCCESS": "SUCCEED",
+    "TRADE_FINISHED": "FINISHED",
+    "TRADE_CLOSED": "CLOSED",
+}
+g_trade_query_status_index = {
+    "CREATED": "CREATED",
     "WAIT_BUYER_PAY": "WAITING",
     "TRADE_SUCCESS": "SUCCESS",
-    "TRADE_FINISHED": "CLOSED",
-    "TRADE_CLOSED": "CLOSED",
+    "TRADE_FINISHED": "FINISH",
+    "TRADE_CLOSED": "CLOSE",
 }
 
 
@@ -53,8 +66,8 @@ def trade_notify():
 
     # 修改订单状态
     order_id = notify_data["out_trade_no"].replace("Bill-", "")
-    db.update_trade_status(conn, order_id, g_trade_status_index[notify_data["trade_status"]])
-    db.update_trade_info(conn, order_id, notify_data["buyer_logon_id"], notify_data["trade_no"])
+    trade_status = g_trade_notify_status_index[notify_data["trade_status"]]
+    db.update_trade_info(conn, order_id, trade_status, notify_data["seller_email"], notify_data["trade_no"])
     Kit.print_purple("Alipay trade notify: %s [LOG:%s]" % (notify_data["trade_status"], log_id))
 
     return "Success"
@@ -73,7 +86,8 @@ def trade_query():
     order_str = trade_info["order_str"]
     order_id = order_str.replace("Bill-", "")
     status = db.read_trade_status(conn, order_id)
-    if status in ["NOT_EXIST", "SUCCESS", "FINISHED", "CLOSED"]:
+    status = g_trade_status_index[status]
+    if status in ["NOT_EXIST", "SUCCESS", "FINISH", "CLOSE"]:
         return Kit.common_rsp({
             "order_str": order_str,
             "order_status": status
@@ -85,12 +99,12 @@ def trade_query():
         return abort(500, "Service {} Error".format(res.split(":")[1]))
 
     # 修改订单状态
-    db.update_trade_status(conn, order_id, g_trade_status_index[data[0]])
-    db.update_trade_info(conn, order_id, data[1], data[2])
+    trade_status = g_trade_query_status_index[data[0]]
+    db.update_trade_info(conn, order_id, trade_status, data[1], data[2])
 
     return Kit.common_rsp({
         "order_str": order_str,
-        "order_status": g_trade_status_index[data[0]]
+        "order_status": trade_status
     })
 
 
