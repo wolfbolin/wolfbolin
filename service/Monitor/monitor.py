@@ -129,7 +129,7 @@ def server_check():
                 .format(server_domain[hostname], msg_text)
             health_status["msg_res"] = []
             for user in user_list:
-                msg_res = Kit.send_sugar_message(app.config, user, title, text)
+                msg_res = Kit.send_sugar_message(app.config, "service", title, text)
                 health_status["msg_res"].append(msg_res)
 
         check_result.append(health_status)

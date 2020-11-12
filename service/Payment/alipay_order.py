@@ -80,7 +80,7 @@ def trade_notify():
         text += "交易金额：{}元\n\n".format(trade_info["volume"])
         text += "交易用户：{}\n\n".format(trade_info["buyer"])
         text += "成交时间：{}\n\n".format(Kit.str_time())
-        Kit.send_sugar_message(app.config, "wolfbolin", "支付宝到账{}元".format(notify_data["total_amount"]), text)
+        Kit.send_sugar_message(app.config, "service", "支付宝到账{}元".format(notify_data["total_amount"]), text)
 
     return "Success"
 
