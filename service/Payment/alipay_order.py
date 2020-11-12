@@ -168,7 +168,6 @@ def alipay_query(conn, order_str, app_name):
     response = json.loads(res.text)
     data = response["alipay_trade_query_response"]
     log_id = db.write_pay_log(conn, data["code"], data["msg"], res.text)
-    Kit.print_purple("Alipay trade precreate: success [LOG:%s]" % log_id)
 
     if data["code"] == "40004" and data["sub_code"] == "ACQ.TRADE_NOT_EXIST":
         return "AC:Waiting", ("CREATED", "", "")
