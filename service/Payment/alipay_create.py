@@ -1,6 +1,6 @@
 # coding=utf-8
 import json
-import Util
+import Kit
 import Payment
 import requests
 from .common import *
@@ -9,12 +9,11 @@ from flask import request
 from Payment import database as db
 from flask import current_app as app
 
-g_trade_precreate_key = {"app", "subject", "volume", "callback"}
+g_trade_precreate_key = {"app", "subject", "volume"}
 
 
 @Payment.payment_blue.route('/alipay', methods=["POST"])
-@Util.req_check_json_key(g_trade_precreate_key)
-@Util.verify_token("security")
+@Kit.req_check_json_key(g_trade_precreate_key)
 def trade_precreate():
     # 获取请求参数
     trade_info = request.get_json()
@@ -24,7 +23,7 @@ def trade_precreate():
 
     # 创建本地订单
     order_id = db.create_trade_order(conn, trade_info["app"], trade_info["subject"],
-                                     trade_info["volume"], trade_info["callback"])
+                                     trade_info["volume"], app.config["ALIPAY"]["notify"])
     order_str = "Bill-%08d" % order_id
 
     # 创建交易订单
@@ -33,7 +32,7 @@ def trade_precreate():
         return abort(500, "Service {} Error".format(res.split(":")[1]))
 
     # 修改订单状态
-    db.update_trade_status(conn, order_id, "WAITING")
+    db.update_trade_status(conn, order_id, "CREATED")
 
     # # 生成二维码
     # qr_code = qrcode.make(data)
@@ -41,7 +40,7 @@ def trade_precreate():
     # qr_code.save(buffered, format="JPEG")
     # qrcode_str = base64.b64encode(buffered.getvalue()).decode()
 
-    return Util.common_rsp({
+    return Kit.common_rsp({
         "order_str": order_str,
         "expire_time": "",
         "qrcode_link": data
@@ -64,7 +63,7 @@ def alipay_precreate(conn, order_str, app_name, subject, volume):
         "method": "alipay.trade.precreate",
         "notify_url": app.config["ALIPAY"]["notify"],
         "sign_type": "RSA2",
-        "timestamp": Util.str_time(),
+        "timestamp": Kit.str_time(),
         "version": "1.0",
     }  # 已经完成排序
     query = {
@@ -85,22 +84,22 @@ def alipay_precreate(conn, order_str, app_name, subject, volume):
         res = requests.get(url=url, params=params)
     except requests.exceptions.ProxyError:
         log_id = db.write_pay_log(conn, "00000", "ProxyError", json.dumps({"url": url, "params": params}))
-        Util.print_red("requests.exceptions.ProxyError:[LOG:%s]" % log_id)
+        Kit.print_red("requests.exceptions.ProxyError:[LOG:%s]" % log_id)
         return "WA:Local", None
     except requests.exceptions.ReadTimeout:
         log_id = db.write_pay_log(conn, "00000", "ReadTimeout", json.dumps({"url": url, "params": params}))
-        Util.print_red("requests.exceptions.ReadTimeout:[LOG:%s]" % log_id)
+        Kit.print_red("requests.exceptions.ReadTimeout:[LOG:%s]" % log_id)
         return "WA:Local", None
     except requests.exceptions.ConnectionError:
         log_id = db.write_pay_log(conn, "00000", "ConnectionError", json.dumps({"url": url, "params": params}))
-        Util.print_red("requests.exceptions.ConnectionError:[LOG:%s]" % log_id)
+        Kit.print_red("requests.exceptions.ConnectionError:[LOG:%s]" % log_id)
         return "WA:Local", None
 
     # 读取请求响应
     response = json.loads(res.text)
     data = response["alipay_trade_precreate_response"]
     log_id = db.write_pay_log(conn, data["code"], data["msg"], res.text)
-    Util.print_purple("Alipay trade precreate: success [LOG:%s]" % log_id)
+    Kit.print_purple("Alipay trade precreate: success [LOG:%s]" % log_id)
 
     if data["code"] != "10000":
         return "WA:Alipay", None
@@ -112,7 +111,7 @@ def alipay_precreate(conn, order_str, app_name, subject, volume):
     try:
         verify_with_rsa2(sign_str, sign, alipay_key_path)
     except rsa.pkcs1.VerificationError:
-        Util.print_red("rsa.pkcs1.VerificationError:[LOG:%s]" % log_id)
+        Kit.print_red("rsa.pkcs1.VerificationError:[LOG:%s]" % log_id)
         return "WA:Sign", None
 
     return "AC:Success", data["qr_code"]

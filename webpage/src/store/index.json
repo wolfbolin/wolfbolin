@@ -30,22 +30,22 @@
     },
     "content": [
       {
-        "src": "./statics/img/default1.jpg",
+        "src": "/statics/img/default1.jpg",
         "title": "default1",
         "subtitle": ""
       },
       {
-        "src": "./statics/img/default2.jpg",
+        "src": "/statics/img/default2.jpg",
         "title": "default2",
         "subtitle": ""
       },
       {
-        "src": "./statics/img/default3.jpg",
+        "src": "/statics/img/default3.jpg",
         "title": "default3",
         "subtitle": ""
       },
       {
-        "src": "./statics/img/default4.jpg",
+        "src": "/statics/img/default4.jpg",
         "title": "default4",
         "subtitle": ""
       }

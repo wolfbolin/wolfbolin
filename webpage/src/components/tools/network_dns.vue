@@ -384,7 +384,7 @@
     }
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
     .wb-dns {
         .wb-option {
             margin: 8px 0;

@@ -1,12 +1,12 @@
 # coding=utf-8
-import Util
+import Kit
 import functools
 from flask import abort
 from flask import request
 from flask import jsonify
 from functools import wraps
 from flask import current_app
-from Util import database as db
+from Kit import database as db
 from flask import current_app as app
 
 rsp_code = {
@@ -31,9 +31,9 @@ def common_rsp(data, status='OK'):
         return jsonify({
             'code': code,
             'status': status,
-            'time': Util.unix_time(),
-            'method': Util.func_name(2),
-            'timestamp': Util.str_time(),
+            'time': Kit.unix_time(),
+            'method': Kit.func_name(2),
+            'timestamp': Kit.str_time(),
             'data': data
         })
 
@@ -49,7 +49,7 @@ def verify_token(level="common"):
             if token is None:
                 abort(400, "Not found token")
 
-            md5_code = Util.calc_md5(t)
+            md5_code = Kit.calc_md5(t)
             if md5_code != token:
                 app.logger.warning("Token错误：{} @ {}".format(t, request.url))
                 abort(403, "Token error")
@@ -61,13 +61,27 @@ def verify_token(level="common"):
     return deco
 
 
+def req_check_query_key(key_list):
+    def deco(func):
+        @wraps(func)
+        def check_json_key(*args, **kwargs):
+            server_info = dict(request.args)
+            if server_info is None or set(server_info.keys()) != key_list:
+                return Kit.common_rsp("Error request key-value", status="Forbidden")
+            return func(*args, **kwargs)
+
+        return check_json_key
+
+    return deco
+
+
 def req_check_json_key(key_list):
     def deco(func):
         @wraps(func)
         def check_json_key(*args, **kwargs):
             server_info = request.get_json()
             if server_info is None or set(server_info.keys()) != key_list:
-                return Util.common_rsp("Error request key-value", status="Forbidden")
+                return Kit.common_rsp("Error request key-value", status="Forbidden")
             return func(*args, **kwargs)
 
         return check_json_key
@@ -81,7 +95,7 @@ def req_check_hostname(func):
         server_info = request.get_json()
         server_index = app.config.get("HOST")
         if server_info["hostname"] not in server_index:
-            return Util.common_rsp("Unknown server", status="Forbidden")
+            return Kit.common_rsp("Unknown server", status="Forbidden")
         return func(*args, **kwargs)
 
     return check_hostname
@@ -91,9 +105,9 @@ def req_check_unixtime(func):
     @wraps(func)
     def check_unixtime(*args, **kwargs):
         server_info = request.get_json()
-        time_now = Util.unix_time()
+        time_now = Kit.unix_time()
         if abs(time_now - int(server_info["unix_time"])) > 300:
-            return Util.common_rsp("The message has expired", status="Forbidden")
+            return Kit.common_rsp("The message has expired", status="Forbidden")
         return func(*args, **kwargs)
 
     return check_unixtime

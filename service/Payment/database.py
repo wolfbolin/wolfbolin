@@ -17,7 +17,7 @@ def create_trade_order(conn, app, subject, volume, callback):
     cursor = conn.cursor()
     sql = "INSERT INTO `payment`(`app`,`subject`,`status`,`volume`,`callback`)" \
           "VALUES(%s,%s,%s,%s,%s)"
-    cursor.execute(sql, args=[app, subject, "CREATE", float(volume), callback])
+    cursor.execute(sql, args=[app, subject, "READY", float(volume), callback])
     conn.commit()
     return cursor.lastrowid
 

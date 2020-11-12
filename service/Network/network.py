@@ -1,5 +1,5 @@
 # coding=utf-8
-import Util
+import Kit
 import Network
 from flask import request
 
@@ -9,6 +9,6 @@ def ip_info():
     user_ip = request.headers.get('X-Real-IP', '0.0.0.0')
     style = request.args.get("style", "json")
     if style == "json":
-        return Util.common_rsp(user_ip)
+        return Kit.common_rsp(user_ip)
     else:
         return str(user_ip)

@@ -1,6 +1,6 @@
 # coding=utf-8
 import json
-import Util
+import Kit
 import Payment
 import requests
 from .common import *
@@ -11,14 +11,16 @@ from flask import current_app as app
 
 g_trade_query_key = {"app", "order_str"}
 g_trade_status_index = {
-    "NOT_EXIST": "NOT_EXIST",
-    "WAITING": "WAITING",
-    "SUCCESS": "SUCCESS",
+    "NOT_EXIST": "NOT_EXIST",  # 订单不存在
+    "READY": "READY",  # 本地订单创建
+    "CREATED": "CREATED",  # 远程订单创建
+    "WAITING": "WAITING",  # 等待订单支付
+    "SUCCESS": "SUCCESS",  # 订单支付成功
     "FINISHED": "FINISHED",
     "CLOSED": "CLOSED",
     "WAIT_BUYER_PAY": "WAITING",
     "TRADE_SUCCESS": "SUCCESS",
-    "TRADE_FINISHED": "FINISHED",
+    "TRADE_FINISHED": "CLOSED",
     "TRADE_CLOSED": "CLOSED",
 }
 
@@ -46,24 +48,23 @@ def trade_notify():
         else:
             verify_with_rsa2(sign_str, sign, "Config/alipay.pub")
     except rsa.pkcs1.VerificationError:
-        Util.print_red("rsa.pkcs1.VerificationError:[LOG:%s]" % log_id)
+        Kit.print_red("rsa.pkcs1.VerificationError:[LOG:%s]" % log_id)
         return abort(400, "Error sign value")
 
     # 修改订单状态
     order_id = notify_data["out_trade_no"].replace("Bill-", "")
     db.update_trade_status(conn, order_id, g_trade_status_index[notify_data["trade_status"]])
     db.update_trade_info(conn, order_id, notify_data["buyer_logon_id"], notify_data["trade_no"])
-    Util.print_purple("Alipay trade notify: %s [LOG:%s]" % (notify_data["trade_status"], log_id))
+    Kit.print_purple("Alipay trade notify: %s [LOG:%s]" % (notify_data["trade_status"], log_id))
 
     return "Success"
 
 
 @Payment.payment_blue.route('/alipay', methods=["GET"])
-@Util.req_check_json_key(g_trade_query_key)
-@Util.verify_token("security")
+@Kit.req_check_query_key(g_trade_query_key)
 def trade_query():
     # 获取请求参数
-    trade_info = request.get_json()
+    trade_info = dict(request.args)
     if trade_info["app"] not in app.config["ALIPAY"].keys():
         return abort(400, "Error app name")
 
@@ -72,8 +73,8 @@ def trade_query():
     order_str = trade_info["order_str"]
     order_id = order_str.replace("Bill-", "")
     status = db.read_trade_status(conn, order_id)
-    if status in ["SUCCESS", "FINISHED", "CLOSED"]:
-        return Util.common_rsp({
+    if status in ["NOT_EXIST", "SUCCESS", "FINISHED", "CLOSED"]:
+        return Kit.common_rsp({
             "order_str": order_str,
             "order_status": status
         })
@@ -87,7 +88,7 @@ def trade_query():
     db.update_trade_status(conn, order_id, g_trade_status_index[data[0]])
     db.update_trade_info(conn, order_id, data[1], data[2])
 
-    return Util.common_rsp({
+    return Kit.common_rsp({
         "order_str": order_str,
         "order_status": g_trade_status_index[data[0]]
     })
@@ -108,7 +109,7 @@ def alipay_query(conn, order_str, app_name):
         "charset": "utf-8",
         "method": "alipay.trade.query",
         "sign_type": "RSA2",
-        "timestamp": Util.str_time(),
+        "timestamp": Kit.str_time(),
         "version": "1.0"
     }  # 已经完成排序
     query = {
@@ -126,25 +127,25 @@ def alipay_query(conn, order_str, app_name):
         res = requests.get(url=url, params=params)
     except requests.exceptions.ProxyError:
         log_id = db.write_pay_log(conn, "00000", "ProxyError", json.dumps({"url": url, "params": params}))
-        Util.print_red("requests.exceptions.ProxyError:[LOG:%s]" % log_id)
+        Kit.print_red("requests.exceptions.ProxyError:[LOG:%s]" % log_id)
         return "WA:Local", None
     except requests.exceptions.ReadTimeout:
         log_id = db.write_pay_log(conn, "00000", "ReadTimeout", json.dumps({"url": url, "params": params}))
-        Util.print_red("requests.exceptions.ReadTimeout:[LOG:%s]" % log_id)
+        Kit.print_red("requests.exceptions.ReadTimeout:[LOG:%s]" % log_id)
         return "WA:Local", None
     except requests.exceptions.ConnectionError:
         log_id = db.write_pay_log(conn, "00000", "ConnectionError", json.dumps({"url": url, "params": params}))
-        Util.print_red("requests.exceptions.ConnectionError:[LOG:%s]" % log_id)
+        Kit.print_red("requests.exceptions.ConnectionError:[LOG:%s]" % log_id)
         return "WA:Local", None
 
     # 读取请求响应
     response = json.loads(res.text)
     data = response["alipay_trade_query_response"]
     log_id = db.write_pay_log(conn, data["code"], data["msg"], res.text)
-    Util.print_purple("Alipay trade precreate: success [LOG:%s]" % log_id)
+    Kit.print_purple("Alipay trade precreate: success [LOG:%s]" % log_id)
 
     if data["code"] == "40004" and data["sub_code"] == "ACQ.TRADE_NOT_EXIST":
-        return "AC:Waiting", ("NOT_EXIST", "", "")
+        return "AC:Waiting", ("CREATED", "", "")
 
     if data["code"] != "10000":
         return "WA:Alipay", None
@@ -156,7 +157,7 @@ def alipay_query(conn, order_str, app_name):
     try:
         verify_with_rsa2(sign_str, sign, alipay_key_path)
     except rsa.pkcs1.VerificationError:
-        Util.print_red("rsa.pkcs1.VerificationError:[LOG:%s]" % log_id)
+        Kit.print_red("rsa.pkcs1.VerificationError:[LOG:%s]" % log_id)
         return "WA:Sign", None
 
     return "AC:Success", (data["trade_status"], data["buyer_logon_id"], data["trade_no"])
