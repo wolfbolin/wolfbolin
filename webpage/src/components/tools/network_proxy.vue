@@ -227,7 +227,7 @@
     }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
     .wb-proxy {
         .wb-option {
             margin-bottom: 16px;
