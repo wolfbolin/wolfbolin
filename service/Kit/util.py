@@ -80,6 +80,7 @@ def req_check_json_key(key_list):
         @wraps(func)
         def check_json_key(*args, **kwargs):
             server_info = request.get_json()
+            print(server_info)
             if server_info is None or set(server_info.keys()) != key_list:
                 return Kit.common_rsp("Error request key-value", status="Forbidden")
             return func(*args, **kwargs)

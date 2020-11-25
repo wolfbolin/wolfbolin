@@ -12,8 +12,8 @@ from flask import current_app as app
 g_trade_query_key = {"app", "order_str"}
 g_trade_status_index = {
     "NOT_EXIST": "NOT_EXIST",  # 订单不存在
-    "READY": "READY",  # 本地订单创建
-    "CREATED": "CREATED",  # 远程订单创建
+    "CREATE": "CREATE",  # 本地订单创建
+    "CREATED": "CREATE",  # 远程订单创建
     "WAITING": "WAITING",  # 等待订单支付
     "SUCCESS": "SUCCESS",  # 订单支付成功
     "FINISH": "FINISH",  # 订单交易终止
@@ -30,7 +30,7 @@ g_trade_notify_status_index = {
     "TRADE_CLOSED": "CLOSED",
 }
 g_trade_query_status_index = {
-    "CREATED": "CREATED",
+    "CREATE": "CREATE",
     "WAIT_BUYER_PAY": "WAITING",
     "TRADE_SUCCESS": "SUCCESS",
     "TRADE_FINISHED": "FINISH",
@@ -170,7 +170,7 @@ def alipay_query(conn, order_str, app_name):
     log_id = db.write_pay_log(conn, data["code"], data["msg"], res.text)
 
     if data["code"] == "40004" and data["sub_code"] == "ACQ.TRADE_NOT_EXIST":
-        return "AC:Waiting", ("CREATED", "", "")
+        return "AC:Waiting", ("CREATE", "", "")
 
     if data["code"] != "10000":
         return "WA:Alipay", None

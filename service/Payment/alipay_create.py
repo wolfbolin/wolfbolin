@@ -19,6 +19,9 @@ def trade_precreate():
     trade_info = request.get_json()
     if trade_info["app"] not in app.config["ALIPAY"].keys():
         return abort(400, "Error app name")
+    trade_info["volume"] = float(trade_info["volume"])
+    if trade_info["volume"] == 0:
+        return abort(400, "Error volume")
     conn = app.mysql_pool.connection()
 
     # 创建本地订单

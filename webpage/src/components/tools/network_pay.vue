@@ -30,9 +30,9 @@
             </el-col>
             <el-col :xs="24" :sm="8" class="wb-alipay-qrcode">
                 <img v-if="order.order_status === '未创建'"
-                     :src="order.order_link" alt="qrcode"/>
+                     src="@/assets/img/QR_Code.png" alt="qrcode"/>
                 <img v-else-if="order.order_status === '已支付'"
-                     src="../../assets/img/done.png" alt="qrcode"/>
+                     src="@/assets/img/done.png" alt="qrcode"/>
                 <div v-else>
                     <vue-qr :text="order.order_link"></vue-qr>
                     <el-button type="primary" @click="open_channel_app" plain>打开手机应用支付</el-button>

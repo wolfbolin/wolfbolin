@@ -5,10 +5,13 @@ import sys
 import uuid
 import time
 import random
+import string
 import inspect
 import hashlib
 import platform
-from bs4 import BeautifulSoup
+
+
+# from bs4 import BeautifulSoup
 
 
 # Print tools
@@ -104,6 +107,17 @@ def random_code():
     return str(uuid.uuid1()).split('-')[0]
 
 
+def random_string(length, chars=string.digits + string.ascii_letters):
+    return ''.join(random.choice(chars) for _ in range(length))
+
+
+def calc_sha1(seed):
+    seed = str(seed).encode('utf-8')
+    sha1 = hashlib.sha1()
+    sha1.update(seed)
+    return sha1.hexdigest()
+
+
 def calc_md5(seed):
     seed = str(seed).encode('utf-8')
     md5 = hashlib.md5()
@@ -111,11 +125,11 @@ def calc_md5(seed):
     return md5.hexdigest()
 
 
-def parse_xml(data):
-    xml = re.sub(r'<!\[CDATA\[(.*)\]\]>', lambda m: m.group(1), data)
-    xml = BeautifulSoup(xml, 'lxml')
-    xml = xml.html.body.xml
-    return xml
+# def parse_xml(data):
+#     xml = re.sub(r'<!\[CDATA\[(.*)\]\]>', lambda m: m.group(1), data)
+#     xml = BeautifulSoup(xml, 'lxml')
+#     xml = xml.html.body.xml
+#     return xml
 
 
 def cpu_core():
