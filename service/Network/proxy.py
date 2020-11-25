@@ -66,7 +66,7 @@ def proxy_clash():
     rule_list.append("GEOIP,CN,LAN")
     rule_list.append("MATCH,LAN")
 
-    # 组装新的配置文件
+    # 代理配置分类归档
     foreign_list = []
     transfer_list = []
     domestic_list = []
@@ -92,8 +92,12 @@ def proxy_clash():
             api["name"] = "【海外】" + api["name"]
             foreign_list.append(api)
 
+    # 读取本地私有代理
+    private_list = Kit.get_app_pair(conn, "proxy", "private_node")
+    private_list = json.loads(private_list)
+
     clash_config = {
-        "proxies": foreign_list + transfer_list + domestic_list,
+        "proxies": foreign_list + transfer_list + domestic_list + private_list,
         "proxy-groups": [
             {
                 "name": "VAC", "type": "select",
@@ -131,6 +135,7 @@ def proxy_clash():
                 "interval": 300, "url": "https://www.gstatic.com/generate_204",
                 "proxies": pick_api(foreign_list + transfer_list, ["美国"])
             },
+            proxy_group(private_list, "Company"),
             proxy_group(foreign_list + transfer_list, "Foreign"),
         ],
         "rules": rule_list
