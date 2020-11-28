@@ -6,7 +6,7 @@ from flask import request
 from flask import current_app as app
 
 g_printer_message_key = {"app", "user", "text"}
-g_sugar_message_key = {"user", "title", "text"}
+g_sugar_message_key = {"user", "source", "title", "text"}
 g_sms_message_key = {"phone", "template", "params"}
 
 
@@ -47,10 +47,11 @@ def sugar_message_push():
     message_info = request.get_json()
 
     user = message_info["user"]
+    source = message_info["source"]
     title = message_info["title"]
     text = message_info["text"]
 
-    res = Kit.send_sugar_message(app.config, user, title, text)
+    res = Kit.send_sugar_message(app.config, user, source, title, text)
 
     return Kit.common_rsp(res)
 

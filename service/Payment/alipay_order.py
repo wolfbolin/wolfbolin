@@ -72,6 +72,7 @@ def trade_notify():
 
     # 发送收单通知
     if trade_status == "SUCCEED":
+        user = app.config["ALIPAY"]["manager"]
         trade_info = db.read_trade_info(conn, order_id)
         text = "支付宝服务<{}>收款成功\n\n".format(trade_info["app"])
         text += "交易流水：{}\n\n".format(trade_info["bill_id"])
@@ -80,7 +81,7 @@ def trade_notify():
         text += "交易金额：{}元\n\n".format(trade_info["volume"])
         text += "交易用户：{}\n\n".format(trade_info["buyer"])
         text += "成交时间：{}\n\n".format(Kit.str_time())
-        Kit.send_sugar_message(app.config, "service", "支付宝到账{}元".format(notify_data["total_amount"]), text)
+        Kit.send_sugar_message(app.config, user, "service", "支付宝到账{}元".format(notify_data["total_amount"]), text)
 
     return "Success"
 

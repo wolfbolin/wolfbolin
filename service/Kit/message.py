@@ -36,11 +36,11 @@ def message_log(conn, phone, template, params):
     conn.commit()
 
 
-def send_sugar_message(config, user, title, text):
+def send_sugar_message(config, user, source, title, text):
     format_time = Kit.str_time()
     content = "----\n\n"  # 32
     content += "标题：{}\n\n".format(title)
-    content += "来源：{}\n\n".format(user)
+    content += "来源：{}\n\n".format(source)
     content += "时间：{}\n\n".format(format_time)
     content += "----\n\n"
     content += "{}\n\n".format(text)
