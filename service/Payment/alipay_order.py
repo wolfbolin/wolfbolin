@@ -67,7 +67,7 @@ def trade_notify():
     # 修改订单状态
     order_id = notify_data["out_trade_no"].replace("Bill-", "")
     trade_status = g_trade_notify_status_index[notify_data["trade_status"]]
-    db.update_trade_info(conn, order_id, trade_status, notify_data["seller_email"], notify_data["trade_no"])
+    db.update_trade_info(conn, order_id, trade_status, notify_data["buyer_logon_id"], notify_data["trade_no"])
     Kit.print_purple("Alipay trade notify: %s [LOG:%s]" % (notify_data["trade_status"], log_id))
 
     # 发送收单通知
