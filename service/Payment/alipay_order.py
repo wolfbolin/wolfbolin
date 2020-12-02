@@ -74,7 +74,7 @@ def trade_notify():
     if trade_status == "SUCCEED":
         user = app.config["ALIPAY"]["manager"]
         trade_info = db.read_trade_info(conn, order_id)
-        text = "支付宝服务<{}>收款成功\n\n".format(trade_info["app"])
+        text = "支付宝服务 [{}] 收款成功\n\n".format(trade_info["app"])
         text += "交易流水：{}\n\n".format(trade_info["bill_id"])
         text += "交易单号：Bill-{:08d}\n\n".format(trade_info["id"])
         text += "交易名称：{}\n\n".format(trade_info["subject"])
