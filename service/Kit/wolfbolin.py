@@ -88,6 +88,10 @@ def format_time(time_obj, pattern='%Y-%m-%d %H:%M:%S'):
     return time.strftime(pattern, time_obj)
 
 
+def datetime2unix(timing):
+    return int(time.mktime(timing.timetuple()))
+
+
 def timestamp2unix(time_string, pattern='%Y-%m-%d %H:%M:%S'):
     time_array = time.strptime(time_string, pattern)
     return int(time.mktime(time_array))

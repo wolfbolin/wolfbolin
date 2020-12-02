@@ -90,24 +90,30 @@ def trade_notify():
 @Kit.req_check_query_key(g_trade_query_key)
 def trade_query():
     # 获取请求参数
-    trade_info = dict(request.args)
-    if trade_info["app"] not in app.config["ALIPAY"].keys():
+    order_info = dict(request.args)
+    if order_info["app"] not in app.config["ALIPAY"].keys():
         return abort(400, "Error app name")
 
     # 查询本地数据
     conn = app.mysql_pool.connection()
-    order_str = trade_info["order_str"]
+    order_str = order_info["order_str"]
     order_id = order_str.replace("Bill-", "")
-    status = db.read_trade_status(conn, order_id)
-    status = g_trade_status_index[status]
-    if status in ["NOT_EXIST", "SUCCESS", "FINISH", "CLOSE"]:
+    trade_info = db.read_trade_info(conn, order_id)
+    trade_info["status"] = g_trade_status_index[trade_info["status"]]
+    if trade_info["status"] in ["NOT_EXIST", "SUCCESS", "FINISH", "CLOSE"]:
         return Kit.common_rsp({
             "order_str": order_str,
-            "order_status": status
+            "order_status": trade_info
+        })
+    if Kit.unix_time() - Kit.datetime2unix(trade_info["created_time"]) > 10 * 60:
+        db.update_trade_status(conn, order_id, "CLOSED")
+        return Kit.common_rsp({
+            "order_str": order_str,
+            "order_status": "CLOSE"
         })
 
     # 查询订单状态
-    res, data = alipay_query(conn, order_str, trade_info["app"])
+    res, data = alipay_query(conn, order_str, order_info["app"])
     if res.split(":")[0] == "WA":
         return abort(500, "Service {} Error".format(res.split(":")[1]))
 
