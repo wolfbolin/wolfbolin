@@ -103,7 +103,7 @@ def trade_query():
     if trade_info["status"] in ["NOT_EXIST", "SUCCESS", "FINISH", "CLOSE"]:
         return Kit.common_rsp({
             "order_str": order_str,
-            "order_status": trade_info
+            "order_status": trade_info["status"]
         })
     if Kit.unix_time() - Kit.datetime2unix(trade_info["created_time"]) > 10 * 60:
         db.update_trade_status(conn, order_id, "CLOSED")
