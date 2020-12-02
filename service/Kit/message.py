@@ -1,5 +1,5 @@
 # coding=utf-8
-import Util
+import Kit
 import json
 import requests
 from flask import current_app as app
@@ -32,15 +32,15 @@ def send_sms_message(conn, phone_numbers, template, params):
 def message_log(conn, phone, template, params):
     cursor = conn.cursor()
     sql = "INSERT INTO `message`(`phone`,`template`,`params`,`unix_time`,`local_time`)VALUES(%s,%s,%s,%s,%s)"
-    cursor.execute(query=sql, args=[str(phone), str(template), str(params), Util.unix_time(), Util.str_time()])
+    cursor.execute(query=sql, args=[str(phone), str(template), str(params), Kit.unix_time(), Kit.str_time()])
     conn.commit()
 
 
-def send_sugar_message(config, user, title, text):
-    format_time = Util.str_time()
+def send_sugar_message(config, user, source, title, text):
+    format_time = Kit.str_time()
     content = "----\n\n"  # 32
     content += "标题：{}\n\n".format(title)
-    content += "来源：{}\n\n".format(user)
+    content += "来源：{}\n\n".format(source)
     content += "时间：{}\n\n".format(format_time)
     content += "----\n\n"
     content += "{}\n\n".format(text)

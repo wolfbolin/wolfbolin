@@ -1,6 +1,6 @@
 # coding=utf-8
 import json
-import Util
+import Kit
 import Monitor
 from flask import request
 from Monitor import database as db
@@ -12,12 +12,12 @@ g_server_heartbeat_key = {"hostname", "unix_time", "boot_time"}
 
 
 @Monitor.monitor_blue.route("/server/report/heartbeat", methods=["POST"])
-@Util.req_check_json_key(g_server_heartbeat_key)
-@Util.req_check_hostname
-@Util.req_check_unixtime
-@Util.verify_token
+@Kit.req_check_json_key(g_server_heartbeat_key)
+@Kit.req_check_hostname
+@Kit.req_check_unixtime
+@Kit.verify_token()
 def server_report_heartbeat():
-    time_now = Util.unix_time()
+    time_now = Kit.unix_time()
     server_info = request.get_json()
     conn = app.mysql_pool.connection()
 
@@ -31,14 +31,14 @@ def server_report_heartbeat():
     if abs(time_now - int(server_info["unix_time"])) > 60:
         result["msg"] += "(The clock needs to be updated)"
 
-    return Util.common_rsp(result)
+    return Kit.common_rsp(result)
 
 
 @Monitor.monitor_blue.route("/server/report/location", methods=["POST"])
-@Util.req_check_json_key(g_server_location_key)
-@Util.req_check_hostname
-@Util.req_check_unixtime
-@Util.verify_token
+@Kit.req_check_json_key(g_server_location_key)
+@Kit.req_check_hostname
+@Kit.req_check_unixtime
+@Kit.verify_token()
 def server_report_location():
     server_info = request.get_json()
     conn = app.mysql_pool.connection()
@@ -46,7 +46,7 @@ def server_report_location():
     client_ip = request.headers.get("X-Real-IP", "0.0.0.0")
     # 链路真实性验证
     if server_info["hostname"] != "test-wolfbolin" and server_info["server_ip"] != client_ip:
-        return Util.common_rsp("Reject IP", status="Forbidden")
+        return Kit.common_rsp("Reject IP", status="Forbidden")
 
     # 检查DNS记录
     result = {
@@ -59,19 +59,19 @@ def server_report_location():
         result["msg"] = modify_server_domain(server_domain, server_info["server_ip"])
         db.update_server_ip(conn, server_info["hostname"], client_ip)
 
-    return Util.common_rsp(result)
+    return Kit.common_rsp(result)
 
 
 @Monitor.monitor_blue.route("/server/check", methods=["GET"])
-@Util.verify_token
+@Kit.verify_token()
 def server_check():
     # 本地数据校验
     client_ip = request.headers.get("X-Real-IP", "0.0.0.0")
     if client_ip != "127.0.0.1":
-        return Util.common_rsp("Reject IP", status="Forbidden")
+        return Kit.common_rsp("Reject IP", status="Forbidden")
 
     expire_time = 120
-    time_now = Util.unix_time()
+    time_now = Kit.unix_time()
     conn = app.mysql_pool.connection()
 
     # 检查上报时间
@@ -118,8 +118,8 @@ def server_check():
 
         if msg_text is not None:
             msg_format = "发送提醒：主机{}状态变更[{}]：active_time: {} <=> time_now: {}"
-            active_time = Util.unix2timestamp(int(server_info["active_time"]))
-            timestamp_now = Util.unix2timestamp(time_now)
+            active_time = Kit.unix2timestamp(int(server_info["active_time"]))
+            timestamp_now = Kit.unix2timestamp(time_now)
             app.logger.info(msg_format.format(hostname, msg_text, active_time, timestamp_now))
 
             # 发送提示
@@ -129,9 +129,9 @@ def server_check():
                 .format(server_domain[hostname], msg_text)
             health_status["msg_res"] = []
             for user in user_list:
-                msg_res = Util.send_sugar_message(app.config, user, title, text)
+                msg_res = Kit.send_sugar_message(app.config, user, "service", title, text)
                 health_status["msg_res"].append(msg_res)
 
         check_result.append(health_status)
 
-    return Util.common_rsp(check_result)
+    return Kit.common_rsp(check_result)

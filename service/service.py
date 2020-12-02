@@ -1,6 +1,6 @@
 # coding=utf-8
 import os
-import Util
+import Kit
 import pymysql
 import logging
 import sentry_sdk
@@ -9,7 +9,7 @@ from flask import Flask
 from flask import request
 from flask_cors import CORS
 from Config import get_config
-from DBUtils.PooledDB import PooledDB
+from dbutils.pooled_db import PooledDB
 from qcloudsms_py import SmsMultiSender
 from sentry_sdk.integrations.flask import FlaskIntegration
 
@@ -17,6 +17,7 @@ from Webpage import webpage_blue
 from Network import network_blue
 from Message import message_blue
 from Monitor import monitor_blue
+from Payment import payment_blue
 
 # 获取配置
 app_config = get_config()
@@ -68,40 +69,41 @@ app.register_blueprint(webpage_blue, url_prefix='/webpage')
 app.register_blueprint(network_blue, url_prefix='/network')
 app.register_blueprint(message_blue, url_prefix='/message')
 app.register_blueprint(monitor_blue, url_prefix='/monitor')
+app.register_blueprint(payment_blue, url_prefix='/payment')
 CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
 
 
 @app.route('/')
 def hello_world():
-    return Util.common_rsp("Hello, world!")
+    return Kit.common_rsp("Hello, world!")
 
 
 @app.route('/debug/sentry')
 def sentry_debug():
     app.logger.info("[DEBUG]Test sentry: {}".format(1 / 0))
-    return Util.common_rsp("DEBUG")
+    return Kit.common_rsp("DEBUG")
 
 
 @app.errorhandler(400)
 def http_forbidden(msg):
     app.logger.warning("{}: <HTTP 400> {}".format(request.url, msg))
-    return Util.common_rsp("Bad Request", status='Bad Request')
+    return Kit.common_rsp("Bad Request", status='Bad Request')
 
 
 @app.errorhandler(403)
 def http_forbidden(msg):
-    return Util.common_rsp(str(msg)[15:], status='Forbidden')
+    return Kit.common_rsp(str(msg)[15:], status='Forbidden')
 
 
 @app.errorhandler(404)
 def http_not_found(msg):
-    return Util.common_rsp(str(msg)[15:], status='Not Found')
+    return Kit.common_rsp(str(msg)[15:], status='Not Found')
 
 
 @app.errorhandler(500)
 def service_error(msg):
     app.logger.error("{}: <HTTP 400> {}".format(request.url, msg))
-    return Util.common_rsp(str(msg)[15:], status='Internal Server Error')
+    return Kit.common_rsp(str(msg)[15:], status='Internal Server Error')
 
 
 if __name__ != '__main__':
@@ -111,5 +113,5 @@ if __name__ != '__main__':
 
 if __name__ == '__main__':
     app.logger.setLevel(logging.DEBUG)
-    app.run(host='127.0.0.1', port=12880, debug=True)
+    app.run(host='0.0.0.0', port=12880, debug=True)
     exit()

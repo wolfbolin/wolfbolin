@@ -66,6 +66,8 @@
                     this.$store.commit("setData", {key: "host", val: "http://127.0.0.1:12880"})
                 } else if (window.location.host.indexOf("127.0.0.1") !== -1) {
                     this.$store.commit("setData", {key: "host", val: "http://127.0.0.1:12880"})
+                } else if (window.location.host.indexOf("192.168") !== -1) {
+                    this.$store.commit("setData", {key: "host", val: `http://${window.location.host.split(":")[0]}:12880`})
                 } else {
                     this.$store.commit("setData", {key: "host", val: "https://core.wolfbolin.com"})
                 }
