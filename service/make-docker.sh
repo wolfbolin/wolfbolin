@@ -10,7 +10,7 @@ docker build -f Dockerfile --tag ${docker_name}:"${time_now}" .
 echo -e "\033[5;36mOrz 镜像重建完成\033[0m"
 
 docker run -itd \
-	--restart always \
+	--restart unless-stopped \
 	--name ${docker_name} \
 	-v $(pwd):/var/app \
 	-p 12864:80 \
