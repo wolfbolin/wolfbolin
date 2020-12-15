@@ -124,17 +124,16 @@ def server_check():
 
             # 发送提示
             user_list = json.loads(server_info["manager"])
-            title = "{}主机{}".format(hostname, msg_text)
+            title = "【{}】主机{}".format(hostname.split("-")[0], msg_text)
             text = "设备状态变化\n\n" + \
                    "服务主机：{}\n\n" + \
                    "服务域名：{}\n\n" + \
                    "状态变化：{}\n\n" + \
+                   "网络信息：{}\n\n" + \
                    "活跃时间：{}\n\n" + \
-                   "启动时间：{}\n\n" + \
-                   "服务IP：{}\n\n"
-            text = text.format(hostname, server_domain[hostname], msg_text,
-                               Kit.unix2timestamp(server_info["active_time"]),
-                               server_info["boot_time"], server_info["server_ip"])
+                   "启动时间：{}\n\n"
+            text = text.format(hostname, server_domain[hostname], msg_text, server_info["server_ip"],
+                               Kit.unix2timestamp(server_info["active_time"]), server_info["boot_time"])
             health_status["msg_res"] = []
             for user in user_list:
                 msg_res = Kit.send_sugar_message(app.config, user, "service", title, text)
