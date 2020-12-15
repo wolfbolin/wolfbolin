@@ -98,7 +98,7 @@ def timestamp2unix(time_string, pattern='%Y-%m-%d %H:%M:%S'):
 
 
 def unix2timestamp(u_time, pattern='%Y-%m-%d %H:%M:%S'):
-    return time.strftime(pattern, time.localtime(u_time))
+    return time.strftime(pattern, time.localtime(int(u_time)))
 
 
 # Calc tools
