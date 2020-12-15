@@ -124,7 +124,7 @@ def server_check():
 
             # 发送提示
             user_list = json.loads(server_info["manager"])
-            title = "【{}】主机{}".format(hostname.split("-")[0], msg_text)
+            title = "{}主机{}".format(hostname.split("-")[0], msg_text)
             text = "设备状态变化\n\n" + \
                    "服务主机：{}\n\n" + \
                    "服务域名：{}\n\n" + \
