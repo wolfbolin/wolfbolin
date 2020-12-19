@@ -47,7 +47,7 @@
                     {"id": "index", "href": "/", "label": "主页", "class": ""},
                     // {"id": "note", "href": "/note", "label": "笔记", "class": ""},
                     // {"id": "blog", "href": "http://blog.wolfbolin.com", "label": "博客", "class": ""},
-                    // {"id": "album", "href": "/album", "label": "相册", "class": ""},
+                    {"id": "album", "href": "/album", "label": "相册", "class": ""},
                     {"id": "tools", "href": "/tools", "label": "工具", "class": ""}
                 ],
             }
