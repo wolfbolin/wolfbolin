@@ -94,10 +94,7 @@ def proxy_clash():
             api["name"] = "【海外】" + api["name"]
             foreign_list.append(api)
 
-    # 读取本地私有代理
-    private_data = Kit.get_app_pair(conn, "proxy", "private_node")
-    private_data = json.loads(private_data)
-
+    # 初始化配置信息
     clash_config = {
         "proxies": foreign_list + transfer_list + domestic_list,
         "proxy-groups": [
@@ -122,32 +119,18 @@ def proxy_clash():
     }
 
     # 私有节点列表
+    private_data = Kit.get_app_pair(conn, "proxy", "private_node")
+    private_data = json.loads(private_data)
     for group in private_data:
         clash_config["proxies"] += group["node"]
-        clash_config["proxy-groups"] += proxy_group(group["name"], group["node"], "select"),
+        clash_config["proxy-groups"] += proxy_group(group["name"], group["node"], **group["config"]),
 
     # 基础节点列表
     clash_config["proxy-groups"] += [
-        {
-            "name": "CHK", "type": "url-test",
-            "interval": 300, "url": "https://www.gstatic.com/generate_204",
-            "proxies": pick_api(foreign_list + transfer_list, ["香港"])
-        },
-        {
-            "name": "CTW", "type": "url-test",
-            "interval": 300, "url": "https://www.gstatic.com/generate_204",
-            "proxies": pick_api(foreign_list + transfer_list, ["台湾"])
-        },
-        {
-            "name": "JPN", "type": "url-test",
-            "interval": 300, "url": "https://www.gstatic.com/generate_204",
-            "proxies": pick_api(foreign_list + transfer_list, ["日本"])
-        },
-        {
-            "name": "USA", "type": "url-test",
-            "interval": 300, "url": "https://www.gstatic.com/generate_204",
-            "proxies": pick_api(foreign_list + transfer_list, ["美国"])
-        },
+        proxy_group("CHK", pick_api(foreign_list + transfer_list, ["香港"])),
+        proxy_group("CTW", pick_api(foreign_list + transfer_list, ["台湾"])),
+        proxy_group("JPN", pick_api(foreign_list + transfer_list, ["日本"])),
+        proxy_group("USA", pick_api(foreign_list + transfer_list, ["美国"])),
         proxy_group("SEA", foreign_list + transfer_list),
     ]
 
@@ -202,15 +185,19 @@ def pick_api(api_list, keywords):
     for api in api_list:
         for keyword in keywords:
             if keyword in api["name"]:
-                api_group.append(api["name"])
+                api_group.append(api)
     return api_group
 
 
 def proxy_group(group_name, api_list, mode="url-test", test_url="https://www.gstatic.com/generate_204"):
     if mode == "url-test":
         group_info = {
-            "name": group_name, "type": mode,
-            "interval": 300, "url": test_url,
+            "name": group_name, "type": "url-test", "interval": 300, "url": test_url, "tolerance": 200,
+            "proxies": ["DIRECT"] + [api["name"] for api in api_list]
+        }
+    elif mode == "fallback":
+        group_info = {
+            "name": group_name, "type": "fallback", "interval": 300, "url": test_url,
             "proxies": ["DIRECT"] + [api["name"] for api in api_list]
         }
     else:
