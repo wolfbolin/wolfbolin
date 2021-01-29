@@ -45,13 +45,14 @@ def printer_text_message():
 @Kit.req_check_json_key(g_sugar_message_key)
 def sugar_message_push():
     message_info = request.get_json()
+    user_token = request.args.get("token", None)
 
     user = message_info["user"]
     source = message_info["source"]
     title = message_info["title"]
     text = message_info["text"]
 
-    res = Kit.send_sugar_message(app.config, user, source, title, text)
+    res = Kit.send_sugar_message(app.config, user, source, title, text, user_token)
 
     return Kit.common_rsp(res)
 

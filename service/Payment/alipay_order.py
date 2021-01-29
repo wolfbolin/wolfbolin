@@ -74,7 +74,7 @@ def trade_notify():
     if trade_status == "SUCCEED":
         user = app.config["ALIPAY"]["manager"]
         trade_info = db.read_trade_info(conn, order_id)
-        text = "支付宝服务<{}>收款成功\n\n".format(trade_info["app"])
+        text = "支付宝服务 [{}] 收款成功\n\n".format(trade_info["app"])
         text += "交易流水：{}\n\n".format(trade_info["bill_id"])
         text += "交易单号：Bill-{:08d}\n\n".format(trade_info["id"])
         text += "交易名称：{}\n\n".format(trade_info["subject"])
@@ -103,7 +103,7 @@ def trade_query():
     if trade_info["status"] in ["NOT_EXIST", "SUCCESS", "FINISH", "CLOSE"]:
         return Kit.common_rsp({
             "order_str": order_str,
-            "order_status": trade_info
+            "order_status": trade_info["status"]
         })
     if Kit.unix_time() - Kit.datetime2unix(trade_info["created_time"]) > 10 * 60:
         db.update_trade_status(conn, order_id, "CLOSED")

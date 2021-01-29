@@ -11,6 +11,7 @@ from flask_cors import CORS
 from Config import get_config
 from dbutils.pooled_db import PooledDB
 from qcloudsms_py import SmsMultiSender
+from logging.handlers import TimedRotatingFileHandler
 from sentry_sdk.integrations.flask import FlaskIntegration
 
 from Webpage import webpage_blue
@@ -37,7 +38,13 @@ app.config.from_mapping(app_config)
 # 服务日志
 file_logger = logging.getLogger('file_log')
 file_logger.setLevel(logging.INFO)
-file_handler = logging.FileHandler(filename='./log/run.log', encoding="utf-8")
+file_handler = TimedRotatingFileHandler(
+    filename='./log/run.log',
+    encoding="utf-8",
+    backupCount=7,
+    interval=1,
+    when="D")
+file_handler.suffix = "%Y-%m-%d.log"
 app.logger.addHandler(file_handler)
 app.logger.setLevel(logging.INFO)
 

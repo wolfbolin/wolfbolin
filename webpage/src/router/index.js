@@ -10,6 +10,12 @@ const routes = [
         component: () => import(/* webpackChunkName: "home" */ '../views/Home.vue')
     },
     {
+        path: '/album',
+        alias: ['/album/:box', '/album/:box/:tool'],
+        name: 'Album',
+        component: () => import(/* webpackChunkName: "home" */ '../views/Album.vue')
+    },
+    {
         path: '/tools',
         alias: ['/tools/:box', '/tools/:box/:tool'],
         name: 'Tool',

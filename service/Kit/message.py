@@ -36,7 +36,7 @@ def message_log(conn, phone, template, params):
     conn.commit()
 
 
-def send_sugar_message(config, user, source, title, text):
+def send_sugar_message(config, user, source, title, text, token=None):
     format_time = Kit.str_time()
     content = "----\n\n"  # 32
     content += "标题：{}\n\n".format(title)
@@ -46,7 +46,8 @@ def send_sugar_message(config, user, source, title, text):
     content += "{}\n\n".format(text)
     content += "----\n\n"
 
-    token = config["SUGAR"][user]
+    if token is None:
+        token = config["SUGAR"][user]
     url = "https://sc.ftqq.com/{}.send".format(token)
     params = {
         "text": title,
