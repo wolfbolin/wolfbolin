@@ -198,7 +198,7 @@ def proxy_group(group_name, api_list, mode="url-test", test_url="https://www.gst
     elif mode == "fallback":
         group_info = {
             "name": group_name, "type": "fallback", "interval": 300, "url": test_url,
-            "proxies": ["DIRECT"] + [api["name"] for api in api_list]
+            "proxies": [api["name"] for api in api_list] + ["DIRECT"]
         }
     else:
         group_info = {
