@@ -46,9 +46,26 @@ def set_proxy_rule():
 @Kit.verify_token()
 def proxy_clash():
     # 下载网络接口
-    api_url = app.config["CLASH"]['api']
+    api_url = app.config["AGENT"]['api-data']
     http_result = requests.get(api_url)
     api_data = yaml.safe_load(http_result.text)
+
+    try:
+        flow_url = app.config["AGENT"]['flow-data']
+        http_result = requests.get(flow_url)
+        flow_data = http_result.text.split(":")[1].split(";")
+        tx_info = {"name": "TX={}".format(Kit.byte2all(flow_data[0].split("=")[1])),
+                   "type": "http", "server": "0.0.0.0", "port": 0}
+        rx_info = {"name": "RX={}".format(Kit.byte2all(flow_data[1].split("=")[1])),
+                   "type": "http", "server": "0.0.0.0", "port": 0}
+        all_info = {"name": "ALL={}".format(Kit.byte2all(flow_data[2].split("=")[1])),
+                    "type": "http", "server": "0.0.0.0", "port": 0}
+        traffic_info = [tx_info, rx_info, all_info]
+        flow_info = {"name": "TX/RX/ALL", "type": "select",
+                     "proxies": ["DIRECT"] + [it["name"] for it in traffic_info]}
+    except requests.exceptions.RequestException:
+        traffic_info = []
+        flow_info = {"name": "TX/RX/ALL", "type": "select", "proxies": ["DIRECT"]}
 
     # 预处理通用规则
     conn = app.mysql_pool.connection()
@@ -96,8 +113,9 @@ def proxy_clash():
 
     # 初始化配置信息
     clash_config = {
-        "proxies": foreign_list + transfer_list + domestic_list,
+        "proxies": foreign_list + transfer_list + domestic_list + traffic_info,
         "proxy-groups": [
+            flow_info,
             {
                 "name": "VAC", "type": "select",
                 "proxies": ["DIRECT", "CHK", "CTW", "USA", "SEA"]
