@@ -209,6 +209,9 @@ def pick_api(api_list, keywords):
 
 def proxy_group(group_name, api_list, mode="url-test", base_proxies=None,
                 test_url="https://www.gstatic.com/generate_204"):
+    if base_proxies is None:
+        base_proxies = []
+
     if mode == "url-test":
         group_info = {
             "name": group_name, "type": "url-test", "interval": 300, "url": test_url, "tolerance": 200,
