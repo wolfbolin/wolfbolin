@@ -207,20 +207,21 @@ def pick_api(api_list, keywords):
     return api_group
 
 
-def proxy_group(group_name, api_list, mode="url-test", test_url="https://www.gstatic.com/generate_204"):
+def proxy_group(group_name, api_list, mode="url-test", base_proxies=None,
+                test_url="https://www.gstatic.com/generate_204"):
     if mode == "url-test":
         group_info = {
             "name": group_name, "type": "url-test", "interval": 300, "url": test_url, "tolerance": 200,
-            "proxies": ["DIRECT"] + [api["name"] for api in api_list]
+            "proxies": base_proxies + [api["name"] for api in api_list]
         }
     elif mode == "fallback":
         group_info = {
             "name": group_name, "type": "fallback", "interval": 300, "url": test_url,
-            "proxies": [api["name"] for api in api_list] + ["DIRECT"]
+            "proxies": [api["name"] for api in api_list] + base_proxies
         }
     else:
         group_info = {
             "name": group_name, "type": "select",
-            "proxies": ["DIRECT"] + [api["name"] for api in api_list]
+            "proxies": base_proxies + [api["name"] for api in api_list]
         }
     return group_info
