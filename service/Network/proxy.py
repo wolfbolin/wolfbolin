@@ -141,15 +141,16 @@ def proxy_clash():
     private_data = json.loads(private_data)
     for group in private_data:
         clash_config["proxies"] += group["node"]
-        clash_config["proxy-groups"] += proxy_group(group["name"], group["node"], **group["config"]),
+        clash_config["proxy-groups"] += proxy_group(group["name"], group["node"], **group["params"]),
 
     # 基础节点列表
+    node_group_config = {"url": "https://www.gstatic.com/generate_204", "tolerance": 200}
     clash_config["proxy-groups"] += [
-        proxy_group("CHK", pick_api(foreign_list + transfer_list, ["香港"])),
-        proxy_group("CTW", pick_api(foreign_list + transfer_list, ["台湾"])),
-        proxy_group("JPN", pick_api(foreign_list + transfer_list, ["日本"])),
-        proxy_group("USA", pick_api(foreign_list + transfer_list, ["美国"])),
-        proxy_group("SEA", foreign_list + transfer_list),
+        proxy_group("CHK", pick_api(foreign_list + transfer_list, ["香港"]), config=node_group_config),
+        proxy_group("CTW", pick_api(foreign_list + transfer_list, ["台湾"]), config=node_group_config),
+        proxy_group("JPN", pick_api(foreign_list + transfer_list, ["日本"]), config=node_group_config),
+        proxy_group("USA", pick_api(foreign_list + transfer_list, ["美国"]), config=node_group_config),
+        proxy_group("SEA", foreign_list + transfer_list, config=node_group_config),
     ]
 
     return str(yaml.dump(clash_config, indent=4, allow_unicode=True, line_break="\r\n"))
@@ -207,19 +208,21 @@ def pick_api(api_list, keywords):
     return api_group
 
 
-def proxy_group(group_name, api_list, mode="url-test", base_proxies=None,
-                test_url="https://www.gstatic.com/generate_204"):
+def proxy_group(group_name, api_list, mode="url-test", base_proxies=None, config=None):
+    if config is None:
+        config = dict()
+
     if base_proxies is None:
         base_proxies = []
 
     if mode == "url-test":
         group_info = {
-            "name": group_name, "type": "url-test", "interval": 300, "url": test_url, "tolerance": 200,
+            "name": group_name, "type": "url-test", "interval": 300,
             "proxies": base_proxies + [api["name"] for api in api_list]
         }
     elif mode == "fallback":
         group_info = {
-            "name": group_name, "type": "fallback", "interval": 300, "url": test_url,
+            "name": group_name, "type": "fallback", "interval": 300,
             "proxies": [api["name"] for api in api_list] + base_proxies
         }
     else:
@@ -227,4 +230,6 @@ def proxy_group(group_name, api_list, mode="url-test", base_proxies=None,
             "name": group_name, "type": "select",
             "proxies": base_proxies + [api["name"] for api in api_list]
         }
+
+    group_info.update(config)
     return group_info
