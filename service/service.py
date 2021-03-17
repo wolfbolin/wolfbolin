@@ -104,7 +104,7 @@ def http_not_found(msg):
 
 @app.errorhandler(500)
 def service_error(msg):
-    app.logger.error("{}: <HTTP 400> {}".format(request.url, msg))
+    app.logger.error("{}: <HTTP 500> {}".format(request.url, msg))
     return Kit.common_rsp(str(msg)[15:], status='Internal Server Error')
 
 

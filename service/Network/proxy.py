@@ -47,12 +47,12 @@ def set_proxy_rule():
 def proxy_clash():
     # 下载网络接口
     api_url = app.config["AGENT"]['api-data']
-    http_result = requests.get(api_url)
+    http_result = requests.get(api_url, timeout=10)
     api_data = yaml.safe_load(http_result.text)
 
     try:
         flow_url = app.config["AGENT"]['flow-data']
-        http_result = requests.get(flow_url)
+        http_result = requests.get(flow_url, timeout=5)
         flow_data = http_result.text.split(":")[1].split(";")
         tx_info = {"name": "TX={}".format(Kit.byte2all(flow_data[0].split("=")[1])),
                    "type": "http", "server": "0.0.0.0", "port": 0}
