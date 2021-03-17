@@ -4,6 +4,7 @@ import re
 import sys
 import uuid
 import time
+import math
 import random
 import string
 import inspect
@@ -70,6 +71,17 @@ def process_bar(now, total, attach=''):
         bar += '%s>%d%%' % ('=' * bar_length, rate_num)
     sys.stdout.write(bar)
     sys.stdout.flush()
+
+
+def byte2all(byte, unit_list=None, split_str=""):
+    # 信息计量单位转换
+    if unit_list is None:
+        unit_list = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB']
+
+    unit = math.floor(math.log(int(byte), 1024))
+    unit = min(unit, len(unit_list))
+    num = int(byte) / math.pow(1024, unit)
+    return "{:.1f}{}{}".format(num, split_str, unit_list[unit])
 
 
 # Time tools

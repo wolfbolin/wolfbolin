@@ -33,7 +33,7 @@ def get_dns_domain():
         domain_list = []
         for domain in domain_data:
             domain_list.append(domain.name)
-        domain_list.sort(key=lambda it: len(it))
+        domain_list.sort()
 
         expire_time = Kit.unix_time() + 3600
         source = "fetch-{}".format(expire_time)
