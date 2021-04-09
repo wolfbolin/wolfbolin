@@ -24,5 +24,16 @@
         "desc": "在线支付实验性接口面板"
       }
     ]
+  },
+  {
+    "label": "util",
+    "name": "Utility",
+    "tool_list": [
+      {
+        "label": "mac",
+        "name": "MAC地址工具",
+        "desc": "可以用于一键转换MAC地址格式"
+      }
+    ]
   }
 ]
