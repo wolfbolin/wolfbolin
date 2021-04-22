@@ -223,7 +223,7 @@ def proxy_group(group_name, api_list, mode="url-test", base_proxies=None, config
     elif mode == "fallback":
         group_info = {
             "name": group_name, "type": "fallback", "interval": 300,
-            "proxies": [api["name"] for api in api_list] + base_proxies
+            "proxies": base_proxies + [api["name"] for api in api_list]
         }
     else:
         group_info = {
