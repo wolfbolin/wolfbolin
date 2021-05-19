@@ -1,4 +1,4 @@
-FROM python:3.7-slim-stretch
+FROM python:3.8-slim-buster
 LABEL maintainer="mailto@wolfbolin.com"
 
 # Why need these step?
