@@ -41,6 +41,7 @@
                 <el-table-column prop="record" min-width="120" label="记录"></el-table-column>
                 <el-table-column prop="domain" min-width="120" label="域名"></el-table-column>
                 <el-table-column prop="type" min-width="80" label="类型"></el-table-column>
+                <el-table-column prop="ttl" min-width="80" label="TTL"></el-table-column>
                 <el-table-column prop="value" min-width="200" label="记录值"></el-table-column>
                 <template v-if="edit_record_order">
                     <el-table-column label="操作" width="200">
@@ -57,7 +58,6 @@
                     </el-table-column>
                 </template>
                 <template v-if="~edit_record_order">
-                    <el-table-column prop="edit" min-width="80" label="编辑"></el-table-column>
                     <el-table-column label="操作" width="80">
                         <template slot-scope="scope">
                             <el-button size="mini" @click="edit_record(scope.$index, scope.row)">编辑</el-button>
@@ -90,7 +90,10 @@
                         </el-select>
                     </el-form-item>
                     <el-form-item label="记录值">
-                        <el-input type="textarea" v-model="edit_data.value" autosize></el-input>
+                        <el-input v-model="edit_data.value"></el-input>
+                    </el-form-item>
+                    <el-form-item label="TTL">
+                        <el-input v-model="edit_data.ttl" type="number" placeholder="120~3600s"></el-input>
                     </el-form-item>
                 </el-form>
                 <div slot="footer" class="dialog-footer">
@@ -209,6 +212,7 @@
                     record: "example",
                     status: "enable",
                     type: "A",
+                    ttl: "600",
                     value: "127.0.0.1",
                 }
                 this.edit_index = -1
