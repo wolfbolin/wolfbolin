@@ -1,13 +1,17 @@
 # coding=utf-8
+import json
+
 import pymysql
 
 
 def get_monitor_info(conn, hostname):
     cursor = conn.cursor(pymysql.cursors.DictCursor)
-    sql = "SELECT `hostname`,`boot_time`,`active_time`,`server_ip`,`status`,`manager` " \
+    sql = "SELECT `hostname`,`boot_time`,`active_time`,`domain`,`ip_list`,`status`,`manager` " \
           "FROM `monitor` WHERE `hostname`=%s"
     cursor.execute(query=sql, args=[hostname])
-    return cursor.fetchone()
+    record = cursor.fetchone()
+    record["ip_list"] = json.loads(record["ip_list"])
+    return record
 
 
 def update_active_time(conn, hostname, unix_time):
@@ -34,9 +38,9 @@ def update_host_status(conn, hostname, status):
     return cursor.rowcount
 
 
-def update_server_ip(conn, hostname, ip):
+def update_server_ip(conn, hostname, ip_list):
     cursor = conn.cursor(pymysql.cursors.DictCursor)
-    sql = "UPDATE `monitor` SET `server_ip`=%s WHERE `hostname`=%s"
-    cursor.execute(query=sql, args=[ip, hostname])
+    sql = "UPDATE `monitor` SET `ip_list`=%s WHERE `hostname`=%s"
+    cursor.execute(query=sql, args=[json.dumps(ip_list), hostname])
     conn.commit()
     return cursor.rowcount

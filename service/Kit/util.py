@@ -93,8 +93,12 @@ def req_check_hostname(func):
     @wraps(func)
     def check_hostname(*args, **kwargs):
         server_info = request.get_json()
-        server_index = app.config.get("HOST")
-        if server_info["hostname"] not in server_index:
+        conn = app.mysql_pool.connection()
+        cursor = conn.cursor()
+        sql = "SELECT COUNT(*) FROM `monitor` WHERE `hostname`=%s"
+        cursor.execute(sql, args=[server_info["hostname"]])
+        num = cursor.fetchone()[0]
+        if num != 1:
             return Kit.common_rsp("Unknown server", status="Forbidden")
         return func(*args, **kwargs)
 
@@ -106,7 +110,7 @@ def req_check_unixtime(func):
     def check_unixtime(*args, **kwargs):
         server_info = request.get_json()
         time_now = Kit.unix_time()
-        if abs(time_now - int(server_info["unix_time"])) > 300:
+        if abs(time_now - int(server_info["unix_time"])) > 30:
             return Kit.common_rsp("The message has expired", status="Forbidden")
         return func(*args, **kwargs)
 

@@ -7,12 +7,9 @@ from Monitor import database as db
 from flask import current_app as app
 from .common import modify_server_domain
 
-g_server_location_key = {"hostname", "unix_time", "server_ip"}
-g_server_heartbeat_key = {"hostname", "unix_time", "boot_time"}
-
 
 @Monitor.monitor_blue.route("/server/report/heartbeat", methods=["POST"])
-@Kit.req_check_json_key(g_server_heartbeat_key)
+@Kit.req_check_json_key({"hostname", "unix_time", "boot_time"})
 @Kit.req_check_hostname
 @Kit.req_check_unixtime
 @Kit.verify_token()
@@ -28,14 +25,14 @@ def server_report_heartbeat():
     result = {
         "msg": "Success;Update server info success"
     }
-    if abs(time_now - int(server_info["unix_time"])) > 60:
+    if abs(time_now - int(server_info["unix_time"])) > 30:
         result["msg"] += "(The clock needs to be updated)"
 
     return Kit.common_rsp(result)
 
 
 @Monitor.monitor_blue.route("/server/report/location", methods=["POST"])
-@Kit.req_check_json_key(g_server_location_key)
+@Kit.req_check_json_key({"hostname", "unix_time", "ip_list"})
 @Kit.req_check_hostname
 @Kit.req_check_unixtime
 @Kit.verify_token()
@@ -43,21 +40,17 @@ def server_report_location():
     server_info = request.get_json()
     conn = app.mysql_pool.connection()
 
-    client_ip = request.headers.get("X-Real-IP", "0.0.0.0")
-    # 链路真实性验证
-    if server_info["hostname"] != "test-wolfbolin" and server_info["server_ip"] != client_ip:
-        return Kit.common_rsp("Reject IP", status="Forbidden")
-
     # 检查DNS记录
     result = {
         "msg": "Nothing to do"
     }
     cache_info = db.get_monitor_info(conn, server_info["hostname"])
-    if cache_info is None or cache_info["server_ip"] != server_info["server_ip"]:
-        server_index = app.config.get("HOST")
-        server_domain = server_index[server_info["hostname"]]
-        result["msg"] = modify_server_domain(server_domain, server_info["server_ip"])
-        db.update_server_ip(conn, server_info["hostname"], client_ip)
+    if cache_info is None:
+        result["msg"] = "Create config record first"
+    elif cache_info["ip_list"] != server_info["ip_list"]:
+        server_domain = cache_info["domain"]
+        result["msg"] = modify_server_domain(server_domain, server_info["ip_list"])
+        db.update_server_ip(conn, server_info["hostname"], server_info["ip_list"])
 
     return Kit.common_rsp(result)
 
