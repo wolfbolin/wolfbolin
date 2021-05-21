@@ -15,6 +15,7 @@ def modify_server_domain(sub_domain, ip_list):
     for record in record_list:
         if record.name == sub_domain:
             record.value = ip_list[it_ip]
+            record.ttl = 120
             record.modify()
             it_ip += 1
 
