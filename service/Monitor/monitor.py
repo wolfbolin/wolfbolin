@@ -69,55 +69,53 @@ def server_check():
 
     # 检查上报时间
     check_result = []
-    server_domain = app.config.get("HOST")
-    check_list = app.config.get("CHECK_LIST")
-    for hostname in check_list.keys():
-        if check_list[hostname] == "ignore":
+    monitor_list = db.get_monitor_list(conn)
+    for monitor_record in monitor_list:
+        if monitor_record["check"] == "ignore":
             continue
 
         health_status = {
-            "hostname": hostname
+            "hostname": monitor_record["hostname"]
         }
 
-        server_info = db.get_monitor_info(conn, hostname)
-        if server_info is None:
+        if monitor_record is None:
             health_status["comment"] = "System not enabled"
             check_result.append(health_status)
             continue
 
-        dt_time = abs(int(server_info["active_time"]) - time_now)
-        if server_info["status"] == "online" and dt_time < expire_time:
+        dt_time = abs(int(monitor_record["active_time"]) - time_now)
+        if monitor_record["status"] == "online" and dt_time < expire_time:
             # 保持在线
             health_status["comment"] = "System keeps online"
             msg_text = None
-        elif server_info["status"] == "offline" and dt_time >= expire_time:
+        elif monitor_record["status"] == "offline" and dt_time >= expire_time:
             # 保持下线
             health_status["comment"] = "System remains offline"
             msg_text = None
-        elif server_info["status"] == "online" and dt_time >= expire_time:
+        elif monitor_record["status"] == "online" and dt_time >= expire_time:
             # 主机下线
-            db.update_host_status(conn, hostname, "offline")
+            db.update_host_status(conn, monitor_record["hostname"], "offline")
             health_status["comment"] = "System offline"
             msg_text = "异常下线"
-        elif server_info["status"] == "offline" and dt_time < expire_time:
+        elif monitor_record["status"] == "offline" and dt_time < expire_time:
             # 主机上线
-            db.update_host_status(conn, hostname, "online")
+            db.update_host_status(conn, monitor_record["hostname"], "online")
             health_status["comment"] = "System online"
             msg_text = "恢复上线"
         else:
-            app.logger.info("未知状况：status:{},dt_time:{}".format(server_info["status"], dt_time))
+            app.logger.info("未知状况：status:{},dt_time:{}".format(monitor_record["status"], dt_time))
             health_status["comment"] = "System unknown status"
             msg_text = None
 
         if msg_text is not None:
             msg_format = "发送提醒：主机{}状态变更[{}]：active_time: {} <=> time_now: {}"
-            active_time = Kit.unix2timestamp(int(server_info["active_time"]))
+            active_time = Kit.unix2timestamp(int(monitor_record["active_time"]))
             timestamp_now = Kit.unix2timestamp(time_now)
-            app.logger.info(msg_format.format(hostname, msg_text, active_time, timestamp_now))
+            app.logger.info(msg_format.format(monitor_record["hostname"], msg_text, active_time, timestamp_now))
 
             # 发送提示
-            user_list = json.loads(server_info["manager"])
-            title = "{}主机{}".format(hostname.split("-")[0], msg_text)
+            user_list = json.loads(monitor_record["manager"])
+            title = "{}主机{}".format(monitor_record["hostname"].split("-")[0], msg_text)
             text = "设备状态变化\n\n" + \
                    "服务主机：{}\n\n" + \
                    "服务域名：{}\n\n" + \
@@ -125,8 +123,9 @@ def server_check():
                    "网络信息：{}\n\n" + \
                    "活跃时间：{}\n\n" + \
                    "启动时间：{}\n\n"
-            text = text.format(hostname, server_domain[hostname], msg_text, server_info["server_ip"],
-                               Kit.unix2timestamp(server_info["active_time"]), server_info["boot_time"])
+            text = text.format(monitor_record["hostname"], monitor_record["domain"], msg_text,
+                               monitor_record["server_ip"],
+                               Kit.unix2timestamp(monitor_record["active_time"]), monitor_record["boot_time"])
             health_status["msg_res"] = []
             for user in user_list:
                 msg_res = Kit.send_sugar_message(app.config, user, "service", title, text)

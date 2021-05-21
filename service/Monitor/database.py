@@ -4,6 +4,16 @@ import json
 import pymysql
 
 
+def get_monitor_list(conn):
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
+    sql = "SELECT `hostname`,`boot_time`,`active_time`,`domain`,`ip_list`,`status`,`manager`,`check` FROM `monitor`"
+    cursor.execute(query=sql)
+    monitor_list = cursor.fetchall()
+    for item in monitor_list:
+        item["ip_list"] = json.loads(item["ip_list"])
+    return monitor_list
+
+
 def get_monitor_info(conn, hostname):
     cursor = conn.cursor(pymysql.cursors.DictCursor)
     sql = "SELECT `hostname`,`boot_time`,`active_time`,`domain`,`ip_list`,`status`,`manager` " \
