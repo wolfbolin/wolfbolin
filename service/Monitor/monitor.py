@@ -124,7 +124,7 @@ def server_check():
                    "活跃时间：{}\n\n" + \
                    "启动时间：{}\n\n"
             text = text.format(monitor_record["hostname"], monitor_record["domain"], msg_text,
-                               monitor_record["server_ip"],
+                               "/".join(json.loads(monitor_record["ip_list"])),
                                Kit.unix2timestamp(monitor_record["active_time"]), monitor_record["boot_time"])
             health_status["msg_res"] = []
             for user in user_list:
