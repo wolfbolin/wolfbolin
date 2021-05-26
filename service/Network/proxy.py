@@ -82,8 +82,8 @@ def proxy_clash():
     rule_list.append("IP-CIDR,127.0.0.0/8,DIRECT")
     rule_list.append("IP-CIDR,172.16.0.0/12,DIRECT")
     rule_list.append("IP-CIDR,192.168.0.0/16,DIRECT")
-    rule_list.append("GEOIP,CN,LAN")
-    rule_list.append("MATCH,LAN")
+    rule_list.append("GEOIP,CN,ALL")
+    rule_list.append("MATCH,ALL")
 
     # 代理配置分类归档
     foreign_list = []
@@ -129,7 +129,7 @@ def proxy_clash():
                 "proxies": ["DIRECT", "CHK", "CTW", "USA", "SEA"]
             },
             {
-                "name": "LAN", "type": "select",
+                "name": "ALL", "type": "select",
                 "proxies": ["DIRECT", "CHK", "CTW", "USA", "SEA"]
             }
         ],
@@ -196,7 +196,7 @@ def add_domain(proxy_status, proxy_rule, domain, rule):
     if proxy_status:
         proxy_rule.append("{},{},VAC".format(rule, domain))
     else:
-        proxy_rule.append("{},{},LAN".format(rule, domain))
+        proxy_rule.append("{},{},ALL".format(rule, domain))
 
 
 def pick_api(api_list, keywords):
