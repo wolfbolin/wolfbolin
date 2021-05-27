@@ -170,7 +170,7 @@ def set_domain_record(domain):
             continue
         app.logger.info("[DNS]添加解析{}.{}".format(commit_record_list[it]['record'], domain.name))
         record = DNSPodX.Record(user, domain, commit_record_list[it]['record'], commit_record_list[it]['type'],
-                                commit_record_list[it]['value'], "默认", 600, 0, "enabled")
+                                commit_record_list[it]['value'], "默认", commit_record_list[it]["ttl"], 0, "enabled")
         record.create()
 
     # 刷新DNS解析缓存
