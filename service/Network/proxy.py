@@ -203,6 +203,8 @@ def pick_api(api_list, keywords):
     api_group = []
     for api in api_list:
         for keyword in keywords:
+            if "仅海外" in api["name"]:
+                continue
             if keyword in api["name"]:
                 api_group.append(api)
     return api_group
