@@ -46,26 +46,50 @@ def set_proxy_rule():
 @Kit.verify_token()
 def proxy_clash():
     # 下载网络接口
-    api_url = app.config["AGENT"]['api-data']
-    http_result = requests.get(api_url, timeout=10)
-    api_data = yaml.safe_load(http_result.text)
+    node_list = []
+    service_list = app.config["AGENT"]['service'].split(";")
+    for id, service in enumerate(service_list):
+        api_url = app.config["AGENT"]['{}_api'.format(service)]
 
+        try:
+            http_result = requests.get(api_url, timeout=10)
+        except requests.exceptions:
+            continue
+
+        api_data = yaml.safe_load(http_result.text)
+        if "Proxy" in api_data.keys():
+            api_data["proxies"] = api_data["Proxy"]
+
+        for node in api_data["proxies"]:
+            node["source"] = "S{}".format(id + 1)
+            node_list.append(node)
+
+    # 流量数据计算
     try:
-        flow_url = app.config["AGENT"]['flow-data']
-        http_result = requests.get(flow_url, timeout=5)
-        flow_data = http_result.text.split(":")[1].split(";")
-        tx_info = {"name": "TX={}".format(Kit.byte2all(flow_data[0].split("=")[1])),
+        flow_data = [0, 0, 0]
+        for service in service_list:
+            flow_url = app.config["AGENT"]['{}_flow'.format(service)]
+            try:
+                http_result = requests.get(flow_url, timeout=10)
+                flow_res = http_result.text.split(":")[1].split(";")
+                flow_data[0] += int(flow_res[0].split("=")[1])
+                flow_data[1] += int(flow_res[1].split("=")[1])
+                flow_data[2] += int(flow_res[2].split("=")[1])
+            except requests.exceptions:
+                continue
+
+        tx_info = {"name": "TX={}".format(Kit.byte2all(flow_data[0])),
                    "type": "http", "server": "0.0.0.0", "port": 0}
-        rx_info = {"name": "RX={}".format(Kit.byte2all(flow_data[1].split("=")[1])),
+        rx_info = {"name": "RX={}".format(Kit.byte2all(flow_data[1])),
                    "type": "http", "server": "0.0.0.0", "port": 0}
-        all_info = {"name": "ALL={}".format(Kit.byte2all(flow_data[2].split("=")[1])),
+        all_info = {"name": "ALL={}".format(Kit.byte2all(flow_data[2])),
                     "type": "http", "server": "0.0.0.0", "port": 0}
         traffic_info = [tx_info, rx_info, all_info]
-        flow_info = {"name": "TX/RX/ALL", "type": "select",
+        flow_data = {"name": "TX/RX/ALL", "type": "select",
                      "proxies": ["DIRECT"] + [it["name"] for it in traffic_info]}
     except requests.exceptions.RequestException:
         traffic_info = []
-        flow_info = {"name": "TX/RX/ALL", "type": "select", "proxies": ["DIRECT"]}
+        flow_data = {"name": "TX/RX/ALL", "type": "select", "proxies": ["DIRECT"]}
 
     # 预处理通用规则
     conn = app.mysql_pool.connection()
@@ -90,32 +114,35 @@ def proxy_clash():
     transfer_list = []
     domestic_list = []
 
-    if "Proxy" in api_data.keys():
-        api_data["proxies"] = api_data["Proxy"]
-    if "Proxy Group" in api_data.keys():
-        api_data["proxy-groups"] = api_data["Proxy Group"]
-    if "Rule" in api_data.keys():
-        api_data["rules"] = api_data["Rule"]
-
-    for api in api_data["proxies"]:
+    for api in node_list:
         for keyword in remove_keyword:
             api["name"] = api["name"].replace(keyword, "")
         api["name"] = api["name"].strip()
+        api["name"] = api["name"].replace("(SS)", "[SS]")
+        if api["name"].find("特殊") >= 0:
+            continue
+        if api["name"].find("仅海外") >= 0:
+            continue
         if api["name"].find("回国") >= 0:
             api["name"] = api["name"].replace("回国-", "")
             api["name"] = "【国内】" + api["name"]
             domestic_list.append(api)
+        elif api["name"].find("->") >= 0:
+            api["name"] = "【中转】" + api["name"]
+            transfer_list.append(api)
         elif api["name"].find("中转") >= 0:
+            api["name"] = "【中转】" + api["name"]
             transfer_list.append(api)
         else:
             api["name"] = "【海外】" + api["name"]
             foreign_list.append(api)
+        api["name"] = "{}@{}".format(api["name"], api["source"])
 
     # 初始化配置信息
     clash_config = {
         "proxies": foreign_list + transfer_list + domestic_list + traffic_info,
         "proxy-groups": [
-            flow_info,
+            flow_data,
             {
                 "name": "VAC", "type": "select",
                 "proxies": ["DIRECT", "CHK", "CTW", "USA", "SEA"]
