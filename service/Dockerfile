@@ -1,4 +1,4 @@
-FROM python:3.7-slim-stretch
+FROM python:3.8-slim-buster
 LABEL maintainer="mailto@wolfbolin.com"
 
 # Why need these step?
@@ -18,8 +18,8 @@ ENV SERVICE_ENV production
 WORKDIR /var/app
 COPY . /var/app
 
-RUN pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --upgrade pip \
-    && pip install -i https://pypi.tuna.tsinghua.edu.cn/simple gunicorn \
-    && pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
+RUN pip install -i https://mirrors.cloud.tencent.com/pypi/simple --upgrade pip \
+    && pip install -i https://mirrors.cloud.tencent.com/pypi/simple gunicorn \
+    && pip install -i https://mirrors.cloud.tencent.com/pypi/simple -r requirements.txt
 
 CMD ["gunicorn","-c","gunicorn.py","service:app"]

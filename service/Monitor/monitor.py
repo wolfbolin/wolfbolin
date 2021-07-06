@@ -7,12 +7,9 @@ from Monitor import database as db
 from flask import current_app as app
 from .common import modify_server_domain
 
-g_server_location_key = {"hostname", "unix_time", "server_ip"}
-g_server_heartbeat_key = {"hostname", "unix_time", "boot_time"}
-
 
 @Monitor.monitor_blue.route("/server/report/heartbeat", methods=["POST"])
-@Kit.req_check_json_key(g_server_heartbeat_key)
+@Kit.req_check_json_key({"hostname", "unix_time", "boot_time"})
 @Kit.req_check_hostname
 @Kit.req_check_unixtime
 @Kit.verify_token()
@@ -28,14 +25,14 @@ def server_report_heartbeat():
     result = {
         "msg": "Success;Update server info success"
     }
-    if abs(time_now - int(server_info["unix_time"])) > 60:
+    if abs(time_now - int(server_info["unix_time"])) > 30:
         result["msg"] += "(The clock needs to be updated)"
 
     return Kit.common_rsp(result)
 
 
 @Monitor.monitor_blue.route("/server/report/location", methods=["POST"])
-@Kit.req_check_json_key(g_server_location_key)
+@Kit.req_check_json_key({"hostname", "unix_time", "ip_list"})
 @Kit.req_check_hostname
 @Kit.req_check_unixtime
 @Kit.verify_token()
@@ -43,21 +40,17 @@ def server_report_location():
     server_info = request.get_json()
     conn = app.mysql_pool.connection()
 
-    client_ip = request.headers.get("X-Real-IP", "0.0.0.0")
-    # 链路真实性验证
-    if server_info["hostname"] != "test-wolfbolin" and server_info["server_ip"] != client_ip:
-        return Kit.common_rsp("Reject IP", status="Forbidden")
-
     # 检查DNS记录
     result = {
         "msg": "Nothing to do"
     }
     cache_info = db.get_monitor_info(conn, server_info["hostname"])
-    if cache_info is None or cache_info["server_ip"] != server_info["server_ip"]:
-        server_index = app.config.get("HOST")
-        server_domain = server_index[server_info["hostname"]]
-        result["msg"] = modify_server_domain(server_domain, server_info["server_ip"])
-        db.update_server_ip(conn, server_info["hostname"], client_ip)
+    if cache_info is None:
+        result["msg"] = "Create config record first"
+    elif cache_info["ip_list"] != server_info["ip_list"]:
+        server_domain = cache_info["domain"]
+        result["msg"] = modify_server_domain(server_domain, server_info["ip_list"])
+        db.update_server_ip(conn, server_info["hostname"], server_info["ip_list"])
 
     return Kit.common_rsp(result)
 
@@ -76,55 +69,53 @@ def server_check():
 
     # 检查上报时间
     check_result = []
-    server_domain = app.config.get("HOST")
-    check_list = app.config.get("CHECK_LIST")
-    for hostname in check_list.keys():
-        if check_list[hostname] == "ignore":
+    monitor_list = db.get_monitor_list(conn)
+    for monitor_record in monitor_list:
+        if monitor_record["check"] == "ignore":
             continue
 
         health_status = {
-            "hostname": hostname
+            "hostname": monitor_record["hostname"]
         }
 
-        server_info = db.get_monitor_info(conn, hostname)
-        if server_info is None:
+        if monitor_record is None:
             health_status["comment"] = "System not enabled"
             check_result.append(health_status)
             continue
 
-        dt_time = abs(int(server_info["active_time"]) - time_now)
-        if server_info["status"] == "online" and dt_time < expire_time:
+        dt_time = abs(int(monitor_record["active_time"]) - time_now)
+        if monitor_record["status"] == "online" and dt_time < expire_time:
             # 保持在线
             health_status["comment"] = "System keeps online"
             msg_text = None
-        elif server_info["status"] == "offline" and dt_time >= expire_time:
+        elif monitor_record["status"] == "offline" and dt_time >= expire_time:
             # 保持下线
             health_status["comment"] = "System remains offline"
             msg_text = None
-        elif server_info["status"] == "online" and dt_time >= expire_time:
+        elif monitor_record["status"] == "online" and dt_time >= expire_time:
             # 主机下线
-            db.update_host_status(conn, hostname, "offline")
+            db.update_host_status(conn, monitor_record["hostname"], "offline")
             health_status["comment"] = "System offline"
             msg_text = "异常下线"
-        elif server_info["status"] == "offline" and dt_time < expire_time:
+        elif monitor_record["status"] == "offline" and dt_time < expire_time:
             # 主机上线
-            db.update_host_status(conn, hostname, "online")
+            db.update_host_status(conn, monitor_record["hostname"], "online")
             health_status["comment"] = "System online"
             msg_text = "恢复上线"
         else:
-            app.logger.info("未知状况：status:{},dt_time:{}".format(server_info["status"], dt_time))
+            app.logger.info("未知状况：status:{},dt_time:{}".format(monitor_record["status"], dt_time))
             health_status["comment"] = "System unknown status"
             msg_text = None
 
         if msg_text is not None:
             msg_format = "发送提醒：主机{}状态变更[{}]：active_time: {} <=> time_now: {}"
-            active_time = Kit.unix2timestamp(int(server_info["active_time"]))
+            active_time = Kit.unix2timestamp(int(monitor_record["active_time"]))
             timestamp_now = Kit.unix2timestamp(time_now)
-            app.logger.info(msg_format.format(hostname, msg_text, active_time, timestamp_now))
+            app.logger.info(msg_format.format(monitor_record["hostname"], msg_text, active_time, timestamp_now))
 
             # 发送提示
-            user_list = json.loads(server_info["manager"])
-            title = "{}主机{}".format(hostname.split("-")[0], msg_text)
+            user_list = json.loads(monitor_record["manager"])
+            title = "{}主机{}".format(monitor_record["hostname"].split("-")[0], msg_text)
             text = "设备状态变化\n\n" + \
                    "服务主机：{}\n\n" + \
                    "服务域名：{}\n\n" + \
@@ -132,8 +123,9 @@ def server_check():
                    "网络信息：{}\n\n" + \
                    "活跃时间：{}\n\n" + \
                    "启动时间：{}\n\n"
-            text = text.format(hostname, server_domain[hostname], msg_text, server_info["server_ip"],
-                               Kit.unix2timestamp(server_info["active_time"]), server_info["boot_time"])
+            text = text.format(monitor_record["hostname"], monitor_record["domain"], msg_text,
+                               "/".join(monitor_record["ip_list"]),
+                               Kit.unix2timestamp(monitor_record["active_time"]), monitor_record["boot_time"])
             health_status["msg_res"] = []
             for user in user_list:
                 msg_res = Kit.send_sugar_message(app.config, user, "service", title, text)

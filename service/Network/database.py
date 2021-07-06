@@ -12,20 +12,20 @@ def delete_domain_record(conn, domain):
 
 def insert_domain_record(conn, record_list):
     cursor = conn.cursor()
-    sql = "INSERT `dns_info`(`record`,`domain`,`value`,`status`,`type`,`id`)" \
-          "VALUES(%s,%s,%s,%s,%s,%s)"
+    sql = "INSERT `dns_info`(`record`,`domain`,`value`,`status`,`type`,`ttl`,`id`)" \
+          "VALUES(%s,%s,%s,%s,%s,%s,%s)"
     for record in record_list:
         cursor.execute(query=sql, args=[record["record"], record["domain"], record["value"],
-                                        record["status"], record["type"], record["id"]])
+                                        record["status"], record["type"], record["ttl"], record["id"]])
     conn.commit()
     return cursor.rowcount
 
 
 def get_domain_record(conn, domain):
     cursor = conn.cursor(pymysql.cursors.DictCursor)
-    sql = "SELECT `domain`,`record`,`value`,`status`,`type`,`id` FROM `dns_info` WHERE `domain`=%s"
+    sql = "SELECT `domain`,`record`,`value`,`status`,`type`,`ttl`,`id` FROM `dns_info` WHERE `domain`=%s"
     cursor.execute(query=sql, args=[domain])
-    return cursor.fetchall()
+    return list(cursor.fetchall())
 
 
 def read_proxy_rule(conn):

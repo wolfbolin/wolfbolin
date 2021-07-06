@@ -82,6 +82,7 @@ def get_domain_record(domain):
                 "value": record.value,
                 "status": record.status,
                 "type": record.r_type,
+                "ttl": record.ttl,
                 "id": record.r_id,
             })
         record_list.sort(key=lambda r: int(r["id"]))
@@ -149,11 +150,13 @@ def set_domain_record(domain):
 
         # 对比内容以修改
         if commit_record_list[it]["record"] != record.name \
+                or commit_record_list[it]["ttl"] != record.ttl \
                 or commit_record_list[it]["value"] != record.value \
                 or commit_record_list[it]["type"] != record.r_type:
             record.name = commit_record_list[it]["record"]
             record.r_type = commit_record_list[it]["type"]
             record.value = commit_record_list[it]["value"]
+            record.ttl = commit_record_list[it]["ttl"]
             record.modify()
             app.logger.info("[DNS]标记修改{}.{}".format(record.name, record.domain.name))
             it += 1
@@ -167,7 +170,7 @@ def set_domain_record(domain):
             continue
         app.logger.info("[DNS]添加解析{}.{}".format(commit_record_list[it]['record'], domain.name))
         record = DNSPodX.Record(user, domain, commit_record_list[it]['record'], commit_record_list[it]['type'],
-                                commit_record_list[it]['value'], "默认", 600, 0, "enabled")
+                                commit_record_list[it]['value'], "默认", commit_record_list[it]["ttl"], 0, "enabled")
         record.create()
 
     # 刷新DNS解析缓存
@@ -181,6 +184,7 @@ def set_domain_record(domain):
             "value": record.value,
             "status": record.status,
             "type": record.r_type,
+            "ttl": record.ttl,
             "id": record.r_id,
         })
     record_list.sort(key=lambda r: int(r["id"]))
