@@ -75,10 +75,6 @@ def proxy_node_list():
             if "Proxy" in api_data.keys():
                 api_data["proxies"] = api_data["Proxy"]
 
-            if len(api_data["proxies"]) == 0:
-                error_list.append("{}=[]".format(source))
-                continue
-
             for node in api_data["proxies"]:
                 node["source"] = source
                 node_list.append(node)
@@ -89,9 +85,14 @@ def proxy_node_list():
             flow_data[1] += int(flow_res[1].split("=")[1])
             flow_data[2] += int(flow_res[2].split("=")[1])
 
+        if len(node_list) != 0:
+            Kit.set_app_pair(conn, "proxy", "node_list", json.dumps(node_list))
+            Kit.set_app_pair(conn, "proxy", "flow_data", json.dumps(flow_data))
+            if len(error_list) == 0:
+                error_list = ["OK for all"]
+        else:
+            error_list = ["All service core"]
         Kit.set_app_pair(conn, "proxy", "error_list", json.dumps(";".join(error_list)))
-        Kit.set_app_pair(conn, "proxy", "node_list", json.dumps(node_list))
-        Kit.set_app_pair(conn, "proxy", "flow_data", json.dumps(flow_data))
         Kit.set_app_pair(conn, "proxy", "timestamp", Kit.unix_time())
 
     if echo == "true":
