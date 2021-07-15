@@ -42,57 +42,92 @@ def set_proxy_rule():
     return Kit.common_rsp(rule_list)
 
 
+@Network.network_blue.route('/proxy/clash/node', methods=["GET"])
+@Kit.verify_token()
+def proxy_node_list():
+    method = request.args.get("refresh", "false")
+    echo = request.args.get("echo", "false")
+
+    req_result = {"count": 0}
+    conn = app.mysql_pool.connection()
+
+    if method == "true":
+        # 读取节点源
+        service_source = app.config["AGENT"]['service'].split(";")
+
+        # 更新源信息
+        node_list = []
+        flow_data = [0, 0, 0]
+        error_list = []
+        for source in service_source:
+            api_url = app.config["AGENT"]['{}_api'.format(source)]
+            flow_url = app.config["AGENT"]['{}_flow'.format(source)]
+
+            try:
+                api_result = requests.get(api_url, timeout=10)
+                flow_result = requests.get(flow_url, timeout=10)
+            except requests.exceptions.RequestException:
+                error_list.append("{}=X".format(source))
+                continue
+
+            # 处理节点新
+            api_data = yaml.safe_load(api_result.text)
+            if "Proxy" in api_data.keys():
+                api_data["proxies"] = api_data["Proxy"]
+
+            if len(api_data["proxies"]) == 0:
+                error_list.append("{}=[]".format(source))
+                continue
+
+            for node in api_data["proxies"]:
+                node["source"] = source
+                node_list.append(node)
+
+            # 处理流量信息
+            flow_res = flow_result.text.split(":")[1].split(";")
+            flow_data[0] += int(flow_res[0].split("=")[1])
+            flow_data[1] += int(flow_res[1].split("=")[1])
+            flow_data[2] += int(flow_res[2].split("=")[1])
+
+        Kit.set_app_pair(conn, "proxy", "error_list", json.dumps(";".join(error_list)))
+        Kit.set_app_pair(conn, "proxy", "node_list", json.dumps(node_list))
+        Kit.set_app_pair(conn, "proxy", "flow_data", json.dumps(flow_data))
+        Kit.set_app_pair(conn, "proxy", "timestamp", Kit.unix_time())
+
+    if echo == "true":
+        req_result["node_list"] = json.loads(Kit.get_app_pair(conn, "proxy", "node_list"))
+        req_result["flow_data"] = json.loads(Kit.get_app_pair(conn, "proxy", "flow_data"))
+        req_result["timestamp"] = json.loads(Kit.get_app_pair(conn, "proxy", "timestamp"))
+        req_result["count"] = len(req_result["node_list"])
+
+    return Kit.common_rsp(req_result)
+
+
 @Network.network_blue.route('/proxy/clash', methods=["GET"])
 @Kit.verify_token()
 def proxy_clash():
-    # 下载网络接口
-    node_list = []
-    service_list = app.config["AGENT"]['service'].split(";")
-    for id, service in enumerate(service_list):
-        api_url = app.config["AGENT"]['{}_api'.format(service)]
+    # 获取节点数据
+    conn = app.mysql_pool.connection()
+    error_list = json.loads(Kit.get_app_pair(conn, "proxy", "error_list"))
+    node_list = json.loads(Kit.get_app_pair(conn, "proxy", "node_list"))
+    flow_data = json.loads(Kit.get_app_pair(conn, "proxy", "flow_data"))
+    timestamp = Kit.get_app_pair(conn, "proxy", "timestamp")
 
-        try:
-            http_result = requests.get(api_url, timeout=10)
-        except requests.exceptions:
-            continue
-
-        api_data = yaml.safe_load(http_result.text)
-        if "Proxy" in api_data.keys():
-            api_data["proxies"] = api_data["Proxy"]
-
-        for node in api_data["proxies"]:
-            node["source"] = "S{}".format(id + 1)
-            node_list.append(node)
-
-    # 流量数据计算
-    try:
-        flow_data = [0, 0, 0]
-        for service in service_list:
-            flow_url = app.config["AGENT"]['{}_flow'.format(service)]
-            try:
-                http_result = requests.get(flow_url, timeout=10)
-                flow_res = http_result.text.split(":")[1].split(";")
-                flow_data[0] += int(flow_res[0].split("=")[1])
-                flow_data[1] += int(flow_res[1].split("=")[1])
-                flow_data[2] += int(flow_res[2].split("=")[1])
-            except requests.exceptions:
-                continue
-
-        tx_info = {"name": "TX={}".format(Kit.byte2all(flow_data[0])),
-                   "type": "http", "server": "0.0.0.0", "port": 0}
-        rx_info = {"name": "RX={}".format(Kit.byte2all(flow_data[1])),
-                   "type": "http", "server": "0.0.0.0", "port": 0}
-        all_info = {"name": "ALL={}".format(Kit.byte2all(flow_data[2])),
-                    "type": "http", "server": "0.0.0.0", "port": 0}
-        traffic_info = [tx_info, rx_info, all_info]
-        flow_data = {"name": "TX/RX/ALL", "type": "select",
-                     "proxies": ["DIRECT"] + [it["name"] for it in traffic_info]}
-    except requests.exceptions.RequestException:
-        traffic_info = []
-        flow_data = {"name": "TX/RX/ALL", "type": "select", "proxies": ["DIRECT"]}
+    tx_info = {"name": "TX={}".format(Kit.byte2all(flow_data[0])),
+               "type": "http", "server": "0.0.0.0", "port": 0}
+    rx_info = {"name": "RX={}".format(Kit.byte2all(flow_data[1])),
+               "type": "http", "server": "0.0.0.0", "port": 0}
+    all_info = {"name": "ALL={}".format(Kit.byte2all(flow_data[2])),
+                "type": "http", "server": "0.0.0.0", "port": 0}
+    time_info = {"name": Kit.unix2timestamp(timestamp),
+                 "type": "http", "server": "0.0.0.0", "port": 0}
+    err_info = {"name": error_list,
+                "type": "http", "server": "0.0.0.0", "port": 0}
+    traffic_info = [tx_info, rx_info, all_info, time_info, err_info]
+    flow_data = {"name": "TX/RX/ALL", "type": "select",
+                 "proxies": ["DIRECT"] + [it["name"] for it in traffic_info]}
 
     # 预处理通用规则
-    conn = app.mysql_pool.connection()
     gfw_list = Kit.get_app_pair(conn, "proxy", "gfwlist")
     gfw_data = base64.b64decode(gfw_list).decode()
     gfw_rule = parse_gfw_rule(gfw_data)
