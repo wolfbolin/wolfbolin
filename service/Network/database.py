@@ -28,10 +28,10 @@ def get_domain_record(conn, domain):
     return list(cursor.fetchall())
 
 
-def read_proxy_rule(conn):
+def read_proxy_rule(conn, user):
     cursor = conn.cursor(pymysql.cursors.DictCursor)
-    sql = "SELECT * FROM `proxy_rule`"
-    cursor.execute(sql)
+    sql = "SELECT * FROM `proxy_rule` WHERE `user`=%s"
+    cursor.execute(sql, args=[user])
     return cursor.fetchall()
 
 

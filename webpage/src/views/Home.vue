@@ -243,15 +243,15 @@
 </script>
 
 <style lang="scss" scoped>
-    @import "~@/assets/css/timeline.css";
+    @import "../assets/css/timeline.css";
 
     @font-face {
         font-family: bmxuyuanx;
-        src: url('~@/assets/ttf/BMXY-WolfBolin.ttf')
+        src: url('../assets/ttf/BMXY-WolfBolin.ttf')
     }
 
     .wb-home {
-        background: url("~@/assets/img/cover.jpg") no-repeat fixed top;
+        background: url("../assets/img/cover.jpg") no-repeat fixed top;
         /* background 必在 background-size 前 */
         background-size: cover;
         position: relative;

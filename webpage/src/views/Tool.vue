@@ -13,21 +13,37 @@
                         <div class="wb-part">
                             <el-card class="wb-login">
                                 <div slot="header" class="login-header">
-                                    <span>身份验证</span>
+                                    <span>网络验证</span>
                                 </div>
                                 <div class="login-body">
-                                    <el-input type="password" placeholder="请输入秘钥" v-model="user_token"
-                                              @keyup.enter.native="check_token" autofocus clearable>
-                                        <el-button slot="append" type="primary" @click="check_token" plain>验证
-                                        </el-button>
+                                    <el-input type="text" placeholder="请输入账户"
+                                              v-model="user_name" autofocus clearable>
+                                        <template slot="prepend">用户</template>
                                     </el-input>
+                                    <el-input type="password" placeholder="请输入秘钥" v-model="user_token"
+                                              @keyup.enter.native="check_token" clearable>
+                                        <template slot="prepend">秘钥</template>
+                                    </el-input>
+                                    <el-checkbox v-model="keep_token">保存秘钥</el-checkbox>
+                                    <el-button type="primary" plain @click="check_token">验证</el-button>
+                                    <p>网络连接
+                                        <i class="el-icon-loading" style="color: orange"
+                                           v-if="connected === 'Unknown'"></i>
+                                        <i class="el-icon-circle-check" style="color: green"
+                                           v-if="connected === 'OK'"></i>
+                                        <i class="el-icon-circle-close" style="color: red"
+                                           v-if="connected === 'Error'"></i>
+                                    </p>
+                                    <p>身份验证
+                                        <i class="el-icon-loading" style="color: orange"
+                                           v-if="token_res === 'Unknown'"></i>
+                                        <i class="el-icon-circle-check" style="color: green"
+                                           v-if="token_res === 'OK'"></i>
+                                        <i class="el-icon-circle-close" style="color: red"
+                                           v-if="token_res === 'Error'"></i>
+                                    </p>
                                 </div>
-                                <div class="login-alert">
-                                    <el-alert title="Token验证成功" type="success"
-                                              v-if="token_res === 'success'"></el-alert>
-                                    <el-alert title="Token验证失败" type="error"
-                                              v-if="token_res === 'error'"></el-alert>
-                                </div>
+
                             </el-card>
                         </div>
                         <div class="wb-part">
@@ -60,7 +76,10 @@ export default {
     name: "Tool",
     data() {
         return {
-            token_res: "none",
+            connected: "Unknown",
+            token_res: "Unknown",
+            keep_token: false,
+            user_name: this.$store.state.user_name,
             user_token: this.$store.state.user_token,
             active_box: null,
             active_tool: null,
@@ -72,18 +91,25 @@ export default {
         check_token: function () {
             let that = this;
             let data_host = this.$store.state.host;
-            this.$http.get(data_host + `/webpage/check/token?token=${this.user_token}`)
+            this.$http.get(data_host + `/webpage/check/token?user=${this.user_name}&token=${this.user_token}`)
                 .then(function (res) {
                     if (res.data.data === 'Success') {
-                        that.token_res = "success"
+                        that.token_res = "OK"
+                        that.$store.commit("setData", {key: "user_name", val: that.user_name})
                         that.$store.commit("setData", {key: "user_token", val: that.user_token})
+                        if (that.keep_token) {
+                            that.$cookies.set("user_name", that.user_name)
+                            that.$cookies.set("user_token", that.user_token)
+                        }
                     } else {
-                        that.token_res = "error"
+                        that.keep_token = false
+                        that.token_res = "Error"
+                        that.$store.commit("setData", {key: "user_name", val: ""})
                         that.$store.commit("setData", {key: "user_token", val: ""})
                     }
                 })
                 .catch(function (res) {
-                    that.token_res = "error"
+                    that.token_res = "Error"
                     that.$store.commit("setData", {key: "user_token", val: ""})
                     console.log(res);
                 })
@@ -113,6 +139,29 @@ export default {
             } else {
                 this.active_mod = () => import(`@/components/tools/${box_label}_${tool_label}`);
             }
+        },
+        check_service: function () {
+            let that = this;
+            let data_host = this.$store.state.host;
+            this.$http.get(data_host + `/generate_204`)
+                .then(function () {
+                    that.connected = "OK"
+                })
+                .catch(function () {
+                    that.connected = "Error"
+                })
+        },
+        read_user_config: function () {
+            let user_name = this.$cookies.get("user_name")
+            let user_token = this.$cookies.get("user_token")
+            if (user_name !== null && user_token !== null) {
+                this.keep_token = true
+                this.user_name = user_name
+                this.user_token = user_token
+                this.$store.commit("setData", {key: "user_name", val: this.user_name})
+                this.$store.commit("setData", {key: "user_token", val: this.user_token})
+                this.check_token()
+            }
         }
     },
     mounted() {
@@ -121,6 +170,8 @@ export default {
             this.$router.replace(new_path);
         }
         this.check_path(this.$route.path);
+        this.check_service();
+        this.read_user_config();
     },
     watch: {
         $route() {
@@ -150,8 +201,15 @@ export default {
     }
 
     .wb-login {
-        .login-alert {
-            margin-top: 16px;
+        .login-body {
+            .el-input {
+                margin-bottom: 8px;
+            }
+
+            .el-button {
+                width: 100%;
+                margin: 6px 0;
+            }
         }
     }
 }

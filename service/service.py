@@ -4,14 +4,12 @@ import Kit
 import pymysql
 import logging
 import sentry_sdk
-import pymemobird
 from flask import Flask
 from flask import request
 from flask_cors import CORS
 from Config import get_config
 from dbutils.pooled_db import PooledDB
 from qcloudsms_py import SmsMultiSender
-from logging.handlers import TimedRotatingFileHandler
 from sentry_sdk.integrations.flask import FlaskIntegration
 
 from Webpage import webpage_blue
@@ -51,16 +49,6 @@ pool_config = app.config.get('POOL')
 mysql_config = app.config.get('MYSQL')
 app.mysql_pool = PooledDB(creator=pymysql, **mysql_config, **pool_config)
 
-# 初始化打印机
-pymemobird.http_proxy = app.config['PROXY']['http_proxy']
-_key = app.config['PRINTER']['access_key']
-_id = app.config['PRINTER']['user_identify']
-_user = pymemobird.User(_key, _id)
-_machine = app.config['PRINTER']['memobird_id']
-_device = pymemobird.Device(_machine)
-_device.bind_user(_user)
-app.printer = _device
-
 # 初始化SMS
 _appid = app.config['SMS']['appid']
 _appkey = app.config['SMS']['appkey']
@@ -78,6 +66,11 @@ CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
 @app.route('/')
 def hello_world():
     return Kit.common_rsp("Hello, world!")
+
+
+@app.route('/generate_204')
+def code_204():
+    return str("Success"), 204
 
 
 @app.route('/debug/sentry')

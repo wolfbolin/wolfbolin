@@ -10,37 +10,6 @@ g_sugar_message_key = {"user", "source", "title", "text"}
 g_sms_message_key = {"phone", "template", "params"}
 
 
-@Message.message_blue.route("/printer/text", methods=["POST"])
-@Kit.req_check_json_key(g_printer_message_key)
-def printer_text_message():
-    message_info = request.get_json()
-
-    name = message_info["app"]
-    user = message_info["user"]
-    text = message_info["text"]
-    format_time = Kit.str_time()
-    content = "================================\n\n"  # 32
-    content += "应用：{}\n".format(name)
-    content += "来源：{}\n".format(user)
-    content += "时间：{}\n".format(format_time)
-    content += "--------------------------------\n\n"  # 32
-    content += "{}\n".format(text)
-    content += "\n================================\n"  # 32
-    content += r"       _    _       _  __ " + "\n"
-    content += r"      | |  | |     | |/ _|" + "\n"
-    content += r"      | |  | | ___ | | |_ " + "\n"
-    content += r"      | |/\| |/ _ \| |  _|" + "\n"
-    content += r"      \  /\  / (_) | | |  " + "\n"
-    content += r"       \/  \/ \___/|_|_|  " + "\n"
-
-    # 生成纸条对象
-    paper = pymemobird.Paper(app.config["PRINTER"]["access_key"])
-    paper.add_text(content)
-    app.printer.print_paper(paper)
-
-    return Kit.common_rsp("Send print message success: [{}]".format(paper.paper_id))
-
-
 @Message.message_blue.route("/sugar/text", methods=["POST"])
 @Kit.req_check_json_key(g_sugar_message_key)
 def sugar_message_push():

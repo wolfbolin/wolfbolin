@@ -66,6 +66,7 @@
         name: "network_clash",
         data() {
             return {
+                user_name: this.$store.state.user_name,
                 user_token: this.$store.state.user_token,
                 loading_data: false,
                 show_edit_dialog: false,
@@ -78,6 +79,7 @@
         },
         methods: {
             check_token: function () {
+                this.user_name = this.$store.state.user_name;
                 this.user_token = this.$store.state.user_token;
                 if (this.user_token.length === 0) {
                     this.$message.error("请先完成用户Token验证")
@@ -133,8 +135,9 @@
                 let that = this;
                 this.loading_data = true;
                 let data_host = this.$store.state.host;
+                let user_name = this.$store.state.user_name;
                 let user_token = this.$store.state.user_token;
-                let http_url = data_host + `/network/proxy/rule?token=${user_token}`
+                let http_url = data_host + `/network/proxy/rule?user=${user_name}&token=${user_token}`
                 this.$http.get(http_url)
                     .then(function (res) {
                         if (res.data.status === 'OK') {

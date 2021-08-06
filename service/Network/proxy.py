@@ -20,9 +20,10 @@ remove_keyword = ["Sakura", "KDDI", "IDCF", "Netflix", "HKT", "TVB", "HBO", "CN2
 @Network.network_blue.route('/proxy/rule', methods=["GET"])
 @Kit.verify_token()
 def get_proxy_rule():
+    user = request.args.get("user", "none")
     # 读取代理规则列表
     conn = app.mysql_pool.connection()
-    rule_list = db.read_proxy_rule(conn)
+    rule_list = db.read_proxy_rule(conn, user)
 
     return Kit.common_rsp(rule_list)
 
@@ -30,6 +31,8 @@ def get_proxy_rule():
 @Network.network_blue.route('/proxy/rule', methods=["PUT"])
 @Kit.verify_token()
 def set_proxy_rule():
+    user = request.args.get("user", "none")
+
     # 解析列表数据
     rule_list = request.get_data(as_text=True)
     rule_list = json.loads(rule_list)
@@ -37,12 +40,12 @@ def set_proxy_rule():
     # 更新代理规则
     conn = app.mysql_pool.connection()
     db.update_proxy_rule(conn, rule_list)
-    rule_list = db.read_proxy_rule(conn)
+    rule_list = db.read_proxy_rule(conn, user)
 
     return Kit.common_rsp(rule_list)
 
 
-@Network.network_blue.route('/proxy/clash/node', methods=["GET"])
+@Network.network_blue.route('/proxy/node', methods=["GET"])
 @Kit.verify_token()
 def proxy_node_list():
     method = request.args.get("refresh", "false")
@@ -57,20 +60,16 @@ def proxy_node_list():
 
         # 更新源信息
         node_list = []
-        flow_data = [0, 0, 0]
-        error_list = []
+        flow_data = [0, 0, 0, 0]
         for source in service_source:
             api_url = app.config["AGENT"]['{}_api'.format(source)]
-            flow_url = app.config["AGENT"]['{}_flow'.format(source)]
 
             try:
                 api_result = requests.get(api_url, timeout=10)
-                flow_result = requests.get(flow_url, timeout=10)
             except requests.exceptions.RequestException:
-                error_list.append("{}=X".format(source))
                 continue
 
-            # 处理节点新
+            # 处理节点数据
             api_data = yaml.safe_load(api_result.text)
             if "Proxy" in api_data.keys():
                 api_data["proxies"] = api_data["Proxy"]
@@ -80,20 +79,18 @@ def proxy_node_list():
                 node_list.append(node)
 
             # 处理流量信息
-            flow_res = flow_result.text.split(":")[1].split(";")
+            flow_res = api_result.headers["Subscription-Userinfo"].split(";")
             flow_data[0] += int(flow_res[0].split("=")[1])
             flow_data[1] += int(flow_res[1].split("=")[1])
             flow_data[2] += int(flow_res[2].split("=")[1])
+            flow_data[3] += int(flow_res[3].split("=")[1])
 
+        # 写入节点更新数据
         if len(node_list) != 0:
             Kit.set_app_pair(conn, "proxy", "node_list", json.dumps(node_list))
             Kit.set_app_pair(conn, "proxy", "flow_data", json.dumps(flow_data))
-            if len(error_list) == 0:
-                error_list = ["OK for all"]
-        else:
-            error_list = ["All service core"]
-        Kit.set_app_pair(conn, "proxy", "error_list", json.dumps(";".join(error_list)))
-        Kit.set_app_pair(conn, "proxy", "timestamp", Kit.unix_time())
+            Kit.set_app_pair(conn, "proxy", "timestamp", Kit.unix_time())
+            req_result["count"] = len(node_list)
 
     if echo == "true":
         req_result["node_list"] = json.loads(Kit.get_app_pair(conn, "proxy", "node_list"))
@@ -107,9 +104,12 @@ def proxy_node_list():
 @Network.network_blue.route('/proxy/clash', methods=["GET"])
 @Kit.verify_token()
 def proxy_clash():
+    user = request.args.get("user", "none")
+    gfw = request.args.get("gfw", "false")
+    x_headers = {}
+
     # 获取节点数据
     conn = app.mysql_pool.connection()
-    error_list = json.loads(Kit.get_app_pair(conn, "proxy", "error_list"))
     node_list = json.loads(Kit.get_app_pair(conn, "proxy", "node_list"))
     flow_data = json.loads(Kit.get_app_pair(conn, "proxy", "flow_data"))
     timestamp = Kit.get_app_pair(conn, "proxy", "timestamp")
@@ -122,21 +122,29 @@ def proxy_clash():
                 "type": "http", "server": "0.0.0.0", "port": 0}
     time_info = {"name": Kit.unix2timestamp(timestamp),
                  "type": "http", "server": "0.0.0.0", "port": 0}
-    err_info = {"name": error_list,
-                "type": "http", "server": "0.0.0.0", "port": 0}
-    traffic_info = [tx_info, rx_info, all_info, time_info, err_info]
+    expire_info = {"name": Kit.unix2timestamp(flow_data[3]),
+                   "type": "http", "server": "0.0.0.0", "port": 0}
+
+    x_headers["Subscription-Userinfo"] = "upload={}; download={}; total={}; expire={}" \
+        .format(flow_data[0], flow_data[1], flow_data[2], flow_data[3])
+
+    traffic_info = [tx_info, rx_info, all_info, time_info, expire_info]
     flow_data = {"name": "TX/RX/ALL", "type": "select",
                  "proxies": ["DIRECT"] + [it["name"] for it in traffic_info]}
 
     # 预处理通用规则
-    gfw_list = Kit.get_app_pair(conn, "proxy", "gfwlist")
-    gfw_data = base64.b64decode(gfw_list).decode()
-    gfw_rule = parse_gfw_rule(gfw_data)
-
     rule_list = []
-    for rule in db.read_proxy_rule(conn):
-        rule_list.append("{},{},{}".format(rule["type"], rule["content"], rule["group"]))
-    rule_list = rule_list + gfw_rule
+    if gfw == "true":
+        gfw_list = Kit.get_app_pair(conn, "proxy", "gfwlist")
+        gfw_data = base64.b64decode(gfw_list).decode()
+        gfw_rule = parse_gfw_rule(gfw_data)
+        rule_list = gfw_rule
+
+    # 读取用户流量规则
+    temp_list = []
+    for rule in db.read_proxy_rule(conn, user):
+        temp_list.append("{},{},{}".format(rule["type"], rule["content"], rule["group"]))
+    rule_list = temp_list + rule_list
 
     rule_list.append("IP-CIDR,10.0.0.0/8,DIRECT")
     rule_list.append("IP-CIDR,127.0.0.0/8,DIRECT")
@@ -216,7 +224,7 @@ def proxy_clash():
         proxy_group("SEA", foreign_list + transfer_list, config=node_group_config),
     ]
 
-    return str(yaml.dump(clash_config, indent=4, allow_unicode=True, line_break="\r\n"))
+    return str(yaml.dump(clash_config, indent=4, allow_unicode=True, line_break="\r\n")), 200, x_headers
 
 
 def parse_gfw_rule(rule_data):

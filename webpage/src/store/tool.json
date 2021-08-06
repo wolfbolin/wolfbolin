@@ -1,12 +1,17 @@
 [
   {
-    "label": "network",
-    "name": "Network",
+    "label": "util",
+    "name": "Utility",
     "tool_list": [
       {
         "label": "ip",
         "name": "IP查询",
         "desc": "用户本机当前IP信息查询"
+      },
+      {
+        "label": "mac",
+        "name": "MAC转换",
+        "desc": "可以用于一键转换MAC地址格式"
       },
       {
         "label": "dns",
@@ -19,6 +24,11 @@
         "desc": "私有代理网络路由配置面板"
       },
       {
+        "label": "kv",
+        "name": "Key-Value*",
+        "desc": "提供高性能K-V信息存储服务"
+      },
+      {
         "label": "pay",
         "name": "在线支付接口",
         "desc": "在线支付实验性接口面板"
@@ -26,13 +36,18 @@
     ]
   },
   {
-    "label": "util",
-    "name": "Utility",
+    "label": "panel",
+    "name": "Panel",
     "tool_list": [
       {
-        "label": "mac",
-        "name": "MAC地址工具",
-        "desc": "可以用于一键转换MAC地址格式"
+        "label": "hostname",
+        "name": "主机管理*",
+        "desc": "管理内部网络中主机资源与网络资源分配"
+      },
+      {
+        "label": "redirect",
+        "name": "端口映射*",
+        "desc": "管理内部网络中公网IP与端口资源管理"
       }
     ]
   }

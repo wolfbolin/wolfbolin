@@ -38,14 +38,15 @@ def common_rsp(data, status='OK'):
         })
 
 
-def verify_token(level="common"):
+def verify_token():
     def deco(func):
         @functools.wraps(func)
         def check_user_token(*args, **kwargs):
+            u = str(request.args.get('user', 'common'))
             t = str(request.args.get('token', 'guest'))
 
             conn = current_app.mysql_pool.connection()
-            token = db.get_app_pair(conn, "auth", "token-{}".format(level))
+            token = db.get_app_pair(conn, "auth", "token-{}".format(u))
             if token is None:
                 abort(400, "Not found token")
 

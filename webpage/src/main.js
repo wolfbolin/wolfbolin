@@ -5,9 +5,11 @@ import store from './store'
 import router from './router'
 import VueAxios from "vue-axios";
 import ElementUI from 'element-ui';
+import VueCookies from 'vue-cookies'
 import 'element-ui/lib/theme-chalk/index.css';
 
 Vue.use(ElementUI);
+Vue.use(VueCookies);
 Vue.use(VueAxios, axios);
 Vue.config.productionTip = false
 

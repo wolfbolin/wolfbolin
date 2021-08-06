@@ -80,6 +80,8 @@
                 } else {
                     this.logo_src = require("@/assets/img/logo_nav.png");
                 }
+                // 设置Cookies配置
+                this.$cookies.config("1h")
             },
             switch_page: function (path) {
                 console.log("Switch page:", path);
