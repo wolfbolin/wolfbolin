@@ -5,10 +5,8 @@ import Kit
 import base64
 import Network
 import requests
-import operator
 from urllib import parse
 from flask import request
-from functools import reduce
 from Network import database as db
 from flask import current_app as app
 
@@ -18,7 +16,7 @@ remove_keyword = ["Sakura", "KDDI", "IDCF", "Netflix", "HKT", "TVB", "HBO", "CN2
 
 
 @Network.network_blue.route('/proxy/rule', methods=["GET"])
-@Kit.verify_token()
+@Kit.verify_passwd("proxy_acl")
 def get_proxy_rule():
     user = request.args.get("user", "none")
     # 读取代理规则列表
@@ -29,7 +27,7 @@ def get_proxy_rule():
 
 
 @Network.network_blue.route('/proxy/rule', methods=["PUT"])
-@Kit.verify_token()
+@Kit.verify_passwd("proxy_acl")
 def set_proxy_rule():
     user = request.args.get("user", "none")
 
@@ -46,7 +44,7 @@ def set_proxy_rule():
 
 
 @Network.network_blue.route('/proxy/node', methods=["GET"])
-@Kit.verify_token()
+@Kit.verify_passwd("proxy_acl")
 def proxy_node_list():
     method = request.args.get("refresh", "false")
     echo = request.args.get("echo", "false")
@@ -102,7 +100,7 @@ def proxy_node_list():
 
 
 @Network.network_blue.route('/proxy/clash', methods=["GET"])
-@Kit.verify_token()
+@Kit.verify_passwd("proxy_acl")
 def proxy_clash():
     user = request.args.get("user", "none")
     gfw = request.args.get("gfw", "false")
@@ -208,11 +206,13 @@ def proxy_clash():
     }
 
     # 私有节点列表
-    private_data = Kit.get_app_pair(conn, "proxy", "private_node")
-    private_data = json.loads(private_data)
-    for group in private_data:
-        clash_config["proxies"] += group["node"]
-        clash_config["proxy-groups"] += proxy_group(group["name"], group["node"], **group["params"]),
+    # TODO Remove hard code
+    if user == "wolfbolin":
+        private_data = Kit.get_app_pair(conn, "proxy", "private_node")
+        private_data = json.loads(private_data)
+        for group in private_data:
+            clash_config["proxies"] += group["node"]
+            clash_config["proxy-groups"] += proxy_group(group["name"], group["node"], **group["params"]),
 
     # 基础节点列表
     node_group_config = {"url": "https://www.gstatic.com/generate_204", "tolerance": 200}

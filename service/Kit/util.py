@@ -42,18 +42,43 @@ def verify_token():
     def deco(func):
         @functools.wraps(func)
         def check_user_token(*args, **kwargs):
-            u = str(request.args.get('user', 'common'))
             t = str(request.args.get('token', 'guest'))
 
             conn = current_app.mysql_pool.connection()
-            token = db.get_app_pair(conn, "auth", "token-{}".format(u))
+            token = db.get_app_pair(conn, "auth", "token")
             if token is None:
                 abort(400, "Not found token")
 
             md5_code = Kit.calc_md5(t)
             if md5_code != token:
-                app.logger.warning("Token错误：{} @ {}".format(t, request.url))
+                app.logger.warning("Token error：{} @ {}".format(t, request.url))
                 abort(403, "Token error")
+
+            return func(*args, **kwargs)
+
+        return check_user_token
+
+    return deco
+
+
+def verify_passwd(p):
+    def deco(func):
+        @functools.wraps(func)
+        def check_user_token(*args, **kwargs):
+            u = str(request.args.get('user', ''))
+            t = str(request.args.get('pass', ''))
+            md5_t = Kit.calc_md5(t)
+            conn = current_app.mysql_pool.connection()
+            res = db.check_user_passwd(conn, u, md5_t, p)
+            if res is None:
+                app.logger.warning("Password error：{} @ {}".format(u, md5_t))
+                abort(400, "Not found user")
+
+            if res["status"] != "open":
+                abort(400, "Account closed")
+
+            if res[p] != "Yes":
+                abort(400, "Account has no permission")
 
             return func(*args, **kwargs)
 

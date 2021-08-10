@@ -9,8 +9,8 @@ Vue.use(Vuex);
 export default new Vuex.Store({
     state: {
         host: "",
-        user_name: "",
-        user_token: "",
+        username: "",
+        password: "",
         home_data: Home,
         tool_data: Tool,
         blog_data: null,

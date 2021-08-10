@@ -82,7 +82,7 @@ def sentry_debug():
 @app.errorhandler(400)
 def http_forbidden(msg):
     app.logger.warning("{}: <HTTP 400> {}".format(request.url, msg))
-    return Kit.common_rsp("Bad Request", status='Bad Request')
+    return Kit.common_rsp(str(msg)[15:], status='Bad Request')
 
 
 @app.errorhandler(403)

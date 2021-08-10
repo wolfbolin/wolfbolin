@@ -1,11 +1,11 @@
 <template>
     <div class="wb-ip">
         <h2>K-V存储信息</h2>
-        <p v-if="user_token.length === 0">请先验证用户交互Token
+        <p v-if="password.length === 0">请先验证用户交互Token
             <el-button type="text" @click="check_token">检查状态</el-button>
         </p>
-        <div v-if="user_token.length !== 0">
-            <el-tabs v-model="active_group" type="card" @tab-click="handle_tab" v-if="user_token.length !== 0">
+        <div v-if="password.length !== 0">
+            <el-tabs v-model="active_group" type="card" @tab-click="handle_tab">
                 <el-tab-pane v-for="group of kv_group" :key="group" :label="group" :name="group"></el-tab-pane>
                 <el-tab-pane label="刷新" name="refresh"></el-tab-pane>
             </el-tabs>
@@ -33,7 +33,8 @@ export default {
     name: "network_ip",
     data() {
         return {
-            user_token: this.$store.state.user_token,
+            username: this.$store.state.username,
+            password: this.$store.state.password,
             kv_group: [],
             record_list: [],
             loading_data: false,
@@ -42,10 +43,11 @@ export default {
     },
     methods: {
         check_token: function () {
-            this.user_token = this.$store.state.user_token;
-            if (this.user_token.length === 0) {
+            this.username = this.$store.state.username;
+            this.password = this.$store.state.password;
+            if (this.password.length === 0) {
                 this.$message.error("请先完成用户Token验证")
-            } else {
+            }else{
                 this.switch_group("refresh");
             }
         },
@@ -61,8 +63,7 @@ export default {
             if (group === "refresh") {
                 let that = this;
                 let data_host = this.$store.state.host;
-                let user_token = this.$store.state.user_token;
-                let http_url = data_host + `/network/k-v/groups?token=${user_token}`
+                let http_url = data_host + `/network/k-v/groups?user=${this.username}&pass=${this.password}`
                 this.$http.get(http_url)
                     .then(function (res) {
                         if (res.data.status === 'OK') {
@@ -84,8 +85,7 @@ export default {
             let that = this;
             this.loading_data = true;
             let data_host = this.$store.state.host;
-            let user_token = this.$store.state.user_token;
-            let http_url = data_host + `/network/k-v/group/${group}/record?token=${user_token}`
+            let http_url = data_host + `/network/k-v/group/${group}/record?user=${this.username}&pass=${this.password}`
             this.$http.get(http_url)
                 .then(function (res) {
                     if (res.data.status === 'OK') {

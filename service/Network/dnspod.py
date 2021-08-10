@@ -10,7 +10,7 @@ from flask import current_app as app
 
 
 @Network.network_blue.route('/dns/domain', methods=["GET"])
-@Kit.verify_token()
+@Kit.verify_passwd("dnspod_acl")
 def get_dns_domain():
     # 读取强制刷新指令
     refresh = request.args.get("refresh", "false")
@@ -53,7 +53,7 @@ def get_dns_domain():
 
 
 @Network.network_blue.route('/dns/domain/<domain>/record', methods=["GET"])
-@Kit.verify_token()
+@Kit.verify_passwd("dnspod_acl")
 def get_domain_record(domain):
     # 读取强制刷新指令
     refresh = request.args.get("refresh", "false")
@@ -110,7 +110,7 @@ def get_domain_record(domain):
 
 
 @Network.network_blue.route('/dns/domain/<domain>/record', methods=["PUT"])
-@Kit.verify_token()
+@Kit.verify_passwd("dnspod_acl")
 def set_domain_record(domain):
     # 解析列表数据
     commit_record_list = request.get_data(as_text=True)

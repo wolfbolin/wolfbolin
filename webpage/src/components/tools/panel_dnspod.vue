@@ -1,10 +1,10 @@
 <template>
     <div class="wb-dns">
         <h2>DNS解析</h2>
-        <p v-if="user_token.length === 0">请先验证用户交互Token
+        <p v-if="password.length === 0">请先验证用户交互Token
             <el-button type="text" @click="check_token">检查状态</el-button>
         </p>
-        <el-tabs v-model="active_domain" type="card" @tab-click="handle_tab_click" v-if="user_token.length !== 0">
+        <el-tabs v-model="active_domain" type="card" @tab-click="handle_tab_click" v-if="password.length !== 0">
             <el-tab-pane v-for="domain of domain_list" :key="domain" :label="domain" :name="domain"></el-tab-pane>
             <el-tab-pane label="刷新" name="refresh-force"></el-tab-pane>
             <el-button-group class="wb-option">
@@ -101,12 +101,13 @@
         name: "dns",
         data() {
             return {
-                user_token: this.$store.state.user_token,
+                username: this.$store.state.username,
+                password: this.$store.state.password,
                 active_domain: null,
                 loading_data: false,
                 show_edit_dialog: false,
                 edit_record_order: false,
-                data_version_info: "1231231231",
+                data_version_info: "",
                 domain_list: [],
                 record_list: [],
                 tag_input_key: "",
@@ -119,10 +120,11 @@
         },
         methods: {
             check_token: function () {
-                this.user_token = this.$store.state.user_token;
-                if (this.user_token.length === 0) {
+                this.username = this.$store.state.username;
+                this.password = this.$store.state.password;
+                if (this.password.length === 0) {
                     this.$message.error("请先完成用户Token验证")
-                } else {
+                }else{
                     this.switch_host("refresh");
                 }
             },
@@ -138,8 +140,7 @@
                 if (domain === "refresh") {
                     let that = this;
                     let data_host = this.$store.state.host;
-                    let user_token = this.$store.state.user_token;
-                    let http_url = data_host + `/network/dns/domain?token=${user_token}&refresh=${force}`
+                    let http_url = data_host + `/network/dns/domain?user=${this.username}&pass=${this.password}&refresh=${force}`
                     this.$http.get(http_url)
                         .then(function (res) {
                             if (res.data.status === 'OK') {
@@ -160,8 +161,7 @@
                 let that = this;
                 this.loading_data = true;
                 let data_host = this.$store.state.host;
-                let user_token = this.$store.state.user_token;
-                let http_url = data_host + `/network/dns/domain/${domain}/record?token=${user_token}&refresh=${force}`
+                let http_url = data_host + `/network/dns/domain/${domain}/record?user=${this.username}&pass=${this.password}&refresh=${force}`
                 this.$http.get(http_url)
                     .then(function (res) {
                         if (res.data.status === 'OK') {
@@ -269,8 +269,7 @@
                 let that = this;
                 this.loading_data = true;
                 let data_host = this.$store.state.host;
-                let user_token = this.$store.state.user_token;
-                let http_url = data_host + `/network/dns/domain/${this.active_domain}/record?token=${user_token}`
+                let http_url = data_host + `/network/dns/domain/${this.active_domain}/record?user=${this.username}&pass=${this.password}`
                 this.$http.put(http_url, this.record_list)
                     .then(function (res) {
                         if (res.data.status === 'OK') {

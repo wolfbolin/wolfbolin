@@ -1,7 +1,6 @@
 # coding=utf-8
 import Kit
 import Message
-import pymemobird
 from flask import request
 from flask import current_app as app
 

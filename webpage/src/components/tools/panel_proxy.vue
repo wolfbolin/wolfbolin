@@ -1,10 +1,10 @@
 <template>
     <div class="wb-proxy">
         <h2>Proxy规则</h2>
-        <p v-if="user_token.length === 0">请先验证用户交互Token
+        <p v-if="password.length === 0">请先验证用户交互Token
             <el-button type="text" @click="check_token">检查状态</el-button>
         </p>
-        <div v-if="user_token.length !== 0">
+        <div v-if="password.length !== 0">
             <el-button-group class="wb-option">
                 <el-button type="primary" icon="el-icon-refresh" @click="update_rule">刷新规则</el-button>
                 <el-button type="primary" icon="el-icon-plus" @click="add_rule">新增规则</el-button>
@@ -66,8 +66,8 @@
         name: "network_clash",
         data() {
             return {
-                user_name: this.$store.state.user_name,
-                user_token: this.$store.state.user_token,
+                username: this.$store.state.username,
+                password: this.$store.state.password,
                 loading_data: false,
                 show_edit_dialog: false,
                 proxy_rule: [],
@@ -79,9 +79,9 @@
         },
         methods: {
             check_token: function () {
-                this.user_name = this.$store.state.user_name;
-                this.user_token = this.$store.state.user_token;
-                if (this.user_token.length === 0) {
+                this.username = this.$store.state.username;
+                this.password = this.$store.state.password;
+                if (this.password.length === 0) {
                     this.$message.error("请先完成用户Token验证")
                 }else{
                     this.update_rule();
@@ -135,9 +135,7 @@
                 let that = this;
                 this.loading_data = true;
                 let data_host = this.$store.state.host;
-                let user_name = this.$store.state.user_name;
-                let user_token = this.$store.state.user_token;
-                let http_url = data_host + `/network/proxy/rule?user=${user_name}&token=${user_token}`
+                let http_url = data_host + `/network/proxy/rule?user=${this.username}&pass=${this.password}`
                 this.$http.get(http_url)
                     .then(function (res) {
                         if (res.data.status === 'OK') {
@@ -181,8 +179,7 @@
                 let that = this;
                 this.loading_data = true;
                 let data_host = this.$store.state.host;
-                let user_token = this.$store.state.user_token;
-                let http_url = data_host + `/network/proxy/rule?token=${user_token}`
+                let http_url = data_host + `/network/proxy/rule?user=${this.username}&pass=${this.password}`
                 this.$http.put(http_url, this.proxy_rule)
                     .then(function (res) {
                         if (res.data.status === 'OK') {
