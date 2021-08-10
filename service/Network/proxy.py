@@ -18,10 +18,10 @@ remove_keyword = ["Sakura", "KDDI", "IDCF", "Netflix", "HKT", "TVB", "HBO", "CN2
 @Network.network_blue.route('/proxy/rule', methods=["GET"])
 @Kit.verify_passwd("proxy_acl")
 def get_proxy_rule():
-    user = request.args.get("user", "none")
+    username = request.args.get("user", "none")
     # 读取代理规则列表
     conn = app.mysql_pool.connection()
-    rule_list = db.read_proxy_rule(conn, user)
+    rule_list = db.read_proxy_rule(conn, username)
 
     return Kit.common_rsp(rule_list)
 
@@ -29,7 +29,7 @@ def get_proxy_rule():
 @Network.network_blue.route('/proxy/rule', methods=["PUT"])
 @Kit.verify_passwd("proxy_acl")
 def set_proxy_rule():
-    user = request.args.get("user", "none")
+    username = request.args.get("user", "none")
 
     # 解析列表数据
     rule_list = request.get_data(as_text=True)
@@ -37,8 +37,8 @@ def set_proxy_rule():
 
     # 更新代理规则
     conn = app.mysql_pool.connection()
-    db.update_proxy_rule(conn, rule_list)
-    rule_list = db.read_proxy_rule(conn, user)
+    db.update_proxy_rule(conn, username, rule_list)
+    rule_list = db.read_proxy_rule(conn, username)
 
     return Kit.common_rsp(rule_list)
 
@@ -102,7 +102,7 @@ def proxy_node_list():
 @Network.network_blue.route('/proxy/clash', methods=["GET"])
 @Kit.verify_passwd("proxy_acl")
 def proxy_clash():
-    user = request.args.get("user", "none")
+    username = request.args.get("user", "none")
     gfw = request.args.get("gfw", "false")
     x_headers = {}
 
@@ -140,7 +140,7 @@ def proxy_clash():
 
     # 读取用户流量规则
     temp_list = []
-    for rule in db.read_proxy_rule(conn, user):
+    for rule in db.read_proxy_rule(conn, username):
         temp_list.append("{},{},{}".format(rule["type"], rule["content"], rule["group"]))
     rule_list = temp_list + rule_list
 
@@ -207,7 +207,7 @@ def proxy_clash():
 
     # 私有节点列表
     # TODO Remove hard code
-    if user == "wolfbolin":
+    if username == "wolfbolin":
         private_data = Kit.get_app_pair(conn, "proxy", "private_node")
         private_data = json.loads(private_data)
         for group in private_data:
