@@ -12,7 +12,12 @@ from flask import current_app as app
 
 remove_keyword = ["Sakura", "KDDI", "IDCF", "Netflix", "HKT", "TVB", "HBO", "CN2", "GIA", "hulu",
                   "AbemaTV", "happyon", "GMO", "HKBN", "HGC", "WTT", "PCCW", "Hinet", "BBC", "ITV",
-                  "C4", "F4", "Azure"]
+                  "C4", "F4", "Azure", " - 基础VIP节点", "(广)"]
+
+replace_keyword = {
+    "(广SS)": "SS",
+    "IEPL": "专线"
+}
 
 
 @Network.network_blue.route('/proxy/rule', methods=["GET"])
@@ -44,7 +49,7 @@ def set_proxy_rule():
 
 
 @Network.network_blue.route('/proxy/node', methods=["GET"])
-@Kit.verify_passwd("proxy_acl")
+@Kit.verify_token()
 def proxy_node_list():
     method = request.args.get("refresh", "false")
     echo = request.args.get("echo", "false")
@@ -60,7 +65,7 @@ def proxy_node_list():
         node_list = []
         flow_data = [0, 0, 0, 0]
         for source in service_source:
-            api_url = app.config["AGENT"]['{}_api'.format(source)]
+            api_url = app.config["AGENT"][source]
 
             try:
                 api_result = requests.get(api_url, timeout=10)
@@ -159,6 +164,8 @@ def proxy_clash():
     for api in node_list:
         for keyword in remove_keyword:
             api["name"] = api["name"].replace(keyword, "")
+        for key, val in replace_keyword.items():
+            api["name"] = api["name"].replace(key, val)
         api["name"] = api["name"].strip()
         api["name"] = api["name"].replace("(SS)", "[SS]")
         if api["name"].find("特殊") >= 0:
