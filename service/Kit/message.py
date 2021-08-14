@@ -48,7 +48,7 @@ def send_sugar_message(config, user, source, title, text, token=None):
 
     if token is None:
         token = config["SUGAR"][user]
-    url = "https://sc.ftqq.com/{}.send".format(token)
+    url = "https://sctapi.ftqq.com/{}.send".format(token)
     params = {
         "text": title,
         "desp": content
@@ -57,3 +57,36 @@ def send_sugar_message(config, user, source, title, text, token=None):
     res = json.loads(res.text)
 
     return res
+
+
+def send_wechat_message(conn, config, user, m_type, content):
+    access_token = get_wechat_token(conn, config)
+    url = "https://qyapi.weixin.qq.com/cgi-bin/message/send"
+    param = {"access_token": access_token}
+    data = {
+        "touser": user,
+        "msgtype": m_type,
+        "agentid": config["WECHAT"]["agentid"],
+        m_type: content,
+        "safe": 1
+    }
+    res = requests.post(url, params=param, json=data)
+    return json.loads(res.text)
+
+
+def get_wechat_token(conn, config):
+    token_expire = Kit.get_app_pair(conn, "message", "wechat_token_expire")
+    if token_expire is None or Kit.unix_time() > int(token_expire):
+        url = "https://qyapi.weixin.qq.com/cgi-bin/gettoken"
+        param = {
+            "corpid": config["WECHAT"]["corpid"],
+            "corpsecret": config["WECHAT"]["corpsecret"],
+        }
+        res = requests.get(url, params=param)
+        res = json.loads(res.text)
+        access_token = res["access_token"]
+        Kit.set_app_pair(conn, "message", "wechat_access_token", access_token)
+        Kit.set_app_pair(conn, "message", "wechat_token_expire", Kit.unix_time() + 3600)
+    else:
+        access_token = Kit.get_app_pair(conn, "message", "wechat_access_token")
+    return access_token
