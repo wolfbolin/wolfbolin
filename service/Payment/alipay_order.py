@@ -81,7 +81,16 @@ def trade_notify():
         text += "交易金额：{}元\n\n".format(trade_info["volume"])
         text += "交易用户：{}\n\n".format(trade_info["buyer"])
         text += "成交时间：{}\n\n".format(Kit.str_time())
-        Kit.send_sugar_message(app.config, user, "service", "支付宝到账{}元".format(notify_data["total_amount"]), text)
+
+        description = "<div class=\"gray\">Alipay@{}</div>".format(Kit.str_time())
+        description += "<div class=\"normal\">{}</div>".format(text)
+        content = {
+            "title": "支付宝收款",
+            "description": description,
+            "url": "https://wolfbolin.com",
+            "btntxt": "更多"
+        }
+        Kit.send_wechat_message(conn, app.config, user, "textcard", content)
 
     return "Success"
 
