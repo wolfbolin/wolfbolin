@@ -87,7 +87,7 @@ def trade_notify():
         content = {
             "title": "支付宝收款",
             "description": description,
-            "url": "https://wolfbolin.com",
+            "url": "https://wolfbolin.com/tools/util/pay",
             "btntxt": "更多"
         }
         Kit.send_wechat_message(conn, app.config, user, "textcard", content)
