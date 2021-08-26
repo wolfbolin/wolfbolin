@@ -82,23 +82,23 @@ def sentry_debug():
 @app.errorhandler(400)
 def http_forbidden(msg):
     app.logger.warning("{}: <HTTP 400> {}".format(request.url, msg))
-    return Kit.common_rsp(str(msg)[15:], status='Bad Request')
+    return Kit.common_rsp(str(msg), status='Bad Request')
 
 
 @app.errorhandler(403)
 def http_forbidden(msg):
-    return Kit.common_rsp(str(msg)[15:], status='Forbidden')
+    return Kit.common_rsp(str(msg), status='Forbidden')
 
 
 @app.errorhandler(404)
 def http_not_found(msg):
-    return Kit.common_rsp(str(msg)[15:], status='Not Found')
+    return Kit.common_rsp(str(msg), status='Not Found')
 
 
 @app.errorhandler(500)
 def service_error(msg):
     app.logger.error("{}: <HTTP 500> {}".format(request.url, msg))
-    return Kit.common_rsp(str(msg)[15:], status='Internal Server Error')
+    return Kit.common_rsp(str(msg), status='Internal Server Error')
 
 
 if __name__ != '__main__':
