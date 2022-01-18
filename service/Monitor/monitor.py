@@ -115,7 +115,6 @@ def server_check():
 
             # 发送提示
             user_list = json.loads(monitor_record["manager"])
-            title = "{}主机{}".format(monitor_record["hostname"].split("-")[0], msg_text)
             text = "设备状态变化\n\n" + \
                    "服务主机：{}\n\n" + \
                    "服务域名：{}\n\n" + \
@@ -128,7 +127,7 @@ def server_check():
                                Kit.unix2timestamp(monitor_record["active_time"]), monitor_record["boot_time"])
             health_status["msg_res"] = []
             for user in user_list:
-                msg_res = Kit.send_sugar_message(app.config, user, "service", title, text)
+                msg_res = Kit.send_wechat_message(conn, app.config, user, "service", text)
                 health_status["msg_res"].append(msg_res)
 
         check_result.append(health_status)

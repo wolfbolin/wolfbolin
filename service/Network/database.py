@@ -38,7 +38,7 @@ def read_proxy_rule(conn, user):
 def update_proxy_rule(conn, username, rule_list):
     cursor = conn.cursor()
     sql = "DELETE FROM `proxy_rule` WHERE `user`=%s"
-    cursor.execute(query=sql,args=[username])
+    cursor.execute(query=sql, args=[username])
     sql = "REPLACE INTO `proxy_rule`(`user`,`type`,`content`,`group`) VALUES (%s,%s,%s,%s)"
     for rule in rule_list:
         cursor.execute(query=sql, args=[username, rule["type"], rule["content"], rule["group"]])

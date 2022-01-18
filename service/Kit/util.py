@@ -90,13 +90,13 @@ def verify_passwd(p):
 def req_check_query_key(key_list):
     def deco(func):
         @wraps(func)
-        def check_json_key(*args, **kwargs):
+        def check_query_key(*args, **kwargs):
             server_info = dict(request.args)
-            if server_info is None or set(server_info.keys()) != key_list:
+            if server_info is None or set(server_info.keys()) != set(key_list):
                 return Kit.common_rsp("Error request key-value", status="Forbidden")
             return func(*args, **kwargs)
 
-        return check_json_key
+        return check_query_key
 
     return deco
 
@@ -106,7 +106,7 @@ def req_check_json_key(key_list):
         @wraps(func)
         def check_json_key(*args, **kwargs):
             server_info = request.get_json()
-            if server_info is None or set(server_info.keys()) != key_list:
+            if server_info is None or set(server_info.keys()) != set(key_list):
                 return Kit.common_rsp("Error request key-value", status="Forbidden")
             return func(*args, **kwargs)
 

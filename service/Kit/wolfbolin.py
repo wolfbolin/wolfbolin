@@ -12,9 +12,6 @@ import hashlib
 import platform
 
 
-# from bs4 import BeautifulSoup
-
-
 # Print tools
 def _print(message, code=None, tag=None, end=None):
     if tag is None:
@@ -141,6 +138,23 @@ def calc_md5(seed):
     return md5.hexdigest()
 
 
+# 跨平台计算Samba用户密码
+# def calc_samba_passwd(seed):
+#     md4 = hashlib.new('md4', seed.encode('utf-16le')).digest()
+#     md4 = codecs.encode(md4, 'hex_codec').decode('utf-8').upper()
+#     return md4
+
+# 跨平台计算SHA512-Crypt
+# 可用于LDAP服务密码加密运算
+# 形如 {CRYPT}$6$salt_code$hash_code
+# from passlib.hash import sha512_crypt
+# def calc_ldap_passwd(seed):
+#     salt = Kit.random_string(16)
+#     sha512 = "{CRYPT}" + sha512_crypt.hash(seed, salt=salt, rounds=5000)
+#     return sha512
+
+
+# from bs4 import BeautifulSoup
 # def parse_xml(data):
 #     xml = re.sub(r'<!\[CDATA\[(.*)\]\]>', lambda m: m.group(1), data)
 #     xml = BeautifulSoup(xml, 'lxml')
