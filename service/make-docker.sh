@@ -13,7 +13,7 @@ docker run -itd \
 	--restart unless-stopped \
 	--name ${docker_name} \
 	-v $(pwd):/var/app \
-	-p 12864:80 \
+	-p 25664:80 \
 	${docker_name}:"${time_now}"
 echo -e "\033[5;36mOrz 镜像启动完成\033[0m"
 docker ps -a
