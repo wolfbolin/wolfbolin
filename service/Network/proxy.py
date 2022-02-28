@@ -77,6 +77,9 @@ def proxy_node_list():
             if "Proxy" in api_data.keys():
                 api_data["proxies"] = api_data["Proxy"]
 
+            if api_data["proxies"] is None:
+                continue
+
             for node in api_data["proxies"]:
                 node["source"] = source
                 node_list.append(node)
