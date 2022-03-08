@@ -1,14 +1,35 @@
 # coding=utf-8
+import pymysql.cursors
+
 import Webpage
 from .page_data import *
 from flask import abort
+from flask import request
 from flask import current_app as app
 
 
-@Webpage.webpage_blue.route('/check/token', methods=["GET"])
-@Kit.verify_token()
+@Webpage.webpage_blue.route('/tool/login', methods=["GET"])
+@Kit.verify_passwd("web_acl")
 def check_token():
     return Kit.common_rsp("Success")
+
+
+@Webpage.webpage_blue.route('/tool/acl', methods=["GET"])
+@Kit.verify_passwd("web_acl")
+def get_tool_list():
+    username = request.args.get("user", "none")
+
+    conn = app.mysql_pool.connection()
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
+    sql = "SELECT * FROM `user_acl` WHERE `username`=%s"
+    cursor.execute(query=sql, args=[username])
+    res = cursor.fetchone()
+    access_list = []
+    for k, v in res.items():
+        if v == "Yes":
+            access_list.append(k.split("_")[0])
+
+    return Kit.common_rsp(access_list)
 
 
 @Webpage.webpage_blue.route('/blog/selection', methods=["GET"])

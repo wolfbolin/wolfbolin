@@ -4,14 +4,12 @@ import Kit
 import pymysql
 import logging
 import sentry_sdk
-import pymemobird
 from flask import Flask
 from flask import request
 from flask_cors import CORS
 from Config import get_config
 from dbutils.pooled_db import PooledDB
 from qcloudsms_py import SmsMultiSender
-from logging.handlers import TimedRotatingFileHandler
 from sentry_sdk.integrations.flask import FlaskIntegration
 
 from Webpage import webpage_blue
@@ -51,16 +49,6 @@ pool_config = app.config.get('POOL')
 mysql_config = app.config.get('MYSQL')
 app.mysql_pool = PooledDB(creator=pymysql, **mysql_config, **pool_config)
 
-# 初始化打印机
-pymemobird.http_proxy = app.config['PROXY']['http_proxy']
-_key = app.config['PRINTER']['access_key']
-_id = app.config['PRINTER']['user_identify']
-_user = pymemobird.User(_key, _id)
-_machine = app.config['PRINTER']['memobird_id']
-_device = pymemobird.Device(_machine)
-_device.bind_user(_user)
-app.printer = _device
-
 # 初始化SMS
 _appid = app.config['SMS']['appid']
 _appkey = app.config['SMS']['appkey']
@@ -72,12 +60,17 @@ app.register_blueprint(network_blue, url_prefix='/network')
 app.register_blueprint(message_blue, url_prefix='/message')
 app.register_blueprint(monitor_blue, url_prefix='/monitor')
 app.register_blueprint(payment_blue, url_prefix='/payment')
-CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
+CORS(app, supports_credentials=True, resources={r"/*": {"origins": app_config["BASE"]["web_host"].split(",")}})
 
 
 @app.route('/')
 def hello_world():
     return Kit.common_rsp("Hello, world!")
+
+
+@app.route('/generate_204')
+def code_204():
+    return str("Success"), 204
 
 
 @app.route('/debug/sentry')
@@ -89,23 +82,23 @@ def sentry_debug():
 @app.errorhandler(400)
 def http_forbidden(msg):
     app.logger.warning("{}: <HTTP 400> {}".format(request.url, msg))
-    return Kit.common_rsp("Bad Request", status='Bad Request')
+    return Kit.common_rsp(str(msg), status='Bad Request')
 
 
 @app.errorhandler(403)
 def http_forbidden(msg):
-    return Kit.common_rsp(str(msg)[15:], status='Forbidden')
+    return Kit.common_rsp(str(msg), status='Forbidden')
 
 
 @app.errorhandler(404)
 def http_not_found(msg):
-    return Kit.common_rsp(str(msg)[15:], status='Not Found')
+    return Kit.common_rsp(str(msg), status='Not Found')
 
 
 @app.errorhandler(500)
 def service_error(msg):
     app.logger.error("{}: <HTTP 500> {}".format(request.url, msg))
-    return Kit.common_rsp(str(msg)[15:], status='Internal Server Error')
+    return Kit.common_rsp(str(msg), status='Internal Server Error')
 
 
 if __name__ != '__main__':
@@ -115,5 +108,5 @@ if __name__ != '__main__':
 
 if __name__ == '__main__':
     app.logger.setLevel(logging.DEBUG)
-    app.run(host='0.0.0.0', port=12880, debug=True)
+    app.run(host='0.0.0.0', port=12870, debug=True)
     exit()

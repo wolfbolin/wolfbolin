@@ -1,21 +1,15 @@
 <template>
     <div class="wb-dns">
         <h2>DNS解析</h2>
-        <p v-if="user_token.length === 0">请先验证用户交互Token
+        <p v-if="password.length === 0">请先验证用户交互Token
             <el-button type="text" @click="check_token">检查状态</el-button>
         </p>
-        <el-tabs v-model="active_domain" type="card" @tab-click="handle_tab_click" v-if="user_token.length !== 0">
+        <el-tabs v-model="active_domain" type="card" @tab-click="handle_tab_click" v-if="password.length !== 0">
             <el-tab-pane v-for="domain of domain_list" :key="domain" :label="domain" :name="domain"></el-tab-pane>
             <el-tab-pane label="刷新" name="refresh-force"></el-tab-pane>
             <el-button-group class="wb-option">
                 <el-button type="primary" icon="el-icon-refresh" @click="refresh_record(active_domain)">刷新记录</el-button>
                 <el-button type="primary" icon="el-icon-plus" @click="add_record">新增记录</el-button>
-                <el-button type="success" icon="el-icon-magic-stick" v-if="highlight_bar"
-                           @click="highlight_bar = ~highlight_bar">高亮标记
-                </el-button>
-                <el-button type="primary" icon="el-icon-magic-stick" v-if="~highlight_bar"
-                           @click="highlight_bar = ~highlight_bar">高亮标记
-                </el-button>
                 <el-button type="warning" icon="el-icon-sort" v-if="edit_record_order"
                            @click="edit_record_order = ~edit_record_order">编辑顺序
                 </el-button>
@@ -25,16 +19,6 @@
                 <el-button type="primary" icon="el-icon-finished" @click="commit_change">提交修改</el-button>
             </el-button-group>
             <p class="wb-version">数据版本：{{data_version_info}}</p>
-            <div class="wb-highlight" v-if="highlight_bar">
-                <el-tag v-for="tag in highlight_key" class="wb-tag" :key="tag" closable
-                        @close="delete_tag(tag)">{{tag}}
-                </el-tag>
-                <el-input class="input-new-tag wb-tag" v-if="highlight_input" size="small" ref="aaa_tag_input"
-                          v-model="tag_input_key" @keyup.enter.native="add_tag" @blur="add_tag">
-                </el-input>
-                <el-button v-else class="button-new-tag wb-tag" size="small" @click="click_tag">+ New Key
-                </el-button>
-            </div>
             <el-table :data="record_list" style="width: 100%" v-loading="loading_data"
                       :row-class-name="row_class" :cell-class-name="cell_class" border>
                 <el-table-column prop="id" label="编号" min-width="100" sortable></el-table-column>
@@ -117,17 +101,15 @@
         name: "dns",
         data() {
             return {
-                user_token: this.$store.state.user_token,
+                username: this.$store.state.username,
+                password: this.$store.state.password,
                 active_domain: null,
                 loading_data: false,
                 show_edit_dialog: false,
                 edit_record_order: false,
-                data_version_info: "1231231231",
+                data_version_info: "",
                 domain_list: [],
                 record_list: [],
-                highlight_bar: false,
-                highlight_key: [],
-                highlight_input: false,
                 tag_input_key: "",
                 original_data: {},
                 edit_id: 0,
@@ -138,10 +120,11 @@
         },
         methods: {
             check_token: function () {
-                this.user_token = this.$store.state.user_token;
-                if (this.user_token.length === 0) {
+                this.username = this.$store.state.username;
+                this.password = this.$store.state.password;
+                if (this.password.length === 0) {
                     this.$message.error("请先完成用户Token验证")
-                } else {
+                }else{
                     this.switch_host("refresh");
                 }
             },
@@ -157,8 +140,7 @@
                 if (domain === "refresh") {
                     let that = this;
                     let data_host = this.$store.state.host;
-                    let user_token = this.$store.state.user_token;
-                    let http_url = data_host + `/network/dns/domain?token=${user_token}&refresh=${force}`
+                    let http_url = data_host + `/network/dns/domain?user=${this.username}&pass=${this.password}&refresh=${force}`
                     this.$http.get(http_url)
                         .then(function (res) {
                             if (res.data.status === 'OK') {
@@ -179,8 +161,7 @@
                 let that = this;
                 this.loading_data = true;
                 let data_host = this.$store.state.host;
-                let user_token = this.$store.state.user_token;
-                let http_url = data_host + `/network/dns/domain/${domain}/record?token=${user_token}&refresh=${force}`
+                let http_url = data_host + `/network/dns/domain/${domain}/record?user=${this.username}&pass=${this.password}&refresh=${force}`
                 this.$http.get(http_url)
                     .then(function (res) {
                         if (res.data.status === 'OK') {
@@ -288,8 +269,7 @@
                 let that = this;
                 this.loading_data = true;
                 let data_host = this.$store.state.host;
-                let user_token = this.$store.state.user_token;
-                let http_url = data_host + `/network/dns/domain/${this.active_domain}/record?token=${user_token}`
+                let http_url = data_host + `/network/dns/domain/${this.active_domain}/record?user=${this.username}&pass=${this.password}`
                 this.$http.put(http_url, this.record_list)
                     .then(function (res) {
                         if (res.data.status === 'OK') {
@@ -314,27 +294,6 @@
                         console.log(res);
                         that.loading_data = false;
                     })
-            },
-            add_tag: function () {
-                this.highlight_input = false
-                if (this.tag_input_key.length === 0) {
-                    return
-                }
-                let temp = new Set(this.highlight_key)
-                temp.add(this.tag_input_key);
-                this.highlight_key = Array.from(temp);
-                this.tag_input_key = ""
-            },
-            click_tag: function () {
-                this.highlight_input = true;
-                this.$nextTick(() => {
-                    this.$refs.aaa_tag_input.$refs.input.focus();
-                });
-            },
-            delete_tag: function (tag_name) {
-                let temp = new Set(this.highlight_key)
-                temp.delete(tag_name)
-                this.highlight_key = Array.from(temp)
             },
             row_class: function ({row}) {
                 if (row.record === "www") {
@@ -366,16 +325,6 @@
                 if (col_key === "value") {
                     this_cell_class += "ellipsis_cell "
                 }
-
-                let col_val = cell_info.row[col_key];
-                for (let key of this.highlight_key) {
-                    if (col_val === undefined) {
-                        continue
-                    }
-                    if (col_val.indexOf(key) !== -1) {
-                        this_cell_class += "highlight_tag "
-                    }
-                }
                 return this_cell_class
             },
             deepCopy: function (item) {
@@ -398,26 +347,6 @@
             display: inline-block;
             margin-left: 16px;
         }
-
-        .wb-highlight {
-            margin-bottom: 8px;
-
-            .wb-tag + .wb-tag {
-                margin-left: 8px;
-            }
-
-            .button-new-tag {
-                height: 32px;
-                line-height: 30px;
-                padding-top: 0;
-                padding-bottom: 0;
-            }
-
-            .input-new-tag {
-                width: 90px;
-                vertical-align: bottom;
-            }
-        }
     }
 
     .el-table .split-line {
@@ -438,10 +367,6 @@
 
     .ellipsis_cell .cell {
         white-space: nowrap;
-    }
-
-    .highlight_tag {
-        background: #ecf5ff;
     }
 
 </style>

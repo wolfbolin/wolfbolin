@@ -13,21 +13,37 @@
                         <div class="wb-part">
                             <el-card class="wb-login">
                                 <div slot="header" class="login-header">
-                                    <span>身份验证</span>
+                                    <span>网络验证</span>
                                 </div>
                                 <div class="login-body">
-                                    <el-input type="password" placeholder="请输入秘钥" v-model="user_token"
-                                              @keyup.enter.native="check_token" autofocus clearable>
-                                        <el-button slot="append" type="primary" @click="check_token" plain>验证
-                                        </el-button>
+                                    <el-input type="text" placeholder="请输入账户"
+                                              v-model="username" autofocus clearable>
+                                        <template slot="prepend">用户</template>
                                     </el-input>
+                                    <el-input type="password" placeholder="请输入秘钥" v-model="password"
+                                              @keyup.enter.native="check_token" clearable>
+                                        <template slot="prepend">秘钥</template>
+                                    </el-input>
+                                    <el-checkbox v-model="keep_token">保存秘钥</el-checkbox>
+                                    <el-button type="primary" plain @click="check_token">验证</el-button>
+                                    <p>网络连接
+                                        <i class="el-icon-loading" style="color: orange"
+                                           v-if="connected === 'Unknown'"></i>
+                                        <i class="el-icon-circle-check" style="color: green"
+                                           v-if="connected === 'OK'"></i>
+                                        <i class="el-icon-circle-close" style="color: red"
+                                           v-if="connected === 'Error'"></i>
+                                    </p>
+                                    <p>身份验证
+                                        <i class="el-icon-loading" style="color: orange"
+                                           v-if="token_res === 'Unknown'"></i>
+                                        <i class="el-icon-circle-check" style="color: green"
+                                           v-if="token_res === 'OK'"></i>
+                                        <i class="el-icon-circle-close" style="color: red"
+                                           v-if="token_res === 'Error'"></i>
+                                    </p>
                                 </div>
-                                <div class="login-alert">
-                                    <el-alert title="Token验证成功" type="success"
-                                              v-if="token_res === 'success'"></el-alert>
-                                    <el-alert title="Token验证失败" type="error"
-                                              v-if="token_res === 'error'"></el-alert>
-                                </div>
+
                             </el-card>
                         </div>
                         <div class="wb-part">
@@ -60,31 +76,42 @@ export default {
     name: "Tool",
     data() {
         return {
-            token_res: "none",
-            user_token: this.$store.state.user_token,
+            connected: "Unknown",
+            token_res: "Unknown",
+            keep_token: false,
+            username: this.$store.state.username,
+            password: this.$store.state.password,
             active_box: null,
             active_tool: null,
             active_mod: () => import(`@/components/tools/welcome`),
-            box_list: this.$store.state.tool_data
+            acl_tools: []
         }
     },
     methods: {
         check_token: function () {
             let that = this;
             let data_host = this.$store.state.host;
-            this.$http.get(data_host + `/webpage/check/token?token=${this.user_token}`)
+            this.$http.get(data_host + `/webpage/tool/acl?user=${this.username}&pass=${this.password}`)
                 .then(function (res) {
-                    if (res.data.data === 'Success') {
-                        that.token_res = "success"
-                        that.$store.commit("setData", {key: "user_token", val: that.user_token})
+                    if (res.data.status === 'OK') {
+                        that.token_res = "OK"
+                        that.$store.commit("setData", {key: "username", val: that.username})
+                        that.$store.commit("setData", {key: "password", val: that.password})
+                        if (that.keep_token) {
+                            that.$cookies.set("username", that.username)
+                            that.$cookies.set("password", that.password)
+                        }
+                        that.acl_tools = res.data.data
                     } else {
-                        that.token_res = "error"
-                        that.$store.commit("setData", {key: "user_token", val: ""})
+                        that.keep_token = false
+                        that.token_res = "Error"
+                        that.$store.commit("setData", {key: "username", val: ""})
+                        that.$store.commit("setData", {key: "password", val: ""})
                     }
                 })
                 .catch(function (res) {
-                    that.token_res = "error"
-                    that.$store.commit("setData", {key: "user_token", val: ""})
+                    that.token_res = "Error"
+                    that.$store.commit("setData", {key: "password", val: ""})
                     console.log(res);
                 })
         },
@@ -113,7 +140,30 @@ export default {
             } else {
                 this.active_mod = () => import(`@/components/tools/${box_label}_${tool_label}`);
             }
-        }
+        },
+        check_service: function () {
+            let that = this;
+            let data_host = this.$store.state.host;
+            this.$http.get(data_host + `/generate_204`)
+                .then(function () {
+                    that.connected = "OK"
+                })
+                .catch(function () {
+                    that.connected = "Error"
+                })
+        },
+        read_user_config: function () {
+            let username = this.$cookies.get("username")
+            let password = this.$cookies.get("password")
+            if (username !== null && password !== null) {
+                this.keep_token = true
+                this.username = username
+                this.password = password
+                this.$store.commit("setData", {key: "username", val: this.username})
+                this.$store.commit("setData", {key: "password", val: this.password})
+                this.check_token()
+            }
+        },
     },
     mounted() {
         if (this.$route.path.split("/").length < 3) {
@@ -121,6 +171,29 @@ export default {
             this.$router.replace(new_path);
         }
         this.check_path(this.$route.path);
+        this.check_service();  // 检查服务器连通性
+        this.read_user_config(); // 检查用户存储
+    },
+    computed: {
+        box_list: function () {
+            let tool_config = this.$store.state.tool_data
+            let box_list = []
+            let box_index = {}
+            for(let box of tool_config["box_list"]){
+                box_index[box["label"]] = box_list.length
+                box["tool_list"] = []
+                box_list.push(box)
+            }
+            for(let tool of tool_config["tool_list"]){
+                if(tool["mode"] === "basic"){
+                    box_list[box_index[tool["box"]]]["tool_list"].push(tool)
+                }
+                if(tool["mode"] === "acl" && this.acl_tools.indexOf(tool["label"]) !== -1){
+                    box_list[box_index[tool["box"]]]["tool_list"].push(tool)
+                }
+            }
+            return box_list
+        }
     },
     watch: {
         $route() {
@@ -135,7 +208,7 @@ export default {
     padding: 36px;
 
     @media screen and (min-width: 768px) {
-        background: url("~@/assets/img/cover.jpg") no-repeat;
+        background: url("https://cdn.wolfbolin.com/image/cover.jpg") no-repeat;
         background-position-y: 40%;
         /* background 必在 background-size 前 */
         background-size: cover;
@@ -150,8 +223,15 @@ export default {
     }
 
     .wb-login {
-        .login-alert {
-            margin-top: 16px;
+        .login-body {
+            .el-input {
+                margin-bottom: 8px;
+            }
+
+            .el-button {
+                width: 100%;
+                margin: 6px 0;
+            }
         }
     }
 }

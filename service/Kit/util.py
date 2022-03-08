@@ -38,21 +38,47 @@ def common_rsp(data, status='OK'):
         })
 
 
-def verify_token(level="common"):
+def verify_token():
     def deco(func):
         @functools.wraps(func)
         def check_user_token(*args, **kwargs):
             t = str(request.args.get('token', 'guest'))
 
             conn = current_app.mysql_pool.connection()
-            token = db.get_app_pair(conn, "auth", "token-{}".format(level))
+            token = db.get_app_pair(conn, "auth", "token")
             if token is None:
                 abort(400, "Not found token")
 
             md5_code = Kit.calc_md5(t)
             if md5_code != token:
-                app.logger.warning("Token错误：{} @ {}".format(t, request.url))
+                app.logger.warning("Token error：{} @ {}".format(t, request.url))
                 abort(403, "Token error")
+
+            return func(*args, **kwargs)
+
+        return check_user_token
+
+    return deco
+
+
+def verify_passwd(p):
+    def deco(func):
+        @functools.wraps(func)
+        def check_user_token(*args, **kwargs):
+            u = str(request.args.get('user', ''))
+            t = str(request.args.get('pass', ''))
+            md5_t = Kit.calc_md5(t)
+            conn = current_app.mysql_pool.connection()
+            res = db.check_user_passwd(conn, u, md5_t, p)
+            if res is None:
+                app.logger.warning("Password error：{} @ {}".format(u, md5_t))
+                abort(400, "Not found user")
+
+            if res["status"] != "open":
+                abort(400, "Account closed")
+
+            if res[p] != "Yes":
+                abort(400, "Account has no permission")
 
             return func(*args, **kwargs)
 
@@ -64,13 +90,13 @@ def verify_token(level="common"):
 def req_check_query_key(key_list):
     def deco(func):
         @wraps(func)
-        def check_json_key(*args, **kwargs):
+        def check_query_key(*args, **kwargs):
             server_info = dict(request.args)
-            if server_info is None or set(server_info.keys()) != key_list:
+            if server_info is None or set(server_info.keys()) != set(key_list):
                 return Kit.common_rsp("Error request key-value", status="Forbidden")
             return func(*args, **kwargs)
 
-        return check_json_key
+        return check_query_key
 
     return deco
 
@@ -80,7 +106,7 @@ def req_check_json_key(key_list):
         @wraps(func)
         def check_json_key(*args, **kwargs):
             server_info = request.get_json()
-            if server_info is None or set(server_info.keys()) != key_list:
+            if server_info is None or set(server_info.keys()) != set(key_list):
                 return Kit.common_rsp("Error request key-value", status="Forbidden")
             return func(*args, **kwargs)
 

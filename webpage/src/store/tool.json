@@ -1,39 +1,70 @@
-[
-  {
-    "label": "network",
-    "name": "Network",
-    "tool_list": [
-      {
-        "label": "ip",
-        "name": "IP查询",
-        "desc": "用户本机当前IP信息查询"
-      },
-      {
-        "label": "dns",
-        "name": "DNS工具*",
-        "desc": "域名解析记录批量修改工具"
-      },
-      {
-        "label": "proxy",
-        "name": "Proxy规则*",
-        "desc": "私有代理网络路由配置面板"
-      },
-      {
-        "label": "pay",
-        "name": "在线支付接口",
-        "desc": "在线支付实验性接口面板"
-      }
-    ]
-  },
-  {
-    "label": "util",
-    "name": "Utility",
-    "tool_list": [
-      {
-        "label": "mac",
-        "name": "MAC地址工具",
-        "desc": "可以用于一键转换MAC地址格式"
-      }
-    ]
-  }
-]
+{
+  "box_list": [
+    {
+      "label": "util",
+      "name": "工具"
+    },
+    {
+      "label": "panel",
+      "name": "面板"
+    }
+  ],
+  "tool_list": [
+    {
+      "box": "util",
+      "mode": "basic",
+      "label": "ip",
+      "name": "IP查询",
+      "desc": "用户本机当前IP信息查询"
+    },
+    {
+      "box": "util",
+      "mode": "basic",
+      "label": "mac",
+      "name": "MAC转换",
+      "desc": "可以用于一键转换MAC地址格式"
+    },
+    {
+      "box": "util",
+      "mode": "basic",
+      "label": "pay",
+      "name": "在线支付接口",
+      "desc": "在线支付实验性接口面板"
+    },
+    {
+      "box": "panel",
+      "mode": "acl",
+      "label": "dnspod",
+      "name": "DNS工具*",
+      "desc": "域名解析记录批量修改工具"
+    },
+    {
+      "box": "panel",
+      "mode": "acl",
+      "label": "proxy",
+      "name": "Proxy规则*",
+      "desc": "私有代理网络路由配置面板"
+    },
+    {
+      "box": "panel",
+      "mode": "acl",
+      "label": "kvdb",
+      "name": "Key-Value*",
+      "desc": "提供高性能K-V信息存储服务"
+    },
+    {
+      "box": "panel",
+      "mode": "acl",
+      "label": "hostname",
+      "name": "主机管理*",
+      "desc": "管理内部网络中主机资源与网络资源分配"
+    },
+    {
+      "box": "panel",
+      "mode": "acl",
+      "label": "redirect",
+      "name": "端口映射*",
+      "desc": "管理内部网络中公网IP与端口资源管理"
+    }
+  ]
+}

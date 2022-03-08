@@ -1,64 +1,55 @@
 # coding=utf-8
 import Kit
 import Message
-import pymemobird
 from flask import request
 from flask import current_app as app
 
-g_printer_message_key = {"app", "user", "text"}
-g_sugar_message_key = {"user", "source", "title", "text"}
-g_sms_message_key = {"phone", "template", "params"}
-
-
-@Message.message_blue.route("/printer/text", methods=["POST"])
-@Kit.req_check_json_key(g_printer_message_key)
-def printer_text_message():
-    message_info = request.get_json()
-
-    name = message_info["app"]
-    user = message_info["user"]
-    text = message_info["text"]
-    format_time = Kit.str_time()
-    content = "================================\n\n"  # 32
-    content += "应用：{}\n".format(name)
-    content += "来源：{}\n".format(user)
-    content += "时间：{}\n".format(format_time)
-    content += "--------------------------------\n\n"  # 32
-    content += "{}\n".format(text)
-    content += "\n================================\n"  # 32
-    content += r"       _    _       _  __ " + "\n"
-    content += r"      | |  | |     | |/ _|" + "\n"
-    content += r"      | |  | | ___ | | |_ " + "\n"
-    content += r"      | |/\| |/ _ \| |  _|" + "\n"
-    content += r"      \  /\  / (_) | | |  " + "\n"
-    content += r"       \/  \/ \___/|_|_|  " + "\n"
-
-    # 生成纸条对象
-    paper = pymemobird.Paper(app.config["PRINTER"]["access_key"])
-    paper.add_text(content)
-    app.printer.print_paper(paper)
-
-    return Kit.common_rsp("Send print message success: [{}]".format(paper.paper_id))
-
 
 @Message.message_blue.route("/sugar/text", methods=["POST"])
-@Kit.req_check_json_key(g_sugar_message_key)
 def sugar_message_push():
-    message_info = request.get_json()
+    msg_data = request.get_json()
     user_token = request.args.get("token", None)
 
-    user = message_info["user"]
-    source = message_info["source"]
-    title = message_info["title"]
-    text = message_info["text"]
+    user = msg_data["user"]
+    source = msg_data["source"]
+    title = msg_data["title"]
+    text = msg_data["text"]
 
     res = Kit.send_sugar_message(app.config, user, source, title, text, user_token)
 
     return Kit.common_rsp(res)
 
 
+@Message.message_blue.route("/wechat/text", methods=["POST"])
+def wechat_text_message_push():
+    msg_data = request.get_json()
+    conn = app.mysql_pool.connection()
+
+    content = {"content": msg_data["title"] + "\n" + msg_data["text"]}
+    res = Kit.send_wechat_message(conn, app.config, msg_data["user"], "text", content)
+
+    return Kit.common_rsp(res)
+
+
+@Message.message_blue.route("/wechat/textcard", methods=["POST"])
+def wechat_textcard_message_push():
+    msg_data = request.get_json()
+    conn = app.mysql_pool.connection()
+
+    description = "<div class=\"gray\">{}@{}</div>".format(msg_data["source"], Kit.str_time())
+    description += "<div class=\"normal\">{}</div>".format(msg_data["text"])
+    content = {
+        "title": msg_data["title"],
+        "description": description,
+        "url": msg_data["url"],
+        "btntxt": "更多"
+    }
+    res = Kit.send_wechat_message(conn, app.config, msg_data["user"], "textcard", content)
+
+    return Kit.common_rsp(res)
+
+
 @Message.message_blue.route("/sms/text", methods=["POST"])
-@Kit.req_check_json_key(g_printer_message_key)
 def sms_message_push():
     message_info = request.get_json()
 
@@ -77,7 +68,7 @@ def sms_message_push():
 
 
 @Message.message_blue.route("/sms/send/<phone>", methods=["POST"])
-@Kit.req_check_json_key(g_sms_message_key)
+@Kit.verify_token()
 def sms_message_send(phone):
     message_info = request.get_json()
 
