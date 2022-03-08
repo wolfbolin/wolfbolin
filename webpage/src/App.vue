@@ -30,7 +30,7 @@
                 <p class="copyright" v-if="run_env==='phone'">
                     CopyRight © 2017-2020 WolfBolin.<br/>All Rights Reserved.
                 </p>
-                <a href="http://www.miitbeian.gov.cn" class="icp">豫ICP备19033794号</a>
+                <a href="https://beian.miit.gov.cn" class="icp">豫ICP备19033794号</a>
             </div>
         </footer>
     </div>

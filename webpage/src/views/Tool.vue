@@ -208,7 +208,7 @@ export default {
     padding: 36px;
 
     @media screen and (min-width: 768px) {
-        background: url("~@/assets/img/cover.jpg") no-repeat;
+        background: url("https://cdn.wolfbolin.com/image/cover.jpg") no-repeat;
         background-position-y: 40%;
         /* background 必在 background-size 前 */
         background-size: cover;

@@ -251,7 +251,7 @@
     }
 
     .wb-home {
-        background: url("../assets/img/cover.jpg") no-repeat fixed top;
+        background: url("https://cdn.wolfbolin.com/image/cover.jpg") no-repeat fixed top;
         /* background 必在 background-size 前 */
         background-size: cover;
         position: relative;
