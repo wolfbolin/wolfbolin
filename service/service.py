@@ -108,5 +108,5 @@ if __name__ != '__main__':
 
 if __name__ == '__main__':
     app.logger.setLevel(logging.DEBUG)
-    app.run(host='0.0.0.0', port=12870, debug=True)
+    app.run(host='0.0.0.0', port=12880, debug=True)
     exit()

@@ -120,7 +120,7 @@
     }
 
     .inner {
-        max-width: 1180px;
+        max-width: 1700px;
         margin: 0 auto;
     }
 
