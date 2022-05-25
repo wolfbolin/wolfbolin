@@ -1,0 +1,25 @@
+{
+  "title": {
+    "text": "Clash策略可视化"
+  },
+  "tooltip": {
+    "trigger": "item",
+    "triggerOn": "mousemove"
+  },
+  "animation": true,
+  "series": [
+    {
+      "type": "sankey",
+      "emphasis": {
+        "focus": "adjacency"
+      },
+      "nodeAlign": "right",
+      "data": [],
+      "links": [],
+      "lineStyle": {
+        "color": "source",
+        "curveness": 0.5
+      }
+    }
+  ]
+}

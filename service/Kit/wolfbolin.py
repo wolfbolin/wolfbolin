@@ -70,12 +70,14 @@ def process_bar(now, total, attach=''):
     sys.stdout.flush()
 
 
-def byte2all(byte, unit_list=None, split_str=""):
+def byte2all(byte: int, unit_list=None, split_str=""):
+    if byte == 0:
+        return 0
     # 信息计量单位转换
     if unit_list is None:
         unit_list = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB']
 
-    unit = math.floor(math.log(int(byte), 1024))
+    unit = math.floor(math.log(byte, 1024))
     unit = min(unit, len(unit_list))
     num = int(byte) / math.pow(1024, unit)
     return "{:.1f}{}{}".format(num, split_str, unit_list[unit])

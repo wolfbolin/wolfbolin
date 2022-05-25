@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import Tool from './tool.json'
 import Home from './index.json'
 import Album from "./album.json";
+import VisualClash from "./echarts/visual_clash.json";
 
 Vue.use(Vuex);
 
@@ -15,6 +16,7 @@ export default new Vuex.Store({
         tool_data: Tool,
         blog_data: null,
         album_list: Album,
+        visual_clash: VisualClash
     },
     mutations: {
         setData(state, param) {

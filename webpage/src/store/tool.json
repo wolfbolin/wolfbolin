@@ -32,6 +32,13 @@
       "desc": "在线支付实验性接口面板"
     },
     {
+      "box": "util",
+      "mode": "basic",
+      "label": "clash",
+      "name": "Clash可视化",
+      "desc": "Clash策略的可视化展示"
+    },
+    {
       "box": "panel",
       "mode": "acl",
       "label": "dnspod",

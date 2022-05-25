@@ -10,7 +10,9 @@
   "dependencies": {
     "axios": "^0.19.2",
     "core-js": "^3.12.1",
+    "echarts": "^5.3.1",
     "element-ui": "^2.15.1",
+    "js-yaml": "^4.1.0",
     "vue": "^2.6.12",
     "vue-axios": "^2.1.5",
     "vue-cookies": "^1.7.4",
@@ -26,6 +28,7 @@
     "@vue/cli-service": "^4.5.13",
     "babel-eslint": "^10.1.0",
     "babel-plugin-component": "^1.1.1",
+    "compression-webpack-plugin": "^6.1.1",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.2.2",
     "sass": "^1.32.13",

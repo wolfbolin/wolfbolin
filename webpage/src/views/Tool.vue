@@ -98,8 +98,8 @@ export default {
                         that.$store.commit("setData", {key: "username", val: that.username})
                         that.$store.commit("setData", {key: "password", val: that.password})
                         if (that.keep_token) {
-                            that.$cookies.set("username", that.username)
-                            that.$cookies.set("password", that.password)
+                            that.$cookies.set("username", that.username, '30d')
+                            that.$cookies.set("password", that.password, '30d')
                         }
                         that.acl_tools = res.data.data
                     } else {
